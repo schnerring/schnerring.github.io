@@ -2,6 +2,15 @@
 
 My personal website [schnerring.net](https://schnerring.net).
 
+## Setup
+
+Initialize the Hugo theme:
+
+```shell
+git submodule init
+git submodule update
+```
+
 ## License
 
 - The repository is licensed under [MIT](./LICENSE)
