@@ -1,0 +1,25 @@
+debug.log
+
+# Created by https://www.toptal.com/developers/gitignore/api/hugo,vscode
+# Edit at https://www.toptal.com/developers/gitignore?templates=hugo,vscode
+
+### Hugo ###
+# Generated files by hugo
+/public/
+/resources/_gen/
+hugo_stats.json
+
+# Executable may be added to repository
+hugo.exe
+hugo.darwin
+hugo.linux
+
+### vscode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# End of https://www.toptal.com/developers/gitignore/api/hugo,vscode
