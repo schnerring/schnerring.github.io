@@ -1,0 +1,43 @@
+name: Hugo
+
+on:
+  push:
+    branches:
+      - main
+
+  # Allows to run workflow manually from Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository and update Hugo themes
+        uses: actions/checkout@v2
+        with:
+          submodules: true
+          fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Install Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: "0.81.0"
+          extended: true
+
+      - name: Build Hugo
+        run: hugo --minify
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+
+      - name: Purge Cloudflare Cache
+        env:
+          CLOUDFLARE_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          chmod +x ./purge_cloudflare_cache.sh
+          ./purge_cloudflare_cache.sh
