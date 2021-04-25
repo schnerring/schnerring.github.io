@@ -2,6 +2,7 @@ baseURL = "https://schnerring.net"
 languageCode = "en-us"
 theme = "hello-friend"
 paginate = 5
+enableRobotsTXT = true
 ignoreFiles = [ "LICENSE$" ]
 
 [params]
