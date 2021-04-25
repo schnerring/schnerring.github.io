@@ -1,0 +1,392 @@
+<!doctype html><html lang=en><head><title>Create a Hugo Website with GitHub Pages, GitHub Actions, and Cloudflare ::
+Michael Schnerring — Coder and Computer Enthusiast</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="In this beginner guide, you&amp;rsquo;ll create a Hugo website from scratch and publish the website on GitHub Pages. You&amp;rsquo;ll configure Cloudflare&amp;rsquo;s DNS and utilize its caching capabilities to optimize page speeds. Finally, implementing automated deployments with GitHub Pages will enable you to publish new content on your site easily.
+"><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://schnerring.net/posts/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare/><link rel=stylesheet href=https://schnerring.net/assets/style.css><link rel=stylesheet href=https://schnerring.net/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://schnerring.net/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://schnerring.net/img/favicon.png><link href=https://schnerring.net/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="Create a Hugo Website with GitHub Pages, GitHub Actions, and Cloudflare"><meta name=twitter:description content="In this beginner guide, you&rsquo;ll create a Hugo website from scratch and publish the website on GitHub Pages. You&rsquo;ll configure Cloudflare&rsquo;s DNS and utilize its caching capabilities to optimize page speeds. Finally, implementing automated deployments with GitHub Pages will enable you to publish new content on your site easily."><meta property="og:title" content="Create a Hugo Website with GitHub Pages, GitHub Actions, and Cloudflare"><meta property="og:description" content="In this beginner guide, you&rsquo;ll create a Hugo website from scratch and publish the website on GitHub Pages. You&rsquo;ll configure Cloudflare&rsquo;s DNS and utilize its caching capabilities to optimize page speeds. Finally, implementing automated deployments with GitHub Pages will enable you to publish new content on your site easily."><meta property="og:type" content="article"><meta property="og:url" content="https://schnerring.net/posts/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-03-19T21:14:22+01:00"><meta property="article:modified_time" content="2021-03-19T21:14:22+01:00"><meta property="og:site_name" content="Michael Schnerring"></head><body><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>schnerring.net</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/about>About</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/about>About</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41c10.4934.0 19-8.5066 19-19C41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>Create a Hugo Website with GitHub Pages, GitHub Actions, and Cloudflare</h1><div class=post-meta><span class=post-date>2021-03-19</span></div><span class=post-tags><a href=https://schnerring.net/tags/hugo/>#hugo</a>&nbsp;
+<a href=https://schnerring.net/tags/cloudflare/>#cloudflare</a>&nbsp;
+<a href=https://schnerring.net/tags/github-actions/>#github actions</a>&nbsp;
+<a href=https://schnerring.net/tags/github-pages/>#github pages</a>&nbsp;</span><div class=post-content><p>In this beginner guide, you&rsquo;ll create a Hugo website from scratch and publish the website on GitHub Pages. You&rsquo;ll configure Cloudflare&rsquo;s DNS and utilize its caching capabilities to optimize page speeds. Finally, implementing automated deployments with GitHub Pages will enable you to publish new content on your site easily.</p><h2 id=motivation>Motivation</h2><p>Over the last couple of years, I&rsquo;ve written documentation for private hobby projects, most of it in <a href=https://en.wikipedia.org/wiki/Markdown>Markdown</a> and managed with <a href=https://git-scm.com/>Git</a>. It&rsquo;s all over the place, some parts quite elaborate, other stuff just bullet point lists.</p><p>I think some of it might be useful for others, so I started looking for ways to publish Markdown documentation and found <a href=https://gohugo.io/>Hugo</a>. It&rsquo;s a simple to use, modern, and very popular static site generator that encourages the use of Markdown files. Perfect!</p><p>Having found Hugo, I started looking into how to best host static content. I&rsquo;ve been using <a href=https://github.com/>GitHub</a> forever, so obviously I chose <a href=https://pages.github.com/>GitHub Pages</a>. Accompanied by <a href=https://www.cloudflare.com/>Cloudflare</a>&rsquo;s caching capabilities, a blazingly fast website is guaranteed.</p><p>The only thing missing was a way to automagically publish changes made to the Git repository on the website. This is where <a href=https://github.com/features/actions>GitHub Actions</a> come in.</p><p>With the technology figured out, in my very first guide, I&rsquo;ll show you step by step how I created this website in its first version. You can check out the code <a href=https://github.com/schnerring/schnerring.github.io/tree/1.0.0>on my GitHub</a> where I tagged the resulting commit with version <code>1.0.0</code>.</p><h2 id=the-plan>The Plan</h2><p>Here is an overview of what you&rsquo;ll do:</p><ol><li><a href=#step-1-prerequisites>Register for third-party services and install the required software</a></li><li><a href=#step-2-prepare-git>Prepare the Git repository</a></li><li><a href=#step-3-prepare-vs-code>Set up the development environment</a></li><li><a href=#step-4-enter-hugo>Create a Hugo site from scratch and run it locally</a></li><li><a href=#step-5-configure-cloudflare>Set up Cloudflare for a custom root (apex) domain</a></li><li><a href=#step-6-deploy-the-site-to-github-pages>Manually deploy the website to GitHub Pages</a></li><li><a href=#step-7-automate-deployments-with-github-actions>Deploy the website automatically to GitHub Pages with GitHub Actions</a></li></ol><p>I created this guide with Windows users in mind, but the workflow should be easily adaptable to other platforms. The steps are detailed and beginner-friendly, so if you&rsquo;re more experienced, you can skip through most parts of steps 1 to 3.</p><p>For this guide, I configured the <code>schnerring.net</code> domain and used <code>schnerring.github.io</code> as the GitHub Pages site. In the instructions, you&rsquo;ll need to replace these accordingly.</p><h2 id=step-1-prerequisites>Step #1: Prerequisites</h2><p>First, you&rsquo;ll need to register for a couple of services and install some software. Everything mentioned is free, except registering a custom domain name. I&rsquo;m not affiliated with any of the products I recommend in this guide.</p><h3 id=sign-up-at-third-party-services>Sign Up at Third-Party Services</h3><ul><li>Register a domain name with your registrar — I&rsquo;m a very happy <a href=https://www.namecheap.com/>Namecheap</a> customer</li><li>Sign up at <a href=https://www.cloudflare.com/>Cloudflare</a></li><li>Sign up at <a href=https://github.com/>GitHub</a></li></ul><h3 id=install-software-for-development>Install Software for Development</h3><p>Install the following programs for local development on our workstation:</p><ul><li><a href=https://gohugo.io/getting-started/installing/>Hugo</a> — make sure to install <code>hugo-extended</code> to be able to use themes that utilize Sass/SCSS</li><li><a href=https://git-scm.com/download/win>Git for Windows</a> — source control management and shell</li><li><a href=https://code.visualstudio.com/Download>Visual Studio Code</a> — editor for coding</li><li><a href=https://www.google.com/chrome/index.html>Google Chrome</a> — web browser for debugging</li></ul><p>I used the <strong>Git Bash</strong> terminal to create the instructions for this guide. It&rsquo;s bundled with Git for Windows and provides UNIX-like commands like <code>rm</code>, <code>touch</code>, and more.</p><h2 id=step-2-prepare-git>Step #2: Prepare Git</h2><h3 id=create-a-github-repository>Create a GitHub Repository</h3><p>Sign in to your GitHub account and create a new repository. To create a <em>user</em> type website with GitHub Pages, name the repository <code>schnerring.github.io</code>.</p><p>If you want to know more about GitHub Page types, you can find further information <a href=https://docs.github.com/en/free-pro-team@latest/github/working-with-github-pages/about-github-pages#types-of-github-pages-sites>in the GitHub Docs</a>.</p><p>Make sure to initialize the repository with a <code>README</code> and a <code>LICENSE</code> file. For this project, I chose the <strong>MIT license</strong>.</p><h3 id=clone-the-newly-created-repository-and-open-it-in-vs-code>Clone the Newly Created Repository and Open It in VS Code</h3><p>If you haven&rsquo;t already, <a href=https://docs.github.com/en/github-ae@latest/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent>configure an SSH key</a> to use with GitHub. You&rsquo;re now ready to clone the GitHub repository to your workstation. Open a Git Bash terminal and run the following commands:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>git clone git@github.com:schnerring/schnerring.github.io.git
+cd schnerring.github.io
+code .
+</code></pre></div><h2 id=step-3-prepare-vs-code>Step #3: Prepare VS Code</h2><p>To make it easier to write clean and consistent code, install the following extensions:</p><p><strong><a href="https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig">EditorConfig</a></strong></p><blockquote><p>EditorConfig helps maintain consistent coding styles for multiple developers working on the same project across various editors and IDEs.</p></blockquote><p><strong><a href="https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint">markdownlint</a></strong></p><blockquote><p>markdownlint is a static analysis tool for Node.js with a library of rules to enforce standards and consistency for Markdown files</p></blockquote><p><strong><a href="https://marketplace.visualstudio.com/items?itemName=timonwong.shellcheck">shellcheck</a></strong></p><blockquote><p>ShellCheck is a GPLv3 tool that gives warnings and suggestions for bash/sh shell scripts</p></blockquote><h3 id=add-the-vscodeextensionsjson-file>Add the <code>.vscode/extensions.json</code> File</h3><p><a href=https://code.visualstudio.com/docs/editor/extension-gallery#_workspace-recommended-extensions>Workspace recommended extensions</a> for VS Code make it easy to share a set of extensions easily across development environments. When you open a repository folder in VS Code and some recommended extensions are missing, you&rsquo;ll be notified, and just one click away from installing them.</p><p>Here&rsquo;s what the file looks like:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:#f92672>&#34;recommendations&#34;</span>: [
+    <span style=color:#e6db74>&#34;editorconfig.editorconfig&#34;</span>,
+    <span style=color:#e6db74>&#34;davidanson.vscode-markdownlint&#34;</span>,
+    <span style=color:#e6db74>&#34;omartawfik.github-actions-vscode&#34;</span>,
+    <span style=color:#e6db74>&#34;timonwong.shellcheck&#34;</span>
+  ]
+}
+</code></pre></div><h3 id=add-the-vscodelaunchjson-file>Add the <code>.vscode/launch.json</code> File</h3><p>When running <code>hugo server</code> locally during development, it&rsquo;s nice to be able to open <code>http://localhost:1313</code> in Chrome from within VS Code by just hitting the <code>F5</code> key. For this, you need to add a <em>launch configuration</em>. VS Code stores launch configurations in the <code>launch.json</code> file located in the <code>.vscode/</code> folder.</p><p>For Windows, the configuration looks like this:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:#960050;background-color:#1e0010>//</span> <span style=color:#960050;background-color:#1e0010>Use</span> <span style=color:#960050;background-color:#1e0010>IntelliSense</span> <span style=color:#960050;background-color:#1e0010>to</span> <span style=color:#960050;background-color:#1e0010>learn</span> <span style=color:#960050;background-color:#1e0010>about</span> <span style=color:#960050;background-color:#1e0010>possible</span> <span style=color:#960050;background-color:#1e0010>attributes.</span>
+  <span style=color:#960050;background-color:#1e0010>//</span> <span style=color:#960050;background-color:#1e0010>Hover</span> <span style=color:#960050;background-color:#1e0010>to</span> <span style=color:#960050;background-color:#1e0010>view</span> <span style=color:#960050;background-color:#1e0010>descriptions</span> <span style=color:#960050;background-color:#1e0010>of</span> <span style=color:#960050;background-color:#1e0010>existing</span> <span style=color:#960050;background-color:#1e0010>attributes.</span>
+  <span style=color:#960050;background-color:#1e0010>//</span> <span style=color:#960050;background-color:#1e0010>For</span> <span style=color:#960050;background-color:#1e0010>more</span> <span style=color:#960050;background-color:#1e0010>information,</span> <span style=color:#960050;background-color:#1e0010>visit:</span> <span style=color:#960050;background-color:#1e0010>https://go.microsoft.com/fwlink/?linkid=830387</span>
+  <span style=color:#f92672>&#34;version&#34;</span>: <span style=color:#e6db74>&#34;0.2.0&#34;</span>,
+  <span style=color:#f92672>&#34;configurations&#34;</span>: [
+    {
+      <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;pwa-chrome&#34;</span>,
+      <span style=color:#f92672>&#34;request&#34;</span>: <span style=color:#e6db74>&#34;launch&#34;</span>,
+      <span style=color:#f92672>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;Launch Chrome against localhost&#34;</span>,
+      <span style=color:#f92672>&#34;url&#34;</span>: <span style=color:#e6db74>&#34;http://localhost:1313&#34;</span>,
+      <span style=color:#f92672>&#34;webRoot&#34;</span>: <span style=color:#e6db74>&#34;${workspaceFolder}&#34;</span>
+    }
+  ]
+}
+</code></pre></div><p>Check out the official documentation to learn more about <a href=https://code.visualstudio.com/Docs/editor/debugging>debugging in VS Code</a>.</p><h3 id=add-the-editorconfig-configuration>Add the EditorConfig Configuration</h3><p>Add the <code>.editorconfig</code> file to the root folder of the repository:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text># top-most EditorConfig file
+root = true
+
+# every file
+[*]
+charset = utf-8
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+</code></pre></div><p><a href=https://editorconfig.org/>Check out EditorConfig</a> if you want to learn more, it&rsquo;s awesome!</p><h3 id=add-the-gitignore-file>Add the <code>.gitignore</code> File</h3><p>To prevent cluttering of the repository with files generated by VS Code, add a <code>.gitignore</code> file to the root of the repository. To generate the <code>.gitignore</code> file, I like to use <a href=https://www.toptal.com/developers/gitignore>gitignore.io</a>. Hugo adds a <code>debug.log</code> file from time to time which I manually add, as well.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>debug.log
+
+# Created by https://www.toptal.com/developers/gitignore/api/hugo,vscode
+# Edit at https://www.toptal.com/developers/gitignore?templates=hugo,vscode
+
+### Hugo ###
+# Generated files by hugo
+/public/
+/resources/_gen/
+hugo_stats.json
+
+# Executable may be added to repository
+hugo.exe
+hugo.darwin
+hugo.linux
+
+### vscode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# End of https://www.toptal.com/developers/gitignore/api/hugo,vscode
+</code></pre></div><h3 id=push-development-environment-settings-to-github>Push Development Environment Settings to GitHub</h3><p>The folder structure now looks like this:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>.vscode/
+├─ extensions.json
+├─ launch.json
+.editorconfig
+.gitignore
+LICENSE
+README.md
+</code></pre></div><p>Push the changes to GitHub:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>git add --all
+git commit --message<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;Add vscode launch.json / extensions.json, .editorconfig, .gitignore&#34;</span>
+git push
+</code></pre></div><h2 id=step-4-enter-hugo>Step #4: Enter Hugo</h2><p><a href=https://gohugo.io/getting-started/quick-start/>Only a few steps</a> are required to create a functional Hugo site.</p><h3 id=create-a-new-site>Create a New Site</h3><p>To create a Hugo site in your current working folder, use the <a href=https://gohugo.io/commands/>Hugo CLI</a>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>hugo new site . --force
+</code></pre></div><p>With <code>--force</code>, Hugo won&rsquo;t complain about the folder containing files.</p><h3 id=add-a-theme>Add a Theme</h3><p>To get started quickly, add the <a href=https://themes.gohugo.io/hugo-theme-hello-friend>Hello Friend theme</a> as a <a href=https://git-scm.com/book/en/v2/Git-Tools-Submodules>Git Submodule</a>. Check out <a href=https://themes.gohugo.io/>themes.gohugo.io</a> for more themes.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>git submodule add https://github.com/panr/hugo-theme-hello-friend.git themes/hello-friend
+</code></pre></div><h3 id=update-the-hugo-configuration>Update the Hugo Configuration</h3><p>The Hello Friend theme requires minimal configuration steps to work. As a baseline, use the sample <a href=https://github.com/rhazdon/hugo-theme-hello-friend-ng#how-to-configure>provided in the themes' README</a> and make some straightforward changes to it.</p><p>The resulting <code>config.toml</code> looks like this:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-toml data-lang=toml><span style=color:#a6e22e>baseURL</span> = <span style=color:#e6db74>&#34;https://schnerring.net&#34;</span>
+<span style=color:#a6e22e>languageCode</span> = <span style=color:#e6db74>&#34;en-us&#34;</span>
+<span style=color:#a6e22e>theme</span> = <span style=color:#e6db74>&#34;hello-friend&#34;</span>
+<span style=color:#a6e22e>paginate</span> = <span style=color:#ae81ff>5</span>
+<span style=color:#a6e22e>ignoreFiles</span> = [ <span style=color:#e6db74>&#34;LICENSE$&#34;</span> ]
+
+[<span style=color:#a6e22e>params</span>]
+  <span style=color:#75715e># dir name of your blog content (default is `content/posts`).</span>
+  <span style=color:#75715e># the list of set content will show up on your index page (baseurl).</span>
+  <span style=color:#75715e>#contentTypeName = &#34;posts&#34;</span>
+
+  <span style=color:#75715e># &#34;light&#34; or &#34;dark&#34;</span>
+  <span style=color:#a6e22e>defaultTheme</span> = <span style=color:#e6db74>&#34;dark&#34;</span>
+
+  <span style=color:#75715e># if you set this to 0, only submenu trigger will be visible</span>
+  <span style=color:#a6e22e>showMenuItems</span> = <span style=color:#ae81ff>2</span>
+
+  <span style=color:#75715e># Show reading time in minutes for posts</span>
+  <span style=color:#a6e22e>showReadingTime</span> = <span style=color:#66d9ef>false</span>
+
+  <span style=color:#75715e># Show table of contents at the top of your posts (defaults to false)</span>
+  <span style=color:#75715e># Alternatively, add this param to post front matter for specific posts</span>
+  <span style=color:#75715e># toc = true</span>
+
+  <span style=color:#75715e># Show full page content in RSS feed items</span>
+  <span style=color:#75715e>#(default is Description or Summary metadata in the front matter)</span>
+  <span style=color:#75715e># rssFullText = true</span>
+
+[<span style=color:#a6e22e>languages</span>]
+  [<span style=color:#a6e22e>languages</span>.<span style=color:#a6e22e>en</span>]
+    <span style=color:#a6e22e>title</span> = <span style=color:#e6db74>&#34;Michael Schnerring&#34;</span>
+    <span style=color:#a6e22e>subtitle</span> = <span style=color:#e6db74>&#34;Coder and Computer Enthusiast&#34;</span>
+    <span style=color:#a6e22e>keywords</span> = <span style=color:#e6db74>&#34;&#34;</span>
+    <span style=color:#a6e22e>description</span> = <span style=color:#e6db74>&#34;Michael Schnerring is a coder and computer enthusiast.&#34;</span>
+    <span style=color:#a6e22e>copyright</span> = <span style=color:#e6db74>&#34;&lt;p&gt;Copyright © 2020 Michael Schnerring&lt;/p&gt;&lt;p xmlns:dct=&#39;http://purl.org/dc/terms/&#39; xmlns:cc=&#39;http://creativecommons.org/ns#&#39; class=&#39;license-text&#39;&gt;&lt;a rel=&#39;cc:attributionURL&#39; property=&#39;dct:title&#39; href=&#39;https://github.com/schnerring/schnerring.github.io/tree/main/content&#39;&gt;Content&lt;/a&gt; licensed under &lt;a rel=&#39;license&#39; href=&#39;https://creativecommons.org/licenses/by/4.0&#39;&gt;CC BY 4.0&lt;/a&gt;&lt;/p&gt;&#34;</span>
+    <span style=color:#a6e22e>menuMore</span> = <span style=color:#e6db74>&#34;Show more&#34;</span>
+    <span style=color:#a6e22e>writtenBy</span> = <span style=color:#e6db74>&#34;Written by&#34;</span>
+    <span style=color:#a6e22e>readMore</span> = <span style=color:#e6db74>&#34;Read more&#34;</span>
+    <span style=color:#a6e22e>readOtherPosts</span> = <span style=color:#e6db74>&#34;Read other posts&#34;</span>
+    <span style=color:#a6e22e>newerPosts</span> = <span style=color:#e6db74>&#34;Newer posts&#34;</span>
+    <span style=color:#a6e22e>olderPosts</span> = <span style=color:#e6db74>&#34;Older posts&#34;</span>
+    <span style=color:#a6e22e>minuteReadingTime</span> = <span style=color:#e6db74>&#34;min read&#34;</span>
+    <span style=color:#a6e22e>dateFormatSingle</span> = <span style=color:#e6db74>&#34;2006-01-02&#34;</span>
+    <span style=color:#a6e22e>dateFormatList</span> = <span style=color:#e6db74>&#34;2006-01-02&#34;</span>
+    <span style=color:#75715e># leave empty to disable, enter display text to enable</span>
+    <span style=color:#75715e>#lastModDisplay = &#34;modified&#34;</span>
+
+    [<span style=color:#a6e22e>languages</span>.<span style=color:#a6e22e>en</span>.<span style=color:#a6e22e>params</span>.<span style=color:#a6e22e>logo</span>]
+      <span style=color:#a6e22e>logoText</span> = <span style=color:#e6db74>&#34;schnerring.net&#34;</span>
+      <span style=color:#a6e22e>logoHomeLink</span> = <span style=color:#e6db74>&#34;/&#34;</span>
+    <span style=color:#75715e># or</span>
+    <span style=color:#75715e>#</span>
+    <span style=color:#75715e># path = &#34;/img/your-example-logo.svg&#34;</span>
+    <span style=color:#75715e># alt = &#34;Your example logo alt text&#34;</span>
+
+    [<span style=color:#a6e22e>languages</span>.<span style=color:#a6e22e>en</span>.<span style=color:#a6e22e>menu</span>]
+      [[<span style=color:#a6e22e>languages</span>.<span style=color:#a6e22e>en</span>.<span style=color:#a6e22e>menu</span>.<span style=color:#a6e22e>main</span>]]
+        <span style=color:#a6e22e>identifier</span> = <span style=color:#e6db74>&#34;about&#34;</span>
+        <span style=color:#a6e22e>name</span> = <span style=color:#e6db74>&#34;About&#34;</span>
+        <span style=color:#a6e22e>url</span> = <span style=color:#e6db74>&#34;/about&#34;</span>
+</code></pre></div><p>The themes' GitHub repository <a href=https://github.com/rhazdon/hugo-theme-hello-friend-ng/blob/master/exampleSite/config.toml>features another <code>config.toml</code> example</a>. You can read more about how to configure Hugo <a href=https://gohugo.io/getting-started/configuration/>in the official documentation</a>.</p><h3 id=add-some-content>Add Some Content</h3><p>With the help of the Hugo CLI, add an about page and the first blog post:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>hugo new about.md
+hugo new posts/hello-world.md
+</code></pre></div><h4 id=aboutmd>about.md</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-markdown data-lang=markdown>---
+title: &#34;About&#34;
+draft: false
+---
+
+I code by day and toy around with computers by night...
+</code></pre></div><h4 id=postshello-worldmd>posts/hello-world.md</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-markdown data-lang=markdown>---
+title: &#34;Hello World&#34;
+description: &#34;The first post of this blog&#34;
+date: 2021-03-14T15:00:21+01:00
+draft: false
+tags:
+  <span style=color:#66d9ef>-</span> &#34;csharp&#34;
+  <span style=color:#66d9ef>-</span> &#34;hello world&#34;
+---
+
+I&#39;m a .NET developer by trade, so let&#39;s say hello in C#!
+
+<span style=color:#e6db74>```csharp
+</span><span style=color:#e6db74></span><span style=color:#66d9ef>using</span> System;
+
+<span style=color:#66d9ef>class</span> <span style=color:#a6e22e>Program</span>
+{
+    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>static</span> <span style=color:#66d9ef>void</span> Main(<span style=color:#66d9ef>string</span>[] args)
+    {
+        Console.WriteLine(<span style=color:#e6db74>&#34;Hello, world!&#34;</span>);
+    }
+}
+<span style=color:#e6db74>```</span>
+</code></pre></div><p>Note the post&rsquo;s default status <code>draft: true</code>, so newly created content has to be published manually. You can read more about it <a href=https://gohugo.io/getting-started/usage/#draft-future-and-expired-content>in the official documentation</a>. Make sure to set this to <code>false</code> before deployment or the post won&rsquo;t be displayed.</p><h3 id=run-the-site-locally>Run the Site Locally</h3><p>To finally test the changes locally, run the following in a Git Bash terminal. The <code>--buildDrafts</code> (or <code>-D</code>) option enables you to also view content that has set <code>draft: true</code>.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>hugo server --buildDrafts
+</code></pre></div><p>Hit the <code>F5</code> button in VS Code to open the page in Chrome.</p><h3 id=push-the-changes>Push the Changes</h3><p>Git ignores empty folders, so if you push the current changes and re-clone the repository, the Hugo folder structure would be partially gone. A common practice is to add empty <code>.gitkeep</code> marker files to empty folders to prevent this:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>touch <span style=color:#f92672>{</span>data,layouts,static<span style=color:#f92672>}</span>/.gitkeep
+</code></pre></div><p>Your folder structure should look like this, excluding <code>resources</code> or <code>public</code> folders, since those are <code>.gitignore</code>d:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>.vscode/
+├─ extensions.json
+├─ launch.json
+archetypes/
+├─ default.md
+content/
+├─ posts/
+│  ├─ hello-world.md
+├─ about.md
+data/
+├─ .gitkeep
+layouts/
+├─ .gitkeep
+static/
+├─ .gitkeep
+themes/
+├─ hello-friend/    (submodule)
+.editorconfig
+.gitignore
+.gitmodules
+config.toml
+LICENSE
+README.md
+</code></pre></div><p>Commit and push everything:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>git add -A
+git commit -m <span style=color:#e6db74>&#34;Add Hugo site, hello-friend theme, about page and hello-world post&#34;</span>
+git push
+</code></pre></div><h2 id=step-5-configure-cloudflare>Step #5: Configure Cloudflare</h2><h3 id=add-the-site-to-cloudflare>Add the Site to Cloudflare</h3><ol><li>Sign in to your Cloudflare account</li><li>Click <strong>+ Add site</strong> in the navigation bar and add <code>schnerring.net</code></li><li>Select <strong>Free plan</strong></li><li>Navigate to the <strong>Overview</strong> page of the newly created site</li><li>Take note of Cloudflare&rsquo;s nameservers, in my case <em>carol.ns.cloudflare.com</em> and <em>cody.ns.cloudflare.com</em></li></ol><h3 id=change-the-nameservers-for-your-domain>Change the Nameservers for Your Domain</h3><p>Sign in to the administrator account of your domain registrar and change the nameservers. My Namecheap nameserver configuration for <code>schnerring.net</code> looks like this after adding the Cloudflare nameservers:</p><p><img src=img/namecheap-nameservers.png alt="Namecheap Nameservers"></p><h3 id=add-the-cname-records>Add the CNAME Records</h3><p>A <strong>CNAME</strong> record is used to map one domain name to another. Go to the DNS management at Cloudflare and add the following records to point your domain to GitHub Pages:</p><p><img src=img/cloudflare-dns-records.png alt="Cloudflare DNS Records"></p><p>Make sure the “orange cloud” is enabled, so you can define rules and cache static content with Cloudflare.</p><h3 id=enable-_full_-ssltls-encryption-mode>Enable <em>Full</em> SSL/TLS Encryption Mode</h3><p>Go to your site&rsquo;s <strong>SSL/TLS</strong> settings and set encryption to <strong>Full</strong>:</p><p><img src=img/cloudflare-encryption-settings.png alt="Cloudflare Encryption Settings"></p><h3 id=configure-the-browser-cache-ttl>Configure the Browser Cache TTL</h3><p>Go to <strong>Cache</strong> → <strong>Configuration</strong> and choose <strong>2 months</strong> or higher, depending on how often you think your already published static content <em>changes</em>.</p><p><img src=img/cloudflare-browser-cache-ttl.png alt="Cloudflare Browser Cache TTL"></p><h3 id=add-page-rules>Add Page Rules</h3><p>The Free Tier lets you create up to three page rules. Go to your site&rsquo;s <strong>Page Rules</strong> settings and click <strong>Create Page Rule</strong>.</p><h4 id=enforce-https>Enforce HTTPS</h4><p><img src=img/cloudflare-page-rule-enforce-https.png alt="Cloudflare Rule - Enforce HTTPS"></p><h4 id=add-forward-from-wwwschnerringnet-subdomain-to-schnerringnet-root-domain>Add Forward from <code>www.schnerring.net</code> Subdomain to <code>schnerring.net</code> Root Domain</h4><p>If you use a subdomain, skip this step.</p><p><img src=img/cloudflare-page-rule-forward.png alt="Cloudflare Rule - Forward"></p><h4 id=cache-all-static-content-to-speed-up-the-website>Cache All Static Content to Speed Up the Website</h4><p><img src=img/cloudflare-page-rule-cache-everything.png alt="Cloudflare Rule - Cache Everything"></p><h3 id=page-rules-overview>Page Rules Overview</h3><p><img src=img/cloudflare-page-rules-overview.png alt="Cloudflare Page Rules Overview"></p><p>Note that as of May 2018 GitHub Pages supports HTTPS for custom domains out of the box. They utilize <a href=https://letsencrypt.org/>Let&rsquo;s Encrypt</a> certificates which are better than the shared certificates you get with Cloudflare. But to issue Let&rsquo;s Encrypt certificates for both <code>www.schnerring.net</code> and <code>schnerring.net</code>, you&rsquo;d have to resort <a href=https://stackoverflow.com/a/58672792/1154965>this, in my opinion hacky, solution</a>.</p><h2 id=step-6-deploy-the-site-to-github-pages>Step #6: Deploy the Site to GitHub Pages</h2><p>You&rsquo;ll deploy the website to GitHub Pages on a separate, parallel <code>gh-pages</code> branch since published artifacts and source code are segregated this way. You can learn more about other options <a href=https://gohugo.io/hosting-and-deployment/hosting-on-github/>in the official Hugo documentation</a>.</p><h3 id=initialize-gh-pages-branch>Initialize <code>gh-pages</code> branch</h3><p>Create an <em>orphan</em> branch which has a <code>git init</code> like state with no history:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>git checkout --orphan gh-pages
+git reset --hard
+git commit --allow-empty -m <span style=color:#e6db74>&#34;Init gh-pages branch&#34;</span>
+git push origin gh-pages
+git checkout main
+</code></pre></div><h3 id=checkout-the-gh-pages-branch-in-public>Checkout the <code>gh-pages</code> Branch in <code>public/</code></h3><p>To build the site, use the <code>hugo</code> command. The build artifacts will be placed in the <code>public/</code> folder, the contents of which need to be published on the <code>gh-pages</code> branch. To be able to checkout multiple branches, use <a href=https://git-scm.com/docs/git-worktree>Git&rsquo;s worktree feature</a>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>git worktree add -B gh-pages public origin/gh-pages
+</code></pre></div><h3 id=add-cname-file-to-static-folder>Add <code>CNAME</code> File to <code>static/</code> Folder</h3><p>Earlier, you configured Cloudflare to properly map <code>www.schnerring.net</code> and <code>schnerring.net</code> to <code>schnerring.github.io</code>&rsquo;s destination. However, you also need a redirect from <code>schnerring.github.io</code> to <code>schnerring.net</code>. You accomplish this by adding a <code>static/CNAME</code> file to the repo, containing your custom domain. When generating the site with <code>hugo</code>, the published site will contain the CNAME file at its root:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>echo <span style=color:#e6db74>&#34;schnerring.net&#34;</span> &gt; static/CNAME
+rm static/.gitkeep
+git add -A
+git commit -m <span style=color:#e6db74>&#34;Add CNAME file&#34;</span>
+git push
+</code></pre></div><h3 id=build-the-hugo-site>Build the Hugo Site</h3><p>Make sure to set <code>draft: false</code> to publish the <code>hello-world.md</code> post. Push the change to GitHub by running <code>git commit -am "Publish hello-world.md" && git push</code>.</p><p>Then run <code>hugo</code>.</p><h3 id=push-the-changes-on-the-gh-pages-branch>Push the Changes on the <code>gh-pages</code> Branch</h3><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>cd public
+git add -A
+git commit -m <span style=color:#e6db74>&#34;Publish to gh-pages&#34;</span>
+git push
+cd ..
+</code></pre></div><h3 id=set-gh-pages-as-publishing-branch>Set <code>gh-pages</code> as Publishing Branch</h3><p>Navigate to your repository on GitHub</p><ol><li>Go to <strong>Settings</strong> → <strong>Pages</strong></li><li>Under <strong>Source</strong>, select <strong>Branch: <code>gh-pages</code></strong> and click <strong>Save</strong></li></ol><p>It should look like this:</p><p><img src=img/github-pages-settings.png alt="GitHub Pages Settings"></p><p>Shortly after you perform these steps, your website should be available at <code>schnerring.net</code>.</p><h3 id=subsequent-deployments>Subsequent Deployments</h3><p>For future deployments, several steps are required:</p><ol><li>Delete contents of <code>public/</code> folder, since <a href=https://gohugo.io/getting-started/usage/#deploy-your-website><code>hugo</code> does not remove generated files before building</a></li><li>Generate the site with <code>hugo</code></li><li>Push changes to the <code>gh-pages</code> branch</li><li>Purge Cloudflare cache</li></ol><p>This is an error-prone and tedious process if repeated frequently, so let&rsquo;s automate these steps with GitHub Pages next.</p><h2 id=step-7-automate-deployments-with-github-actions>Step #7: Automate Deployments with GitHub Actions</h2><h3 id=configure-github-actions>Configure GitHub Actions</h3><p><a href=https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions>GitHub Actions Workflows</a> are configured mostly through configuration files in the <code>.github/workflows</code> folder. This allows your configuration to be version controlled and flexible.</p><p>Add the following <code>.github/workflows/hugo.yml</code> file to the repository:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#f92672>name</span>: <span style=color:#ae81ff>Hugo</span>
+
+<span style=color:#f92672>on</span>:
+  <span style=color:#f92672>push</span>:
+    <span style=color:#f92672>branches</span>:
+      - <span style=color:#ae81ff>main</span>
+
+  <span style=color:#75715e># Allows to run workflow manually from Actions tab</span>
+  <span style=color:#f92672>workflow_dispatch</span>:
+
+<span style=color:#f92672>jobs</span>:
+  <span style=color:#f92672>build</span>:
+    <span style=color:#f92672>runs-on</span>: <span style=color:#ae81ff>ubuntu-latest</span>
+    <span style=color:#f92672>steps</span>:
+      - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Checkout repository and update Hugo themes</span>
+        <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>actions/checkout@v2</span>
+        <span style=color:#f92672>with</span>:
+          <span style=color:#f92672>submodules</span>: <span style=color:#66d9ef>true</span>
+          <span style=color:#f92672>fetch-depth</span>: <span style=color:#ae81ff>0</span> <span style=color:#75715e># Fetch all history for .GitInfo and .Lastmod</span>
+
+      - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Install Hugo</span>
+        <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>peaceiris/actions-hugo@v2</span>
+        <span style=color:#f92672>with</span>:
+          <span style=color:#f92672>hugo-version</span>: <span style=color:#e6db74>&#34;0.81.0&#34;</span>
+          <span style=color:#f92672>extended</span>: <span style=color:#66d9ef>true</span>
+
+      - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Build Hugo</span>
+        <span style=color:#f92672>run</span>: <span style=color:#ae81ff>hugo --minify</span>
+
+      - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Deploy to GitHub Pages</span>
+        <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>peaceiris/actions-gh-pages@v3</span>
+        <span style=color:#f92672>with</span>:
+          <span style=color:#f92672>github_token</span>: <span style=color:#ae81ff>${{ secrets.GITHUB_TOKEN }}</span>
+          <span style=color:#f92672>publish_dir</span>: <span style=color:#ae81ff>./public</span>
+
+      - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Purge Cloudflare Cache</span>
+        <span style=color:#f92672>env</span>:
+          <span style=color:#f92672>CLOUDFLARE_ZONE_ID</span>: <span style=color:#ae81ff>${{ secrets.CLOUDFLARE_ZONE_ID }}</span>
+          <span style=color:#f92672>CLOUDFLARE_API_TOKEN</span>: <span style=color:#ae81ff>${{ secrets.CLOUDFLARE_API_TOKEN }}</span>
+          <span style=color:#f92672>GITHUB_TOKEN</span>: <span style=color:#ae81ff>${{ secrets.GITHUB_TOKEN }}</span>
+        <span style=color:#f92672>run</span>: |<span style=color:#e6db74>
+</span><span style=color:#e6db74>          chmod +x ./purge_cloudflare_cache.sh
+</span><span style=color:#e6db74>          ./purge_cloudflare_cache.sh</span>          
+</code></pre></div><p>Name the GitHub Actions Workflow <code>Hugo</code> which is triggered when pushed to the <code>main</code> branch. As OS, the <code>latest</code> version of <code>ubuntu</code> is used.</p><p>We only run one job, <code>build</code>, and perform the following steps:</p><ol><li>Checkout the repository and update Hugo themes</li><li>Install Hugo <code>extended</code> since the theme uses SCSS.</li><li>Build Hugo and <code>--minify</code></li><li>Deploy to GitHub Pages. The default deployment branch is <code>gh-pages</code>. Choose the <code>./public</code> folder to be published.</li><li>Purge the Cloudflare Cache by running the <code>./purge_cloudflare_cache.sh</code> script that you&rsquo;ll create in the next steps.</li></ol><p>The above is straight forward, thanks to the free Actions available at the <a href=https://github.com/marketplace>GitHub Marketplace</a>. Thanks to <a href=https://github.com/peaceiris>peaceiris</a> for the awesome work:</p><ul><li><a href=https://github.com/peaceiris/actions-hugo>GitHub Actions for Hugo</a></li><li><a href=https://github.com/peaceiris/actions-gh-pages>GitHub Actions for GitHub Pages</a></li></ul><p>Note the mapping of the environment variables required in step 4 and 5. You&rsquo;ll later configure the GitHub secrets that will be injected as environment variables into the context of the respective <code>steps</code>. The <code>GITHUB_TOKEN</code> doesn&rsquo;t need to be configured for GitHub Actions, since GitHub automatically creates it to use in your workflow. For local debugging though, you&rsquo;ll have to create a token, anyway.</p><h3 id=create-a-github-personal-access-token>Create a GitHub Personal Access Token</h3><blockquote><p>Personal access tokens (PAT) are an alternative to using passwords for authentication to GitHub when using the GitHub API or the command line.</p></blockquote><p>Go to your GitHub profile&rsquo;s <a href=https://github.com/settings/tokens><strong>Settings</strong> → <strong>Developer settings</strong> → <strong>Personal access tokens</strong></a>. Click <strong>Generate new token</strong>, select only the <code>public_repo</code> scope and enter the note <code>schnerring.github.io</code>, to be able to later recognize what it&rsquo;s used for.</p><p>You only get one chance to copy the token&rsquo;s value, so add a new environment variable named <code>GITHUB_TOKEN</code> to your local system:</p><p><img src=img/windows-environment-variables.png alt="Windows Environment Variables"></p><p>If you lose the token, just delete and then recreate it.</p><h3 id=create-the-purge_cloudflare_cachesh-script>Create the <code>purge_cloudflare_cache.sh</code> Script</h3><h4 id=purge-the-cloudflare-cache>Purge the Cloudflare Cache</h4><p>Use Cloudflare&rsquo;s API to <a href=https://api.cloudflare.com/#zone-purge-all-files>purge all cached files</a> with <code>curl</code> after successful deployment:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>curl <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --silent <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --request POST <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --header <span style=color:#e6db74>&#34;Authorization: Bearer </span><span style=color:#e6db74>${</span>CLOUDFLARE_API_TOKEN<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --header <span style=color:#e6db74>&#34;Content-Type: application/json&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --data <span style=color:#e6db74>&#39;{&#34;purge_everything&#34;:true}&#39;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  <span style=color:#e6db74>&#34;https://api.cloudflare.com/client/v4/zones/</span><span style=color:#e6db74>${</span>CLOUDFLARE_ZONE_ID<span style=color:#e6db74>}</span><span style=color:#e6db74>/purge_cache&#34;</span>
+</code></pre></div><p>Before you can run the command above, set <code>CLOUDFLARE_ZONE_ID</code> and <code>CLOUDFLARE_API_TOKEN</code> as environment variables in your GitHub repository and your workstation. You can add secrets in your GitHub repository&rsquo;s <strong>Settings</strong> → <strong>Secrets</strong> → <strong>New repository secret</strong>:</p><ul><li><p>Set <code>CLOUDFLARE_ZONE_ID</code> to your Cloudflare site&rsquo;s <strong>Zone ID</strong> which you can find it on your site&rsquo;s <strong>Overview</strong> page.</p></li><li><p>Set <code>CLOUDFLARE_API_TOKEN</code> to an API Token with <em>Zone.Cache Purge</em> permissions. Create one at <strong>My Profile</strong> → <strong>API Tokens</strong> → <strong>Create Token</strong> → <strong>Create Custom Token</strong> → <strong>Get started</strong>:</p><p><img src=img/cloudflare-api-token.png alt="Cloudflare API Token"></p></li></ul><p>You should then be able to locally run the <code>curl</code> snippet above which should output <code>"success": true</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:#f92672>&#34;result&#34;</span>: {
+    <span style=color:#f92672>&#34;id&#34;</span>: <span style=color:#e6db74>&#34;********************************&#34;</span>
+  },
+  <span style=color:#f92672>&#34;success&#34;</span>: <span style=color:#66d9ef>true</span>,
+  <span style=color:#f92672>&#34;errors&#34;</span>: [],
+  <span style=color:#f92672>&#34;messages&#34;</span>: []
+}
+</code></pre></div><h4 id=polling-the-github-pages-build-status>Polling the GitHub Pages Build Status</h4><p>Before purging the site&rsquo;s cache on Cloudflare, make sure that the GitHub Pages build completed successfully. Via GitHub&rsquo;s API, <a href=https://docs.github.com/en/free-pro-team@latest/rest/reference/repos#get-latest-pages-build>query the latest GitHub Pages build</a> with <code>curl</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>curl <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --silent <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --user <span style=color:#e6db74>&#34;schnerring:</span><span style=color:#e6db74>${</span>GITHUB_TOKEN<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --header <span style=color:#e6db74>&#34;Accept: application/vnd.github.v3+json&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  <span style=color:#e6db74>&#34;https://api.github.com/repos/schnerring/schnerring.github.io/pages/builds/latest&#34;</span>
+</code></pre></div><p>The <code>GITHUB_TOKEN</code> you configured earlier is used here. Executing the snippet locally will output <code>"status": "built"</code> if the GitHub Pages build succeeded:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:#f92672>&#34;url&#34;</span>: <span style=color:#e6db74>&#34;https://api.github.com/repos/schnerring/schnerring.github.io/pages/builds/123456789&#34;</span>,
+  <span style=color:#f92672>&#34;status&#34;</span>: <span style=color:#e6db74>&#34;built&#34;</span>,
+  <span style=color:#f92672>&#34;error&#34;</span>: {
+    <span style=color:#f92672>&#34;message&#34;</span>: <span style=color:#66d9ef>null</span>
+  },
+  <span style=color:#960050;background-color:#1e0010>...</span>
+}
+</code></pre></div><h4 id=put-it-all-together>Put It All Together</h4><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=color:#75715e>#!/usr/bin/env bash
+</span><span style=color:#75715e></span>
+readonly DELAY_STEP_SECONDS<span style=color:#f92672>=</span><span style=color:#ae81ff>15</span>
+readonly INTERVAL_SECONDS<span style=color:#f92672>=</span><span style=color:#ae81ff>5</span>
+readonly TIMEOUT_SECONDS<span style=color:#f92672>=</span><span style=color:#ae81ff>120</span>
+
+readonly GITHUB_USER<span style=color:#f92672>=</span>schnerring
+readonly GITHUB_REPO<span style=color:#f92672>=</span>schnerring.github.io
+
+<span style=color:#75715e>##################################################</span>
+<span style=color:#75715e># Poll status of latest GitHub Pages build every INTERVAL_SECONDS seconds for up</span>
+<span style=color:#75715e># to TIMEOUT_SECONDS seconds.</span>
+<span style=color:#75715e># Globals:</span>
+<span style=color:#75715e>#   GITHUB_REPO</span>
+<span style=color:#75715e>#   GITHUB_TOKEN</span>
+<span style=color:#75715e>#   GITHUB_USER</span>
+<span style=color:#75715e>#   INTERVAL_SECONDS</span>
+<span style=color:#75715e>#   TIMEOUT_SECONDS</span>
+<span style=color:#75715e># Arguments:</span>
+<span style=color:#75715e>#   None</span>
+<span style=color:#75715e># Outputs:</span>
+<span style=color:#75715e>#   Success message to stdout or error message to stderr.</span>
+<span style=color:#75715e># Returns:</span>
+<span style=color:#75715e>#   0 on success, 1 otherwise.</span>
+<span style=color:#75715e>##################################################</span>
+<span style=color:#66d9ef>function</span> poll_build_status<span style=color:#f92672>()</span> <span style=color:#f92672>{</span>
+  echo <span style=color:#e6db74>&#34;Awaiting completion of latest GitHub Pages build ...&#34;</span>
+  local waited_seconds<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>
+  <span style=color:#66d9ef>while</span> <span style=color:#f92672>[[</span> <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>waited_seconds<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> -lt <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>TIMEOUT_SECONDS<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>]]</span>; <span style=color:#66d9ef>do</span>
+    <span style=color:#66d9ef>if</span> curl <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>      --silent <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>      --user <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>GITHUB_USER<span style=color:#e6db74>}</span><span style=color:#e6db74>:</span><span style=color:#e6db74>${</span>GITHUB_TOKEN<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>      --header <span style=color:#e6db74>&#34;Accept: application/vnd.github.v3+json&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>      <span style=color:#e6db74>&#34;https://api.github.com/repos/</span><span style=color:#e6db74>${</span>GITHUB_USER<span style=color:#e6db74>}</span><span style=color:#e6db74>/</span><span style=color:#e6db74>${</span>GITHUB_REPO<span style=color:#e6db74>}</span><span style=color:#e6db74>/pages/builds/latest&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>      | grep -q <span style=color:#e6db74>&#39;&#34;status&#34;: &#34;built&#34;&#39;</span>; <span style=color:#66d9ef>then</span>
+      echo <span style=color:#e6db74>&#34;Success.&#34;</span>
+      <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>
+    <span style=color:#66d9ef>fi</span>
+    echo <span style=color:#e6db74>&#34;  Sleeping </span><span style=color:#e6db74>${</span>INTERVAL_SECONDS<span style=color:#e6db74>}</span><span style=color:#e6db74> seconds until next status poll ...&#34;</span>
+    sleep <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>INTERVAL_SECONDS<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>
+    <span style=color:#f92672>((</span> waited_seconds <span style=color:#f92672>+=</span> INTERVAL_SECONDS <span style=color:#f92672>))</span>
+  <span style=color:#66d9ef>done</span>
+  echo <span style=color:#e6db74>&#34;Failure.&#34;</span> &gt;&amp;<span style=color:#ae81ff>2</span>
+  <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>1</span>
+<span style=color:#f92672>}</span>
+
+<span style=color:#75715e>##################################################</span>
+<span style=color:#75715e># Purge entire Cloudflare cache.</span>
+<span style=color:#75715e># Globals:</span>
+<span style=color:#75715e>#   CLOUDFLARE_API_TOKEN</span>
+<span style=color:#75715e>#   CLOUDFLARE_ZONE_ID</span>
+<span style=color:#75715e># Arguments:</span>
+<span style=color:#75715e>#   None</span>
+<span style=color:#75715e># Outputs:</span>
+<span style=color:#75715e>#   Success message to stdout or error message to stderr.</span>
+<span style=color:#75715e># Returns:</span>
+<span style=color:#75715e>#   0 on success, 1 otherwise.</span>
+<span style=color:#75715e>##################################################</span>
+<span style=color:#66d9ef>function</span> purge_cache<span style=color:#f92672>()</span> <span style=color:#f92672>{</span>
+  echo <span style=color:#e6db74>&#34;Purging Cloudflare cache ...&#34;</span>
+  <span style=color:#66d9ef>if</span> curl <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    --silent <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    --request POST <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    --header <span style=color:#e6db74>&#34;Authorization: Bearer </span><span style=color:#e6db74>${</span>CLOUDFLARE_API_TOKEN<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    --header <span style=color:#e6db74>&#34;Content-Type: application/json&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    --data <span style=color:#e6db74>&#39;{&#34;purge_everything&#34;:true}&#39;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    <span style=color:#e6db74>&#34;https://api.cloudflare.com/client/v4/zones/</span><span style=color:#e6db74>${</span>CLOUDFLARE_ZONE_ID<span style=color:#e6db74>}</span><span style=color:#e6db74>/purge_cache&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>    | grep -q <span style=color:#e6db74>&#39;&#34;success&#34;: true&#39;</span>; <span style=color:#66d9ef>then</span>
+    echo <span style=color:#e6db74>&#34;Success.&#34;</span>
+    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>
+  <span style=color:#66d9ef>else</span>
+  echo <span style=color:#e6db74>&#34;Failure.&#34;</span> &gt;&amp;<span style=color:#ae81ff>2</span>
+    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>1</span>
+  <span style=color:#66d9ef>fi</span>
+<span style=color:#f92672>}</span>
+
+<span style=color:#75715e>##################################################</span>
+<span style=color:#75715e># Main function of script.</span>
+<span style=color:#75715e># Globals:</span>
+<span style=color:#75715e>#   DELAY_STEP_SECONDS</span>
+<span style=color:#75715e># Arguments:</span>
+<span style=color:#75715e>#   None</span>
+<span style=color:#75715e>##################################################</span>
+<span style=color:#66d9ef>function</span> main<span style=color:#f92672>()</span> <span style=color:#f92672>{</span>
+  echo <span style=color:#e6db74>&#34;Sleeping </span><span style=color:#e6db74>${</span>DELAY_STEP_SECONDS<span style=color:#e6db74>}</span><span style=color:#e6db74> seconds ...&#34;</span>
+  sleep <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>DELAY_STEP_SECONDS<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>
+  poll_build_status <span style=color:#f92672>||</span> exit <span style=color:#ae81ff>1</span>
+
+  echo <span style=color:#e6db74>&#34;Sleeping </span><span style=color:#e6db74>${</span>DELAY_STEP_SECONDS<span style=color:#e6db74>}</span><span style=color:#e6db74> seconds ...&#34;</span>
+  sleep <span style=color:#e6db74>&#34;</span><span style=color:#e6db74>${</span>DELAY_STEP_SECONDS<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>
+  purge_cache <span style=color:#f92672>||</span> exit <span style=color:#ae81ff>1</span>
+<span style=color:#f92672>}</span>
+
+<span style=color:#75715e># Entrypoint</span>
+main <span style=color:#e6db74>&#34;</span>$@<span style=color:#e6db74>&#34;</span>
+</code></pre></div><p><code>poll_build_status</code> and <code>purge_cache</code> contain the functionality. The <code>main</code> function serves as the entry point executing those functions.</p><p><code>poll_build_status</code> implements a <code>while</code> loop to repeatedly poll GitHub&rsquo;s API. It succeeds if the response contains <code>"status": "built"</code> or times out after two minutes and fails.</p><p>Before each step, the script heuristically <code>sleep</code>s 15 seconds in case of latency issues with GitHub&rsquo;s API or GitHub Pages updates.</p><p>Running the <code>./purge_cloudflare_cache.sh</code> script locally should output:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>Awaiting completion of latest GitHub Pages build ...
+Success.
+Purging Cloudflare cache ...
+Success.
+</code></pre></div><p>Note that for sites with lots of files, purging the whole cache should be avoided. Cloudflare supports purging the cache for individual files.</p><p>We <em>could</em> list only changed files if we wanted to with a command like <code>git diff-tree -r --no-commit-id --name-only --diff-filter=DM gh-pages</code> and only purge the cache for these files, but that&rsquo;s out of scope for this post.</p><p>Now push <code>.github/workflows/hugo.yml</code> and <code>purge_cloudflare_cache.sh</code> to the repository:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>git add -A
+git commit -m <span style=color:#e6db74>&#34;Add .github/workflows/hugo.yml, purge_cloudflare_cache.sh&#34;</span>
+git push
+</code></pre></div><p>Go check out the <strong>Actions</strong> tab on your GitHub repository. If everything is configured correctly, GitHub Actions should be building your site:</p><p><img src=img/github-actions-workflows.png alt="GitHub Actions Workflow"></p><p>After the workflow succeeded, there won&rsquo;t be any changes to the site because we didn&rsquo;t change anything about our site, yet.</p><p>To make a change, switch to the light theme by setting <code>defaultTheme = "light"</code> inside the <code>config.toml</code> file. Push the changes by running <code>git commit -am "Set default theme to light" && git push</code> and another GitHub Action workflow should automatically be triggered.</p><p>After the build completes, your website should be displayed in the light theme. If it isn&rsquo;t, make sure to also purge your browser cache.</p><h2 id=wrapping-up>Wrapping Up</h2><p>It took quite a bit of effort, but you now have a hands-off system in place that helps you to publish content to your website in an automated way. All you have to do is pushing new changes to your GitHub repo and after a minute the changes will be live.</p></div></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user"><p>Copyright © 2020 Michael Schnerring</p><p xmlns:dct=http://purl.org/dc/terms/ xmlns:cc=http://creativecommons.org/ns# class=license-text><a rel=cc:attributionurl property="dct:title" href=https://github.com/schnerring/schnerring.github.io/tree/main/content>Content</a> licensed under <a rel=license href=https://creativecommons.org/licenses/by/4.0>CC BY 4.0</a></p></div></div></footer><script src=https://schnerring.net/assets/main.js></script><script src=https://schnerring.net/assets/prism.js></script></div></body></html>
