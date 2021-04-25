@@ -10,7 +10,7 @@ ignoreFiles = [ "LICENSE$" ]
   #contentTypeName = "posts"
 
   # "light" or "dark"
-  defaultTheme = "dark"
+  defaultTheme = "light"
 
   # if you set this to 0, only submenu trigger will be visible
   showMenuItems = 2
