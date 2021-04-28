@@ -4,6 +4,7 @@ description: "The first post of this blog"
 date: 2021-03-14T15:00:21+01:00
 draft: false
 hideReadMore: true
+comments: true
 tags:
   - "csharp"
   - "hello world"

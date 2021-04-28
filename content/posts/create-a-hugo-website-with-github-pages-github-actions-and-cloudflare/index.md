@@ -3,6 +3,7 @@ title: "Create a Hugo Website with GitHub Pages, GitHub Actions, and Cloudflare"
 date: 2021-03-19T21:14:22+01:00
 draft: false
 hideReadMore: true
+comments: true
 tags:
   - hugo
   - cloudflare

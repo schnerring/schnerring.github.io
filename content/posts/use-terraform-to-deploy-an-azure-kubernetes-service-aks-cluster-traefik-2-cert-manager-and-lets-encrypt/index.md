@@ -3,6 +3,7 @@ title: "Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traef
 date: 2021-04-25T01:00:27+02:00
 draft: false
 hideReadMore: true
+comments: true
 tags:
   - aks
   - azure
