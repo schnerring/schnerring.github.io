@@ -169,7 +169,7 @@ terraform output -raw kube_config > ~/.kube/config
 
 We check the deployment by running `kubectl get all`:
 
-```txt
+```text
 NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
 service/kubernetes   ClusterIP   10.0.0.1     <none>        443/TCP   3m54s
 ```
@@ -231,7 +231,7 @@ resource "helm_release" "cert_manager" {
 
 We then run `terraform apply` to deploy cert-manager. We then check our work by running `kubectl get all --namespace cert-manager`, which should display something like this:
 
-```txt
+```text
 NAME                                           READY   STATUS    RESTARTS   AGE
 pod/cert-manager-7998c69865-vrvrd              1/1     Running   0          75s
 pod/cert-manager-cainjector-7b744d56fb-qb54k   1/1     Running   0          75s
@@ -396,7 +396,7 @@ To [configure Traefik to trust forwarded headers](https://doc.traefik.io/traefik
 
 After running `terraform apply`, we check the deployment by running `kubectl get all --namespace traefik`:
 
-```txt
+```text
 NAME                           READY   STATUS    RESTARTS   AGE
 pod/traefik-6b6767d778-hxzzw   1/1     Running   0          68s
 
@@ -544,7 +544,7 @@ After running `terraform apply` again, we should be able to visit the demo site 
 
 To verify the HTTPS redirect works, we run `curl -svDL http://hello.k8s.schnerring.net` (PowerShell), or `curl -sLD - http://hello.k8s.schnerring.net` (Bash):
 
-```txt
+```text
 ...
 < HTTP/1.1 301 Moved Permanently
 < Location: https://hello.k8s.schnerring.net/
@@ -569,6 +569,6 @@ terraform plan -out infrastructure.tfplan
 terraform apply infrastructure.tfplan
 ```
 
-Besides that caveat, we created a pretty cool solution, fully managed by Terraform, have we not?
+Besides that caveat, we created a pretty cool solution, fully managed by Terraform, didn't we?
 
-You can find all the code on GitHub in my [schnerring/infrastructure repository](https://github.com/schnerring/infrastructure/tree/0.1.0), which is evolving continuously. After committing the code to the repo, I added the `0.1.0` tag. This way, in the future, we can easily find the code depicted in this post.
+You can find all the code on GitHub in my [schnerring/infrastructure repository](https://github.com/schnerring/infrastructure/blob/0.1.0/k8s.tf), which is evolving continuously. After committing the code to the repo, I added the `0.1.0` tag. This way, in the future, we can easily find the code depicted in this post.
