@@ -381,10 +381,18 @@ resource "helm_release" "traefik" {
     name  = "ports.web.redirectTo"
     value = "websecure"
   }
+
+  # Trust private AKS IP range
+  set {
+    name  = "additionalArguments"
+    value = "{--entryPoints.websecure.forwardedHeaders.trustedIPs=10.0.0.0/8}"
+  }
 }
 ```
 
 Setting `ports.web.redirectTo` to `websecure` forces all HTTP traffic to be redirected to HTTPS.
+
+To [configure Traefik to trust forwarded headers](https://doc.traefik.io/traefik/v2.3/routing/entrypoints/#forwarded-headers) from Azure, we set `entryPoints.websecure.forwardedHeaders.trustedIPs=10.0.0.0/8`.
 
 After running `terraform apply`, we check the deployment by running `kubectl get all --namespace traefik`:
 
@@ -402,7 +410,7 @@ NAME                                 DESIRED   CURRENT   READY   AGE
 replicaset.apps/traefik-6b6767d778   1         1         1       69s
 ```
 
-Next, we add a wildcard DNS record with the IP of our Traefik service. To obtain the external IP address of the service, we leverage the `kubernetes_service` [Data Source](https://www.terraform.io/docs/language/data-sources/index.html) of the `kubernetes` provider. We then add the wildcard DNS record `*.k8s.schnerring.net` pointing to the external IP of Traefik.
+Next, we add a DNS record with the IP of our Traefik service. To obtain the external IP address of the service, we leverage the `kubernetes_service` [Data Source](https://www.terraform.io/docs/language/data-sources/index.html) of the `kubernetes` provider. We then add the DNS record `k8s.schnerring.net` pointing to the external IP of Traefik.
 
 Let us update the `k8s.tf` file accordingly and `terraform apply` the changes:
 
@@ -416,9 +424,10 @@ data "kubernetes_service" "traefik" {
 
 resource "cloudflare_record" "traefik" {
   zone_id = cloudflare_zone.schnerring_net.id
-  name    = "*.k8s"
+  name    = "k8s"
   type    = "A"
   value   = data.kubernetes_service.traefik.status.0.load_balancer.0.ingress.0.ip
+  proxied = true
 }
 ```
 
