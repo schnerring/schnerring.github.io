@@ -1,0 +1,361 @@
+<!doctype html><html lang=en><head><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform ::
+Michael Schnerring — Coder and Computer Enthusiast</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Did you ever think about running a Matrix homeserver? In this post, we will set one up on the Azure Kubernetes Service (AKS). We will use the reference homeserver implementation, which is Synapse from the folks at matrix.org. This post focuses on the Kubernetes stuff, so we will keep the Synapse configuration to a minimum. Things like federation, delegation and PostgreSQL are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the Synapse Admin UI deployment with secure access to the administration endpoints to make management of our homeserver easier.
+"><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://schnerring.net/posts/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/><link rel=stylesheet href=https://schnerring.net/assets/style.css><link rel=stylesheet href=https://schnerring.net/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://schnerring.net/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://schnerring.net/img/favicon.png><link href=https://schnerring.net/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform"><meta name=twitter:description content="Did you ever think about running a Matrix homeserver? In this post, we will set one up on the Azure Kubernetes Service (AKS). We will use the reference homeserver implementation, which is Synapse from the folks at matrix.org. This post focuses on the Kubernetes stuff, so we will keep the Synapse configuration to a minimum. Things like federation, delegation and PostgreSQL are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the Synapse Admin UI deployment with secure access to the administration endpoints to make management of our homeserver easier."><meta property="og:title" content="Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform"><meta property="og:description" content="Did you ever think about running a Matrix homeserver? In this post, we will set one up on the Azure Kubernetes Service (AKS). We will use the reference homeserver implementation, which is Synapse from the folks at matrix.org. This post focuses on the Kubernetes stuff, so we will keep the Synapse configuration to a minimum. Things like federation, delegation and PostgreSQL are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the Synapse Admin UI deployment with secure access to the administration endpoints to make management of our homeserver easier."><meta property="og:type" content="article"><meta property="og:url" content="https://schnerring.net/posts/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-05-14T01:13:33+02:00"><meta property="article:modified_time" content="2021-05-14T01:13:33+02:00"><meta property="og:site_name" content="Michael Schnerring"><script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script></head><body><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>schnerring.net</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/about>About</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/about>About</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41c10.4934.0 19-8.5066 19-19C41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</h1><div class=post-meta><span class=post-date>2021-05-14</span></div><span class=post-tags><a href=https://schnerring.net/tags/aks/>#aks</a>&nbsp;
+<a href=https://schnerring.net/tags/homeserver/>#homeserver</a>&nbsp;
+<a href=https://schnerring.net/tags/k8s/>#k8s</a>&nbsp;
+<a href=https://schnerring.net/tags/kubernetes/>#kubernetes</a>&nbsp;
+<a href=https://schnerring.net/tags/matrix/>#matrix</a>&nbsp;
+<a href=https://schnerring.net/tags/synapse/>#synapse</a>&nbsp;
+<a href=https://schnerring.net/tags/synapse-admin-ui/>#synapse admin ui</a>&nbsp;
+<a href=https://schnerring.net/tags/terraform/>#terraform</a>&nbsp;</span><figure class=post-cover><img src=https://schnerring.net/posts/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/img/cover.svg alt="Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform"></figure><div class=post-content><p>Did you ever think about running a Matrix homeserver? In this post, we will set one up on the <a href=https://azure.microsoft.com/en-us/services/kubernetes-service/>Azure Kubernetes Service</a> (AKS). We will use the reference homeserver implementation, which is <a href=https://github.com/matrix-org/synapse/>Synapse</a> from the folks at <a href=https://matrix.org/>matrix.org</a>. This post focuses on the Kubernetes stuff, so we will keep the Synapse configuration to a minimum. Things like <a href=https://github.com/matrix-org/synapse/blob/master/docs/federate.md>federation</a>, <a href=https://github.com/matrix-org/synapse/blob/master/docs/delegate.md>delegation</a> and <a href=https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database>PostgreSQL</a> are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the <a href=https://github.com/Awesome-Technologies/synapse-admin>Synapse Admin UI</a> deployment with secure access to the <a href=https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints>administration endpoints</a> to make management of our homeserver easier.</p><h2 id=preface>Preface</h2><p>Besides some basic knowledge about AKS, Kubernetes, and Terraform, we have to set up a couple of other things before getting started.</p><p>We need an AKS cluster with a configured <a href=https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/>Ingress Controller</a> to be able to expose our homeserver to the world. I use <a href=https://doc.traefik.io/traefik/>Traefik 2</a> in combination with its <a href=https://doc.traefik.io/traefik/providers/kubernetes-ingress/>Kubernetes Ingress</a> implementation.</p><p>Synapse requires valid TLS certificates to work and <a href=https://github.com/matrix-org/synapse/blob/master/docs/ACME.md>ships with functionality</a> to automatically provision certificates through <a href=https://letsencrypt.org/>Let&rsquo;s Encrypt</a>. However, I use <a href=https://cert-manager.io/>cert-manager</a> as a certificate management solution for all my services. So we skip over that part of the configuration, too.</p><p>The last thing we have to set up is <a href=https://www.terraform.io/>Terraform</a> with a <a href=https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs>properly configured <code>kubernetes</code> provider</a>. If you do not want to use Terraform, transforming the code to regular YAML manifests is trivial.</p><p>Depending on your needs, reverse proxy (ingress) functionality and certificate management is the part where your setup differs the most. If you are starting out from scratch, check out <a href=../use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt>my previous post</a>, covering much of the steps required to set up the AKS cluster.</p><h2 id=ingress>Ingress</h2><p>We work from the outside to the inside. The <code>Ingress</code> is what exposes our Kubernetes <code>Service</code> to the public internet. We also add a <code>Namespace</code> for all our Matrix resources to a new Terraform file <code>matrix.tf</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_namespace&#34; &#34;matrix&#34;</span> {
+  <span style=color:#66d9ef>metadata</span> {
+    name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix&#34;</span>
+  }
+}
+
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_ingress&#34; &#34;matrix&#34;</span> {
+  <span style=color:#66d9ef>metadata</span> {
+    name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-ing&#34;</span>
+    namespace <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>matrix</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
+
+    annotations <span style=color:#f92672>=</span> {
+      &#34;cert-manager.io/cluster-issuer&#34;           <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;letsencrypt-staging&#34;</span>
+      &#34;traefik.ingress.kubernetes.io/router.tls&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;true&#34;</span>
+    }
+  }
+
+  <span style=color:#66d9ef>spec</span> {
+    <span style=color:#66d9ef>rule</span> {
+      host <span style=color:#f92672>=</span> <span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>synapse_server_name</span>
+
+      <span style=color:#66d9ef>http</span> {
+        <span style=color:#66d9ef>path</span> {
+          path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/_matrix&#34;</span>
+
+          <span style=color:#66d9ef>backend</span> {
+            service_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-svc&#34;</span>
+            service_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>8008</span>
+          }
+        }
+
+        <span style=color:#66d9ef>path</span> {
+          path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/_synapse/client&#34;</span>
+
+          <span style=color:#66d9ef>backend</span> {
+            service_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-svc&#34;</span>
+            service_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>8008</span>
+          }
+        }
+
+        <span style=color:#66d9ef>path</span> {
+          path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/&#34;</span>
+
+          <span style=color:#66d9ef>backend</span> {
+            service_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-admin-svc&#34;</span>
+            service_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>8080</span>
+          }
+        }
+      }
+    }
+
+    <span style=color:#66d9ef>tls</span> {
+      secret_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-tls-secret&#34;</span>
+      hosts       <span style=color:#f92672>=</span> [<span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>synapse_server_name</span>]
+    }
+  }
+}
+</code></pre></div><p>To route external traffic to the Synapse <code>Service</code> (<code>matrix-svc</code>), we set up the <code>/_matrix</code> and <code>/_synapse/client</code> endpoints according to the <a href=https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md>official reverse proxy documentation</a>. The <code>/</code> endpoint routes traffic to the Synapse Admin UI (<code>matrix-admin-svc</code>). We do <strong>NOT</strong> expose the <code>/_synapse/admin</code> endpoint. We will look at how to access this endpoint at the end of this post.</p><p>After we finish testing, we must change the certificate issuer from <code>letsencrypt-staging</code> to <code>letsencrypt-production</code>. Later on, we will also define the <code>var.synapse_server_name</code> Terraform input variable.</p><h2 id=services>Services</h2><p><code>Service</code>s expose our Synapse and Synapse Admin UI deployments as network services inside our Kubernetes cluster:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_service&#34; &#34;matrix&#34;</span> {
+  <span style=color:#66d9ef>metadata</span> {
+    name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-svc&#34;</span>
+    namespace <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>matrix</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
+  }
+
+  <span style=color:#66d9ef>spec</span> {
+    selector <span style=color:#f92672>=</span> {
+      &#34;app&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix&#34;</span>
+    }
+
+    <span style=color:#66d9ef>port</span> {
+      port        <span style=color:#f92672>=</span> <span style=color:#ae81ff>8008</span>
+      target_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>8008</span>
+    }
+  }
+}
+
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_service&#34; &#34;matrix_admin&#34;</span> {
+  <span style=color:#66d9ef>metadata</span> {
+    name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-admin-svc&#34;</span>
+    namespace <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>matrix</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
+  }
+
+  <span style=color:#66d9ef>spec</span> {
+    selector <span style=color:#f92672>=</span> {
+      &#34;app&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-admin&#34;</span>
+    }
+
+    <span style=color:#66d9ef>port</span> {
+      port        <span style=color:#f92672>=</span> <span style=color:#ae81ff>8080</span>
+      target_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>80</span>
+    }
+  }
+}
+</code></pre></div><p>Pretty self-explanatory. We map the service ports to container ports of the deployments that we add in a later step.</p><h2 id=configuration-files>Configuration Files</h2><p>Before adding the deployment to our cluster, we generate the initial configuration files for Synapse:</p><ul><li><code>homeserver.yaml</code>: Synapse configuration</li><li><code>matrix.schnerring.net.log.config</code>: logging configuration</li><li><code>matrix.schnerring.net.signature.key</code>: the key, Synapse signs messages with</li></ul><p>We can do that with the <code>generate</code> command which is part of Synapse:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>kubectl run matrix-generate-pod <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --stdin <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --rm <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --restart<span style=color:#f92672>=</span>Never <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --command<span style=color:#f92672>=</span>true <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --image matrixdotorg/synapse:latest <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --env<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;SYNAPSE_REPORT_STATS=yes&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --env<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;SYNAPSE_SERVER_NAME=matrix.schnerring.net&#34;</span> <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  -- bash -c <span style=color:#e6db74>&#34;/start.py generate &amp;&amp; sleep 300&#34;</span>
+</code></pre></div><p>This command creates a pod, runs <code>generate</code>, <code>sleep</code>s for 300 seconds, and then cleans itself up. Five minutes should be enough time to copy the generated files from the container before it terminates. The following command copies the entire <code>/data</code> directory from the container to a local <code>synapse-config</code> directory:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>kubectl cp matrix-generate-pod:/data synapse-config
+</code></pre></div><p>We then store the three configuration files as <code>Secret</code> on the cluster. But before, make sure to change the value of <code>handlers.file.filename</code> from <code>/homeserver.log</code> to <code>/data/homeserver.log</code> inside the <code>*.log.config</code> file. Otherwise, you will run into <a href=https://github.com/matrix-org/synapse/issues/9970>a permission issue caused by the default logger configuration</a> that I discovered.</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>locals</span> {
+  synapse_log_config       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/data/${var.synapse_server_name}.log.config&#34;</span>
+  synapse_signing_key_path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/data/${var.synapse_server_name}.signing.key&#34;</span>
+}
+
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_secret&#34; &#34;matrix&#34;</span> {
+  <span style=color:#66d9ef>metadata</span> {
+    name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-secret&#34;</span>
+    namespace <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>matrix</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
+  }<span style=color:#75715e>
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>  # See also: https://github.com/matrix-org/synapse/blob/master/docker/README.md#generating-a-configuration-file
+</span><span style=color:#75715e></span>  data <span style=color:#f92672>=</span> {
+    &#34;homeserver.yaml&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>templatefile</span>(
+      <span style=color:#e6db74>&#34;${path.module}/synapse-config/homeserver.tpl.yaml&#34;</span>,
+      {
+        &#34;server_name&#34;                <span style=color:#f92672>=</span> <span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>synapse_server_name</span>
+        &#34;report_stats&#34;               <span style=color:#f92672>=</span> <span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>synapse_report_stats</span>
+        &#34;log_config&#34;                 <span style=color:#f92672>=</span> <span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>synapse_log_config</span>
+        &#34;signing_key_path&#34;           <span style=color:#f92672>=</span> <span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>synapse_signing_key_path</span>
+        &#34;registration_shared_secret&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>synapse_registration_shared_secret</span>
+        &#34;macaroon_secret_key&#34;        <span style=color:#f92672>=</span> <span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>synapse_macaroon_secret_key</span>
+        &#34;form_secret&#34;                <span style=color:#f92672>=</span> <span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>synapse_form_secret</span>
+      }
+    )
+
+    &#34;log.config&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>templatefile</span>(
+      <span style=color:#e6db74>&#34;${path.module}/synapse-config/log.tpl.config&#34;</span>,
+      {
+        &#34;log_filename&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/data/homeserver.log&#34;</span>
+        &#34;log_level&#34;    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;INFO&#34;</span>
+      }
+    )
+
+    &#34;signing.key&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>synapse_signing_key</span>
+  }
+}
+</code></pre></div><p>To protect the signing key and the secrets contained inside the <code>homeserver.yaml</code> file, we use the Terraform <a href=https://www.terraform.io/docs/language/functions/templatefile.html><code>templatefile()</code></a> function, which allows us to put variable placeholders into the configuration files that are interpolated during <code>terraform apply</code>. This way, we can commit the configuration files to source control securely. To denote the files as template files, we change the file names to <code>homeserver.tpl.yaml</code> and <code>log.tpl.config</code>. Here is an example of how to define interpolation sequences inside <code>homeserver.yaml</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#f92672>server_name</span>: <span style=color:#e6db74>&#34;${server_name}&#34;</span>
+
+<span style=color:#75715e># ...</span>
+
+<span style=color:#75715e># a secret which is used to sign access tokens. If none is specified,</span>
+<span style=color:#75715e># the registration_shared_secret is used, if one is given; otherwise,</span>
+<span style=color:#75715e># a secret key is derived from the signing key.</span>
+<span style=color:#75715e>#</span>
+<span style=color:#f92672>macaroon_secret_key</span>: <span style=color:#e6db74>&#34;${macaroon_secret_key}&#34;</span>
+
+<span style=color:#75715e># a secret which is used to calculate HMACs for form values, to stop</span>
+<span style=color:#75715e># falsification of values. Must be specified for the User Consent</span>
+<span style=color:#75715e># forms to work.</span>
+<span style=color:#75715e>#</span>
+<span style=color:#f92672>form_secret</span>: <span style=color:#e6db74>&#34;${form_secret}&#34;</span>
+</code></pre></div><p>Of course, you can also check out the <a href=https://github.com/schnerring/infrastructure/tree/0.3.0/synapse-config>config file templates on my GitHub</a>.</p><p>To find the values inside the huge <code>homeserver.yaml</code> file, we use the following regular expression. It matches any line that is not a comment or whitespace:</p><pre><code class=language-regexp data-lang=regexp>^(?!^\s*#)^(?!\n).*
+</code></pre><p>All we have to do now is define the <a href=https://www.terraform.io/docs/language/values/variables.html>Terraform input variables</a> and set them to the values we originally generated:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>variable</span> <span style=color:#e6db74>&#34;synapse_image_version&#34;</span> {
+  type        <span style=color:#f92672>=</span> <span style=color:#66d9ef>string</span>
+  description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Synapse image version.&#34;</span>
+  default     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;v1.33.2&#34;</span>
+}
+
+<span style=color:#66d9ef>variable</span> <span style=color:#e6db74>&#34;synapse_server_name&#34;</span> {
+  type        <span style=color:#f92672>=</span> <span style=color:#66d9ef>string</span>
+  description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Public Synapse hostname.&#34;</span>
+}
+
+<span style=color:#66d9ef>variable</span> <span style=color:#e6db74>&#34;synapse_report_stats&#34;</span> {
+  type        <span style=color:#f92672>=</span> <span style=color:#66d9ef>bool</span>
+  description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Enable anonymous statistics reporting.&#34;</span>
+}
+
+<span style=color:#66d9ef>variable</span> <span style=color:#e6db74>&#34;synapse_signing_key&#34;</span> {
+  type        <span style=color:#f92672>=</span> <span style=color:#66d9ef>string</span>
+  description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Signing key Synapse signs messages with.&#34;</span>
+  sensitive   <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+}
+
+<span style=color:#66d9ef>variable</span> <span style=color:#e6db74>&#34;synapse_registration_shared_secret&#34;</span> {
+  type        <span style=color:#f92672>=</span> <span style=color:#66d9ef>string</span>
+  description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Allows registration of standard or admin accounts by anyone who has the shared secret.&#34;</span>
+  sensitive   <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+}
+
+<span style=color:#66d9ef>variable</span> <span style=color:#e6db74>&#34;synapse_macaroon_secret_key&#34;</span> {
+  type        <span style=color:#f92672>=</span> <span style=color:#66d9ef>string</span>
+  description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Secret which is used to sign access tokens.&#34;</span>
+  sensitive   <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+}
+
+<span style=color:#66d9ef>variable</span> <span style=color:#e6db74>&#34;synapse_form_secret&#34;</span> {
+  type        <span style=color:#f92672>=</span> <span style=color:#66d9ef>string</span>
+  description <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Secret which is used to calculate HMACs for form values.&#34;</span>
+  sensitive   <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+}
+</code></pre></div><h2 id=persistent-volume-claim>Persistent Volume Claim</h2><p>To be able to persist media, we create a <a href=https://kubernetes.io/docs/concepts/storage/persistent-volumes/#persistentvolumeclaims><code>PersistentVolumeClaim</code></a> (PVC):</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_persistent_volume_claim&#34; &#34;matrix&#34;</span> {
+  <span style=color:#66d9ef>metadata</span> {
+    name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-pvc&#34;</span>
+    namespace <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>matrix</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
+  }
+
+  <span style=color:#66d9ef>spec</span> {
+    access_modes <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;ReadWriteOnce&#34;</span>]
+
+    <span style=color:#66d9ef>resources</span> {
+      requests <span style=color:#f92672>=</span> {
+        &#34;storage&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;4Gi&#34;</span>
+      }
+    }
+  }
+}
+</code></pre></div><p>Note that the <code>default</code> AKS <a href=https://kubernetes.io/docs/concepts/storage/storage-classes/><code>StorageClass</code></a> has the <code>ReclaimPolicy</code> set to <code>Delete</code> . I recommend defining a custom storage class for production. Setting its reclaim policy to <code>Retain</code> makes accidentally purging the media PVC much harder.</p><h2 id=synapse>Synapse</h2><p>Let us finally deploy Synapse. We just need to mount the configuration files and the PVC we just defined:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_deployment&#34; &#34;matrix&#34;</span> {
+  <span style=color:#66d9ef>metadata</span> {
+    name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-deploy&#34;</span>
+    namespace <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>matrix</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
+    labels <span style=color:#f92672>=</span> {
+      &#34;app&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix&#34;</span>
+    }
+  }
+  <span style=color:#66d9ef>spec</span> {
+    replicas <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+
+    <span style=color:#66d9ef>selector</span> {
+      match_labels <span style=color:#f92672>=</span> {
+        &#34;app&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix&#34;</span>
+      }
+    }
+
+    <span style=color:#66d9ef>strategy</span> {
+      type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Recreate&#34;</span>
+    }
+
+    <span style=color:#66d9ef>template</span> {
+      <span style=color:#66d9ef>metadata</span> {
+        labels <span style=color:#f92672>=</span> {
+          &#34;app&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix&#34;</span>
+        }
+      }
+
+      <span style=color:#66d9ef>spec</span> {
+        hostname       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix&#34;</span>
+        restart_policy <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Always&#34;</span>
+
+        <span style=color:#66d9ef>container</span> {
+          name  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;synapse&#34;</span>
+          image <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrixdotorg/synapse:${var.synapse_image_version}&#34;</span>
+
+          <span style=color:#66d9ef>port</span> {
+            container_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>8008</span>
+          }
+
+          <span style=color:#66d9ef>volume_mount</span> {
+            mount_path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/data&#34;</span>
+            name       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;data-vol&#34;</span>
+          }
+
+          <span style=color:#66d9ef>volume_mount</span> {
+            name       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;secret-vol&#34;</span>
+            mount_path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/data/homeserver.yaml&#34;</span>
+            sub_path   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;homeserver.yaml&#34;</span>
+            read_only  <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+          }
+
+          <span style=color:#66d9ef>volume_mount</span> {
+            name       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;secret-vol&#34;</span>
+            mount_path <span style=color:#f92672>=</span> <span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>synapse_log_config</span>
+            sub_path   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;log.config&#34;</span>
+            read_only  <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+          }
+
+          <span style=color:#66d9ef>volume_mount</span> {
+            name       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;secret-vol&#34;</span>
+            mount_path <span style=color:#f92672>=</span> <span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>synapse_signing_key_path</span>
+            sub_path   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;signing.key&#34;</span>
+            read_only  <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+          }
+        }
+
+        <span style=color:#66d9ef>volume</span> {
+          name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;data-vol&#34;</span>
+
+          <span style=color:#66d9ef>persistent_volume_claim</span> {
+            claim_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-pvc&#34;</span>
+          }
+        }
+
+        <span style=color:#66d9ef>volume</span> {
+          name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;secret-vol&#34;</span>
+
+          <span style=color:#66d9ef>secret</span> {
+            secret_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-secret&#34;</span>
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre></div><p>To deploy everything, we run the following commands:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>terraform plan -out infrastructure.tfplan
+terraform apply infrastructure.tfplan
+</code></pre></div><p>After the deployment succeeds, do not forget to change the cluster issuer to <code>letsencrypt-production</code> and <code>terraform apply</code> again.</p><p>Next, we <a href=https://github.com/matrix-org/synapse/blob/5688a74cf3042c0064e3600cb03f6edaa7f7c838/INSTALL.md#registering-a-user>register a new user</a>. Synapse includes the <code>register_new_matrix_user</code> command. First, we query the name of the pod:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>kubectl get pods --namespace matrix
+</code></pre></div><p>We then run the following to connect to the pod:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>kubectl exec --stdin --tty --namespace matrix matrix-deploy-xxxxxxxxxx-xxxxx -- bash
+</code></pre></div><p>Now we register the user:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>register_new_matrix_user <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --admin <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --user michael <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  --config /data/homeserver.yaml <span style=color:#ae81ff>\
+</span><span style=color:#ae81ff></span>  http://localhost:8008
+</code></pre></div><p>We use <a href=https://element.io/>Element</a> or any other Matrix client and sign in. Great!</p><h2 id=synapse-admin-ui>Synapse Admin UI</h2><p>The Synapse API includes administration endpoints but lacks a UI for administration tasks. There is an <a href=https://github.com/matrix-org/synapse/issues/2032>open GitHub issue</a> which seems to be inactive. However, <a href=https://github.com/Awesome-Technologies/synapse-admin>awesometechnologies/synapse-admin</a> is being actively developed and works well.</p><p>We already configured the ingress to route traffic to the <code>matrix-admin-svc</code>, so the only thing missing is the deployment:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_deployment&#34; &#34;matrix_admin&#34;</span> {
+  <span style=color:#66d9ef>metadata</span> {
+    name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-admin-deploy&#34;</span>
+    namespace <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>matrix</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
+    labels <span style=color:#f92672>=</span> {
+      &#34;app&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-admin&#34;</span>
+    }
+  }
+  <span style=color:#66d9ef>spec</span> {
+    replicas <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
+
+    <span style=color:#66d9ef>selector</span> {
+      match_labels <span style=color:#f92672>=</span> {
+        &#34;app&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-admin&#34;</span>
+      }
+    }
+
+    <span style=color:#66d9ef>strategy</span> {
+      type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Recreate&#34;</span>
+    }
+
+    <span style=color:#66d9ef>template</span> {
+      <span style=color:#66d9ef>metadata</span> {
+        labels <span style=color:#f92672>=</span> {
+          &#34;app&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-admin&#34;</span>
+        }
+      }
+
+      <span style=color:#66d9ef>spec</span> {
+        hostname       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-admin&#34;</span>
+        restart_policy <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Always&#34;</span>
+
+        <span style=color:#66d9ef>container</span> {
+          name  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;synapse-admin&#34;</span>
+          image <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;awesometechnologies/synapse-admin:latest&#34;</span>
+
+          <span style=color:#66d9ef>port</span> {
+            container_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>80</span>
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre></div><p>No configuration is required because the Admin UI is a client-side application. After running <code>terraform apply</code>, we can browse to <code>matrix.schnerring.net</code> to access the app:</p><p><img src=./img/admin-ui-login.png alt="Synapse Admin UI Login"></p><p>Synapse Admin UI requires access to the <code>_synapse/admin</code> endpoint. But we do not want to expose that endpoint to the public internet, so we have to connect to it by other means. <code>kubectl port-forward</code> allows us to securely forward a local port to a port on a Kubernetes service:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>kubectl port-forward service/matrix-svc --namespace matrix 8008:8008
+</code></pre></div><p>We can now enter <code>http://localhost:8008</code> as homeserver URL and login to the admin UI with the user we created earlier:</p><p><img src=./img/admin-ui-users.png alt="Synapse Admin UI Users"></p><h2 id=whats-next>What&rsquo;s Next?</h2><p>Regardless of what you plan on doing with your homeserver, replacing SQLite with PostgreSQL should be at the top of the priority list. Other than that, there is tons of other stuff to configure depending on your needs.</p><p>I am super happy with what we have built and curious about what you think. I would appreciate it if you shared your opinion in the comments below.</p></div><div id=remark42></div><script>const defaultTheme="light";function getHelloFriendTheme(){const a=localStorage&&localStorage.getItem("theme");return a||defaultTheme}</script><script>var remark_config={host:"https://remark42.schnerring.net",site_id:"schnerring.net",theme:getHelloFriendTheme(),show_email_subscription:!1}</script><script>!function(d,b){for(var c=0,a,e,f;c<d.length;c++)a=b.createElement("script"),e=".js",f=b.head||b.body,"noModule"in a?(a.type="module",e=".mjs"):a.async=!0,a.defer=!0,a.src=remark_config.host+"/web/"+d[c]+e,f.appendChild(a)}(remark_config.components||["embed"],document)</script><script>const themeToggle=document.querySelector(".theme-toggle");themeToggle.addEventListener("click",()=>{setTimeout(()=>window.REMARK42.changeTheme(getHelloFriendTheme()),10)})</script></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user"><p>Copyright © 2020 Michael Schnerring</p><p xmlns:dct=http://purl.org/dc/terms/ xmlns:cc=http://creativecommons.org/ns# class=license-text><a rel=cc:attributionurl property="dct:title" href=https://github.com/schnerring/schnerring.github.io/tree/main/content>Content</a> licensed under <a rel=license href=https://creativecommons.org/licenses/by/4.0>CC BY 4.0</a></p></div></div></footer><script src=https://schnerring.net/assets/main.js></script><script src=https://schnerring.net/assets/prism.js></script></div></body></html>
