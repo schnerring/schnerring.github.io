@@ -206,6 +206,8 @@ provider "kubernetes-alpha" {
 }
 ```
 
+Stacking the providers above with our managed Kubernetes cluster resources can lead to errors and [should be avoided](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources). I will mention this once more at the [end of the post](#one-last-thing).
+
 Next, we deploy cert-manager with Helm by adding the following Terraform code to the `k8s.tf` file:
 
 ```hcl
@@ -569,6 +571,8 @@ terraform plan -out infrastructure.tfplan
 terraform apply infrastructure.tfplan
 ```
 
-Besides that caveat, we created a pretty cool solution, fully managed by Terraform, didn't we?
+I already mentioned this earlier. The need for the workaround above also stems from the fact that we stack Kubernetes cluster infrastructure with Kubernetes resources inside the same module which the [official Kubernetes provider documentation discourages](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources). To save you a headache, please adhere to the docs and separate cluster and Kubernetes resources into different modules, if you plan on using this code for production!
+
+Other than that, we created a pretty cool solution, fully managed by Terraform, did we not?
 
 You can find all the code on GitHub in my [schnerring/infrastructure repository](https://github.com/schnerring/infrastructure/blob/0.1.0/k8s.tf), which is evolving continuously. After committing the code to the repo, I added the `0.1.0` tag. This way, in the future, we can easily find the code depicted in this post.

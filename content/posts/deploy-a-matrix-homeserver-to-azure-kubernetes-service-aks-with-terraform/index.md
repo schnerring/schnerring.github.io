@@ -16,7 +16,7 @@ tags:
   - terraform
 ---
 
-Did you ever think about running a Matrix homeserver? In this post, we will set one up on the [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/) (AKS). We will use the reference homeserver implementation, which is [Synapse](https://github.com/matrix-org/synapse/) from the folks at [matrix.org](https://matrix.org/). This post focuses on the Kubernetes stuff, so we will keep the Synapse configuration to a minimum. Things like [federation](https://github.com/matrix-org/synapse/blob/master/docs/federate.md), [delegation](https://github.com/matrix-org/synapse/blob/master/docs/delegate.md) and [PostgreSQL](https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database) are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the [Synapse Admin UI](https://github.com/Awesome-Technologies/synapse-admin) deployment with secure access to the [administration endpoints](https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints) to make management of our homeserver easier.
+Did you ever think about running a Matrix homeserver? In this post, we will set one up on the [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/) (AKS). We will use the reference homeserver implementation, which is [Synapse](https://github.com/matrix-org/synapse/) from the folks at [matrix.org](https://matrix.org/). This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like [federation](https://github.com/matrix-org/synapse/blob/master/docs/federate.md), [delegation](https://github.com/matrix-org/synapse/blob/master/docs/delegate.md) and [PostgreSQL](https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database) are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the [Synapse Admin UI](https://github.com/Awesome-Technologies/synapse-admin) deployment with secure access to the [administration endpoints](https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints) to make management of our homeserver easier.
 
 <!--more-->
 
@@ -348,9 +348,20 @@ resource "kubernetes_deployment" "matrix" {
         hostname       = "matrix"
         restart_policy = "Always"
 
+        security_context {
+          run_as_user     = "991"
+          run_as_group    = "991"
+          fs_group        = "991"
+          run_as_non_root = true
+        }
+
         container {
           name  = "synapse"
           image = "matrixdotorg/synapse:${var.synapse_image_version}"
+
+          security_context {
+            read_only_root_filesystem = true
+          }
 
           port {
             container_port = 8008
@@ -403,6 +414,8 @@ resource "kubernetes_deployment" "matrix" {
   }
 }
 ```
+
+It is good practice to lock down the container by making the root filesystem read-only, if possible. We also run the container as the `991` user and group, respectively, the [default user used by Synapse](https://github.com/matrix-org/synapse/blob/e550ab17adc8dd3c48daf7fedcd09418a73f524b/docker/start.py#L184-L185).
 
 To deploy everything, we run the following commands:
 
