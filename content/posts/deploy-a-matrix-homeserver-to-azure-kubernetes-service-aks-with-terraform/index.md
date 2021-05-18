@@ -234,7 +234,7 @@ macaroon_secret_key: "${macaroon_secret_key}"
 form_secret: "${form_secret}"
 ```
 
-Of course, you can also check out the [config file templates on my GitHub](https://github.com/schnerring/infrastructure/tree/0.3.0/synapse-config).
+Of course, you can also check out the [config file templates on my GitHub](https://github.com/schnerring/infrastructure/tree/v0.3.0/synapse-config).
 
 To find the values inside the huge `homeserver.yaml` file, we use the following regular expression. It matches any line that is not a comment or whitespace:
 

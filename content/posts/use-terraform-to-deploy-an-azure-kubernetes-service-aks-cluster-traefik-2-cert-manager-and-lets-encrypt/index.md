@@ -142,7 +142,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 }
 ```
 
-Note that I have defined the `var.location` and `var.tags` variables in a separate [variables.tf](https://github.com/schnerring/infrastructure/blob/0.1.0/variables.tf) file.
+Note that I have defined the `var.location` and `var.tags` variables in a separate [variables.tf](https://github.com/schnerring/infrastructure/blob/v0.1.0/variables.tf) file.
 
 To be able to access the AKS cluster locally with `kubectl`, we define a Terraform [`output`](https://www.terraform.io/docs/language/values/outputs.html) in the `outputs.tf` file:
 
@@ -575,4 +575,4 @@ I already mentioned this earlier. The need for the workaround above also stems f
 
 Other than that, we created a pretty cool solution, fully managed by Terraform, did we not?
 
-You can find all the code on GitHub in my [schnerring/infrastructure repository](https://github.com/schnerring/infrastructure/blob/0.1.0/k8s.tf), which is evolving continuously. After committing the code to the repo, I added the `0.1.0` tag. This way, in the future, we can easily find the code depicted in this post.
+You can find all the code on GitHub in my [schnerring/infrastructure repository](https://github.com/schnerring/infrastructure/blob/v0.1.0/k8s.tf), which is evolving continuously. After committing the code to the repo, I added the `v0.1.0` tag. This way, in the future, we can easily find the code depicted in this post.

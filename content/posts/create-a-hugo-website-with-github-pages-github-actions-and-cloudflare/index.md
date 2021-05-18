@@ -25,7 +25,7 @@ Having found Hugo, I started looking into how to best host static content. I've 
 
 The only thing missing was a way to automagically publish changes made to the Git repository on the website. This is where [GitHub Actions](https://github.com/features/actions) come in.
 
-With the technology figured out, in my very first guide, I'll show you step by step how I created this website in its first version. You can check out the code [on my GitHub](https://github.com/schnerring/schnerring.github.io/tree/1.0.0) where I tagged the resulting commit with version `1.0.0`.
+With the technology figured out, in my very first guide, I'll show you step by step how I created this website in its first version. You can check out the code [on my GitHub](https://github.com/schnerring/schnerring.github.io/tree/v1.0.0) where I tagged the resulting commit with version `v1.0.0`.
 
 ## The Plan
 
