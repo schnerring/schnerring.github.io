@@ -1,6 +1,8 @@
 ---
 title: "Create a Hugo Website with GitHub Pages, GitHub Actions, and Cloudflare"
 date: 2021-03-19T21:14:22+01:00
+cover: "img/cover.svg"
+useRelativeCover: true
 draft: false
 hideReadMore: true
 comments: true
