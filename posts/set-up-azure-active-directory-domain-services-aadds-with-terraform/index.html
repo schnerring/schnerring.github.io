@@ -1,0 +1,245 @@
+<!doctype html><html lang=en><head><title>Set Up Azure Active Directory Domain Services (AADDS) with Terraform ::
+Michael Schnerring — Coder and Computer Enthusiast</title><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a Microsoft-managed solution, providing a subset of traditional AD DS features without the need to self-manage DCs.
+One such service that requires AD DS features is Windows Virtual Desktop (WVD). I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.
+"><meta name=keywords content><meta name=robots content="noodp"><link rel=canonical href=https://schnerring.net/posts/set-up-azure-active-directory-domain-services-aadds-with-terraform/><link rel=stylesheet href=https://schnerring.net/assets/style.css><link rel=stylesheet href=https://schnerring.net/style.css><link rel=apple-touch-icon-precomposed sizes=144x144 href=https://schnerring.net/img/apple-touch-icon-144-precomposed.png><link rel="shortcut icon" href=https://schnerring.net/img/favicon.png><link href=https://schnerring.net/assets/fonts/Inter-Italic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-Regular.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-Medium.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-MediumItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-Bold.woff2 rel=preload type=font/woff2 as=font crossorigin><link href=https://schnerring.net/assets/fonts/Inter-BoldItalic.woff2 rel=preload type=font/woff2 as=font crossorigin><meta name=twitter:card content="summary"><meta name=twitter:title content="Set Up Azure Active Directory Domain Services (AADDS) with Terraform"><meta name=twitter:description content="Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a Microsoft-managed solution, providing a subset of traditional AD DS features without the need to self-manage DCs.
+One such service that requires AD DS features is Windows Virtual Desktop (WVD). I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform."><meta property="og:title" content="Set Up Azure Active Directory Domain Services (AADDS) with Terraform"><meta property="og:description" content="Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a Microsoft-managed solution, providing a subset of traditional AD DS features without the need to self-manage DCs.
+One such service that requires AD DS features is Windows Virtual Desktop (WVD). I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform."><meta property="og:type" content="article"><meta property="og:url" content="https://schnerring.net/posts/set-up-azure-active-directory-domain-services-aadds-with-terraform/"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-05-22T16:23:36+02:00"><meta property="article:modified_time" content="2021-05-22T16:23:36+02:00"><meta property="og:site_name" content="Michael Schnerring"><script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script></head><body><div class=container><header class=header><span class=header__inner><a href=/ class=logo style=text-decoration:none><span class=logo__mark><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44"><path fill="none" d="M15 8l14.729 14.382L15 35.367"/></svg></span><span class=logo__text>schnerring.net</span>
+<span class=logo__cursor></span></a><span class=header__right><nav class=menu><ul class="menu__inner menu__inner--desktop"><li><a href=/about>About</a></li></ul><ul class="menu__inner menu__inner--mobile"><li><a href=/about>About</a></li></ul></nav><span class=menu-trigger><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg></span><span class=theme-toggle><svg class="theme-toggler" width="24" height="24" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 41c10.4934.0 19-8.5066 19-19C41 11.5066 32.4934 3 22 3 11.5066 3 3 11.5066 3 22s8.5066 19 19 19zM7 22C7 13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22z"/></svg></span></span></span></header><div class=content><div class=post><h1 class=post-title>Set Up Azure Active Directory Domain Services (AADDS) with Terraform</h1><div class=post-meta><span class=post-date>2021-05-22</span></div><span class=post-tags><a href=https://schnerring.net/tags/aadds/>#aadds</a>&nbsp;
+<a href=https://schnerring.net/tags/arm/>#arm</a>&nbsp;
+<a href=https://schnerring.net/tags/azure-active-directory-domain-services/>#azure active directory domain services</a>&nbsp;
+<a href=https://schnerring.net/tags/azure-resource-manager-template/>#azure resource manager template</a>&nbsp;
+<a href=https://schnerring.net/tags/terraform/>#terraform</a>&nbsp;</span><figure class=post-cover><img src=https://schnerring.net/posts/set-up-azure-active-directory-domain-services-aadds-with-terraform/img/cover.svg alt="Set Up Azure Active Directory Domain Services (AADDS) with Terraform"></figure><div class=post-content><p>Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a <em>Microsoft-managed</em> solution, providing a subset of <a href=https://docs.microsoft.com/en-us/azure/active-directory-domain-services/compare-identity-solutions>traditional AD DS features</a> without the need to <em>self-manage</em> DCs.</p><p>One such service that requires AD DS features is <a href=https://docs.microsoft.com/en-us/azure/virtual-desktop/overview>Windows Virtual Desktop (WVD)</a>. I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.</p><p>If you are lazy, you can <a href=#wrapping-up>skip to the end</a> and use the custom Terraform module <a href=https://registry.terraform.io/modules/schnerring/aadds/azurerm/latest>I published to the Terraform Registry</a>.</p><h2 id=prerequisites>Prerequisites</h2><p>Before getting started, we need the following things:</p><ul><li>Active Azure subscription</li><li><a href=https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-create-new-tenant>Azure Active Directory (Azure AD or AAD) tenant</a></li><li><a href=https://www.terraform.io/downloads.html>Install Terraform</a></li></ul><h2 id=building-blocks>Building Blocks</h2><p>So how do we figure out what the required resources are to deploy AADDS? By reverse-engineering the AADDS configuration wizard in the Azure Portal! We launch it by adding a new managed domain after navigating to <strong>Azure AD Domain Services</strong>.</p><p>What we find is that the following resources are required:</p><ul><li>Resource group</li><li>Virtual network and subnet</li><li><code>AAD DC Administrators</code> user group</li></ul><p>Using default values for the remaining configuration options, we can download an <a href=https://docs.microsoft.com/en-us/azure/azure-resource-manager/templates/overview>Azure Resource Manager (ARM) template</a> in the final review step of the wizard.</p><p>Analyzing the ARM template reveals that besides the resource group, virtual network, and subnet, a <a href=https://docs.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview>Network Security Group (NSG)</a> with the <a href=https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-nsg#inbound-security-rules>security rules required for AADDS</a> is added.</p><p>The ARM template also contains the <code>Microsoft.AAD/domainServices</code> resource, with its parameters set to the configuration options from the wizard. The following is version <code>2021-03-01</code> of the ARM template format <a href="https://docs.microsoft.com/en-us/azure/templates/microsoft.aad/2021-03-01/domainservices?tabs=json">from the official Azure Template documentation</a>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:#f92672>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+  <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;Microsoft.AAD/domainServices&#34;</span>,
+  <span style=color:#f92672>&#34;apiVersion&#34;</span>: <span style=color:#e6db74>&#34;2021-03-01&#34;</span>,
+  <span style=color:#f92672>&#34;location&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+  <span style=color:#f92672>&#34;tags&#34;</span>: {},
+  <span style=color:#f92672>&#34;properties&#34;</span>: {
+    <span style=color:#f92672>&#34;domainName&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+    <span style=color:#f92672>&#34;replicaSets&#34;</span>: [
+      {
+        <span style=color:#f92672>&#34;location&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+        <span style=color:#f92672>&#34;subnetId&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>
+      }
+    ],
+    <span style=color:#f92672>&#34;ldapsSettings&#34;</span>: {
+      <span style=color:#f92672>&#34;ldaps&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;pfxCertificate&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;pfxCertificatePassword&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;externalAccess&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>
+    },
+    <span style=color:#f92672>&#34;resourceForestSettings&#34;</span>: {
+      <span style=color:#f92672>&#34;settings&#34;</span>: [
+        {
+          <span style=color:#f92672>&#34;trustedDomainFqdn&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+          <span style=color:#f92672>&#34;trustDirection&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+          <span style=color:#f92672>&#34;friendlyName&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+          <span style=color:#f92672>&#34;remoteDnsIps&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+          <span style=color:#f92672>&#34;trustPassword&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>
+        }
+      ],
+      <span style=color:#f92672>&#34;resourceForest&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>
+    },
+    <span style=color:#f92672>&#34;domainSecuritySettings&#34;</span>: {
+      <span style=color:#f92672>&#34;ntlmV1&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;tlsV1&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;syncNtlmPasswords&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;syncKerberosPasswords&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;syncOnPremPasswords&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;kerberosRc4Encryption&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;kerberosArmoring&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>
+    },
+    <span style=color:#f92672>&#34;domainConfigurationType&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+    <span style=color:#f92672>&#34;sku&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+    <span style=color:#f92672>&#34;filteredSync&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+    <span style=color:#f92672>&#34;notificationSettings&#34;</span>: {
+      <span style=color:#f92672>&#34;notifyGlobalAdmins&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;notifyDcAdmins&#34;</span>: <span style=color:#e6db74>&#34;string&#34;</span>,
+      <span style=color:#f92672>&#34;additionalRecipients&#34;</span>: [<span style=color:#e6db74>&#34;string&#34;</span>]
+    }
+  }
+}
+</code></pre></div><p>The docs also reference the <a href=https://github.com/Azure/azure-quickstart-templates/tree/master/101-AAD-DomainServices>Azure Resource Manager QuickStart Template on GitHub</a>. Its README confirms our previous findings but shows that the configuration wizard also must perform the following steps under the hood:</p><ul><li><a href=https://github.com/Azure/azure-quickstart-templates/tree/820b8b7c172d08d0966b0c6f4a80691ca1972410/101-AAD-DomainServices#3-register-the-azure-active-directory-application-service-principal>Register the Azure Active Directory Application Service Principal <code>2565bd9d-da50-47d4-8b85-4c97f669dc36</code></a></li><li><a href=https://github.com/Azure/azure-quickstart-templates/tree/820b8b7c172d08d0966b0c6f4a80691ca1972410/101-AAD-DomainServices#5-register-resource-provider>Register the <code>Microsoft.AAD</code> Resource Provider</a></li></ul><p>With everything figured out, we can continue with the fun part: Terraform!</p><h2 id=putting-everything-together>Putting Everything Together</h2><p>Let&rsquo;s register the service principal and resource provider first:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azuread_service_principal&#34; &#34;aadds&#34;</span> {
+  application_id <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;2565bd9d-da50-47d4-8b85-4c97f669dc36&#34;</span>
+}
+
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_resource_provider_registration&#34; &#34;aadds&#34;</span> {
+  name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Microsoft.AAD&#34;</span>
+}
+</code></pre></div><p>Next, we add the <code>AAD DC Administrators</code> user group:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azuread_group&#34; &#34;aadds&#34;</span> {
+  display_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AAD DC Administrators&#34;</span>
+  description  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Delegated group to administer Azure AD Domain Services&#34;</span>
+}
+</code></pre></div><p>Adding the resource group, virtual network, subnet, and NSG is pretty straightforward:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_resource_group&#34; &#34;aadds&#34;</span> {
+  name     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-rg&#34;</span>
+  location <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Switzerland North&#34;</span>
+}
+
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_virtual_network&#34; &#34;aadds&#34;</span> {
+  name                <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-vnet&#34;</span>
+  resource_group_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
+  location            <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Switzerland North&#34;</span>
+
+  address_space <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.0/16&#34;</span>]<span style=color:#75715e>
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>  # AADDS DCs
+</span><span style=color:#75715e></span>  dns_servers <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.4&#34;, &#34;10.0.0.5&#34;</span>]
+}
+
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_subnet&#34; &#34;aadds&#34;</span> {
+  name                 <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-snet&#34;</span>
+  resource_group_name  <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
+  virtual_network_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_virtual_network</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
+
+  address_prefixes <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.0/24&#34;</span>]
+}
+
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_network_security_group&#34; &#34;aadds&#34;</span> {
+  name                <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-nsg&#34;</span>
+  location            <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Switzerland North&#34;</span>
+  resource_group_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
+
+  <span style=color:#66d9ef>security_rule</span> {
+    name                       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AllowRD&#34;</span>
+    access                     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Allow&#34;</span>
+    priority                   <span style=color:#f92672>=</span> <span style=color:#ae81ff>201</span>
+    direction                  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Inbound&#34;</span>
+    protocol                   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Tcp&#34;</span>
+    source_address_prefix      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;CorpNetSaw&#34;</span>
+    source_port_range          <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
+    destination_address_prefix <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
+    destination_port_range     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;3389&#34;</span>
+  }
+
+  <span style=color:#66d9ef>security_rule</span> {
+    name                       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AllowPSRemoting&#34;</span>
+    access                     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Allow&#34;</span>
+    priority                   <span style=color:#f92672>=</span> <span style=color:#ae81ff>301</span>
+    direction                  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Inbound&#34;</span>
+    protocol                   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Tcp&#34;</span>
+    source_address_prefix      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AzureActiveDirectoryDomainServices&#34;</span>
+    source_port_range          <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
+    destination_address_prefix <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
+    destination_port_range     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;5986&#34;</span>
+  }
+}
+
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_subnet_network_security_group_association&#34; &#34;aadds&#34;</span> {
+  subnet_id                 <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_subnet</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>id</span>
+  network_security_group_id <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_network_security_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>id</span>
+}
+</code></pre></div><p>Make sure to set <code>dns_servers</code> to the IP addresses of the DCs. You can find them on the <strong>Overview</strong> page of the managed domain after the deployment succeeded.</p><p>The final step is to add the AADDS deployment. Define the ARM template as Terraform <a href=https://www.terraform.io/docs/language/functions/templatefile.html><code>templatefile</code></a> named <code>aadds-arm-template.tpl.json</code>:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json>{
+  <span style=color:#f92672>&#34;$schema&#34;</span>: <span style=color:#e6db74>&#34;https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#&#34;</span>,
+  <span style=color:#f92672>&#34;contentVersion&#34;</span>: <span style=color:#e6db74>&#34;1.0.0.0&#34;</span>,
+  <span style=color:#f92672>&#34;resources&#34;</span>: [
+    {
+      <span style=color:#f92672>&#34;name&#34;</span>: <span style=color:#e6db74>&#34;${domainName}&#34;</span>,
+      <span style=color:#f92672>&#34;type&#34;</span>: <span style=color:#e6db74>&#34;Microsoft.AAD/domainServices&#34;</span>,
+      <span style=color:#f92672>&#34;apiVersion&#34;</span>: <span style=color:#e6db74>&#34;2021-03-01&#34;</span>,
+      <span style=color:#f92672>&#34;location&#34;</span>: <span style=color:#e6db74>&#34;${location}&#34;</span>,
+      <span style=color:#f92672>&#34;tags&#34;</span>: <span style=color:#960050;background-color:#1e0010>$</span>{<span style=color:#960050;background-color:#1e0010>tags</span>},
+      <span style=color:#f92672>&#34;properties&#34;</span>: {
+        <span style=color:#f92672>&#34;domainName&#34;</span>: <span style=color:#e6db74>&#34;${domainName}&#34;</span>,
+        <span style=color:#f92672>&#34;replicaSets&#34;</span>: [
+          {
+            <span style=color:#f92672>&#34;location&#34;</span>: <span style=color:#e6db74>&#34;${location}&#34;</span>,
+            <span style=color:#f92672>&#34;subnetId&#34;</span>: <span style=color:#e6db74>&#34;${subnetId}&#34;</span>
+          }
+        ],
+        <span style=color:#f92672>&#34;domainSecuritySettings&#34;</span>: {
+          <span style=color:#f92672>&#34;ntlmV1&#34;</span>: <span style=color:#e6db74>&#34;${ntlmV1}&#34;</span>,
+          <span style=color:#f92672>&#34;tlsV1&#34;</span>: <span style=color:#e6db74>&#34;${tlsV1}&#34;</span>,
+          <span style=color:#f92672>&#34;syncNtlmPasswords&#34;</span>: <span style=color:#e6db74>&#34;${syncNtlmPasswords}&#34;</span>,
+          <span style=color:#f92672>&#34;syncKerberosPasswords&#34;</span>: <span style=color:#e6db74>&#34;${syncKerberosPasswords}&#34;</span>,
+          <span style=color:#f92672>&#34;syncOnPremPasswords&#34;</span>: <span style=color:#e6db74>&#34;${syncOnPremPasswords}&#34;</span>,
+          <span style=color:#f92672>&#34;kerberosRc4Encryption&#34;</span>: <span style=color:#e6db74>&#34;${kerberosRc4Encryption}&#34;</span>,
+          <span style=color:#f92672>&#34;kerberosArmoring&#34;</span>: <span style=color:#e6db74>&#34;${kerberosArmoring}&#34;</span>
+        },
+        <span style=color:#f92672>&#34;domainConfigurationType&#34;</span>: <span style=color:#e6db74>&#34;${domainConfigurationType}&#34;</span>,
+        <span style=color:#f92672>&#34;sku&#34;</span>: <span style=color:#e6db74>&#34;${sku}&#34;</span>,
+        <span style=color:#f92672>&#34;filteredSync&#34;</span>: <span style=color:#e6db74>&#34;${filteredSync}&#34;</span>,
+        <span style=color:#f92672>&#34;notificationSettings&#34;</span>: {
+          <span style=color:#f92672>&#34;notifyGlobalAdmins&#34;</span>: <span style=color:#e6db74>&#34;${notifyGlobalAdmins}&#34;</span>,
+          <span style=color:#f92672>&#34;notifyDcAdmins&#34;</span>: <span style=color:#e6db74>&#34;${notifyDcAdmins}&#34;</span>,
+          <span style=color:#f92672>&#34;additionalRecipients&#34;</span>: <span style=color:#960050;background-color:#1e0010>$</span>{<span style=color:#960050;background-color:#1e0010>additionalRecipients</span>}
+        }
+      }
+    }
+  ]
+}
+</code></pre></div><p>We then populate its values dynamically like so:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_resource_group_template_deployment&#34; &#34;aadds&#34;</span> {
+  name                <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-deploy&#34;</span>
+  resource_group_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
+
+  deployment_mode <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Incremental&#34;</span>
+
+  template_content <span style=color:#f92672>=</span> <span style=color:#66d9ef>templatefile</span>(
+    <span style=color:#e6db74>&#34;${path.module}/aadds-arm-template.tpl.json&#34;</span>,
+    {<span style=color:#75715e>
+</span><span style=color:#75715e>      # Basics
+</span><span style=color:#75715e></span>      &#34;domainName&#34;              <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds.schnerring.net&#34;</span>
+      &#34;location&#34;                <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Switzerland North&#34;</span>
+      &#34;sku&#34;                     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Standard&#34;</span>
+      &#34;domainConfigurationType&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;FullySynced&#34;</span><span style=color:#75715e>
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>      # Networking
+</span><span style=color:#75715e></span>      &#34;subnetId&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_subnet</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>id</span><span style=color:#75715e>
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>      # Administration
+</span><span style=color:#75715e></span>      &#34;notifyGlobalAdmins&#34;   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Enabled&#34;</span>
+      &#34;notifyDcAdmins&#34;       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Enabled&#34;</span>
+      &#34;additionalRecipients&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>jsonencode</span>([])<span style=color:#75715e>
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>      # Synchronization
+</span><span style=color:#75715e></span>      &#34;filteredSync&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Enabled&#34;</span><span style=color:#75715e>
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>      # Security
+</span><span style=color:#75715e></span>      &#34;tlsV1&#34;                 <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Enabled&#34;</span>
+      &#34;ntlmV1&#34;                <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Enabled&#34;</span>
+      &#34;syncNtlmPasswords&#34;     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Enabled&#34;</span>
+      &#34;syncOnPremPasswords&#34;   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Enabled&#34;</span>
+      &#34;kerberosRc4Encryption&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Enabled&#34;</span>
+      &#34;syncKerberosPasswords&#34; <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Enabled&#34;</span>
+      &#34;kerberosArmoring&#34;      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Disabled&#34;</span><span style=color:#75715e>
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>      # Tags
+</span><span style=color:#75715e></span>      &#34;tags&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>jsonencode</span>({})
+    }
+  )
+
+  depends_on <span style=color:#f92672>=</span> [<span style=color:#66d9ef>azurerm_resource_provider_registration</span>.<span style=color:#66d9ef>aadds</span>]
+}
+</code></pre></div><p>Run <code>terraform apply</code> to deploy everything. It takes around 45 minutes to complete.</p><h2 id=wrapping-up>Wrapping Up</h2><p>I created a custom module wrapping the above functionality and <a href=https://registry.terraform.io/modules/schnerring/aadds/azurerm/latest>published it to the Terraform Registry</a>. You can also find <a href=https://github.com/schnerring/terraform-azurerm-aadds>the code on my GitHub</a> along with some examples. I decided that the creation of network resources is out of the module&rsquo;s scope. Depending on what network topology you prefer, pre-provisioning the virtual network and subnet gives you more flexibility.</p><p>The module provides the same options as the Azure Portal configuration wizard. More advanced configuration options like LDAP and forests are not yet supported. Feel free to comment below, or open an issue or pull request on GitHub if you find something to improve.</p><p>A minimal deployment with the custom module looks like this:</p><div class=highlight><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_resource_group&#34; &#34;aadds&#34;</span> {
+  name     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-rg&#34;</span>
+  location <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Switzerland North&#34;</span>
+}
+
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_virtual_network&#34; &#34;aadds&#34;</span> {
+  name                <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-vnet&#34;</span>
+  resource_group_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
+  location            <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Switzerland North&#34;</span>
+
+  address_space <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.0/16&#34;</span>]<span style=color:#75715e>
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>  # AADDS DCs
+</span><span style=color:#75715e></span>  dns_servers <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.4&#34;, &#34;10.0.0.5&#34;</span>]
+}
+
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_subnet&#34; &#34;aadds&#34;</span> {
+  name                 <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-snet&#34;</span>
+  resource_group_name  <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
+  virtual_network_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_virtual_network</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
+
+  address_prefixes <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.0/24&#34;</span>]
+}
+
+<span style=color:#66d9ef>module</span> <span style=color:#e6db74>&#34;aadds&#34;</span> {
+  source  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;schnerring/aadds/azurerm&#34;</span>
+  version <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;0.1.1&#34;</span>
+
+  resource_group_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
+  location            <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Switzerland North&#34;</span>
+  domain_name         <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds.schnerring.net&#34;</span>
+  subnet_id           <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_subnet</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>id</span>
+}
+</code></pre></div></div><div id=remark42></div><script>const defaultTheme="light";function getHelloFriendTheme(){const a=localStorage&&localStorage.getItem("theme");return a||defaultTheme}</script><script>var remark_config={host:"https://remark42.schnerring.net",site_id:"schnerring.net",theme:getHelloFriendTheme(),show_email_subscription:!1}</script><script>!function(d,b){for(var c=0,a,e,f;c<d.length;c++)a=b.createElement("script"),e=".js",f=b.head||b.body,"noModule"in a?(a.type="module",e=".mjs"):a.async=!0,a.defer=!0,a.src=remark_config.host+"/web/"+d[c]+e,f.appendChild(a)}(remark_config.components||["embed"],document)</script><script>const themeToggle=document.querySelector(".theme-toggle");themeToggle.addEventListener("click",()=>{setTimeout(()=>window.REMARK42.changeTheme(getHelloFriendTheme()),10)})</script></div></div><footer class=footer><div class=footer__inner><div class="copyright copyright--user"><p>Copyright © 2020 Michael Schnerring</p><p xmlns:dct=http://purl.org/dc/terms/ xmlns:cc=http://creativecommons.org/ns# class=license-text><a rel=cc:attributionurl property="dct:title" href=https://github.com/schnerring/schnerring.github.io/tree/main/content>Content</a> licensed under <a rel=license href=https://creativecommons.org/licenses/by/4.0>CC BY 4.0</a></p></div></div></footer><script src=https://schnerring.net/assets/main.js></script><script src=https://schnerring.net/assets/prism.js></script></div></body></html>
