@@ -1,6 +1,8 @@
 ---
-title: "Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt"
+title: "Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates"
 date: 2021-04-25T01:00:27+02:00
+cover: "img/cover.png"
+useRelativeCover: true
 draft: false
 hideReadMore: true
 comments: true
@@ -16,6 +18,8 @@ tags:
   - letsencrypt
   - terraform
   - traefik
+aliases:
+  - use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt
 ---
 
 In this post, we will deploy a simple [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/services/kubernetes-service/) cluster from scratch. To expose our web services securely, we will install Traefik 2 and configure [cert-manager](https://cert-manager.io/) to manage Let's Encrypt certificates. The best part about it: we will do everything with [Terraform](https://www.terraform.io/).
@@ -43,7 +47,7 @@ Here is an outline of the steps required to build our solution:
 1. [Setup Terraform](#step-1-setup-terraform)
 2. [Create the AKS cluster](#step-2-create-the-aks-cluster)
 3. [Deploy cert-manager](#step-3-deploy-cert-manager)
-4. [Configure Let's Encrypt](#step-4-configure-lets-encrypt)
+4. [Configure Let's Encrypt certificates](#step-4-configure-lets-encrypt-certificates)
 5. [Deploy Traefik](#step-5-deploy-traefik)
 6. [Deploy a demo application](#step-6-deploy-a-demo-application)
 
@@ -254,7 +258,7 @@ replicaset.apps/cert-manager-cainjector-7b744d56fb   1         1         1      
 replicaset.apps/cert-manager-webhook-7d6d4c78bc      1         1         1       75s
 ```
 
-## Step 4: Configure Let's Encrypt
+## Step 4: Configure Let's Encrypt Certificates
 
 In Kubernetes, `Issuer`s are Kubernetes resources representing certificate authorities able to generate certificates. We have to create a single `ClusterIssuer`, a cluster-wide `Issuer`, using [DNS01 challenge validation](https://cert-manager.io/docs/configuration/acme/dns01/) with Let's Encrypt servers. As mentioned earlier, we will use Cloudflare, but [many other DNS providers are supported](https://cert-manager.io/docs/configuration/acme/dns01/#supported-dns01-providers).
 
@@ -294,7 +298,7 @@ resource "kubernetes_secret" "letsencrypt_cloudflare_api_token_secret" {
 }
 ```
 
-Next, we add the staging and production `ClusterIssuer` cert-manager CRD resources for Let's Encrypt. We will have to use regular Kubernetes YAML manifests since we cannot deploy CRDs with the `kubernetes` provider. Here, the [`kubernetes_manifest`](https://registry.terraform.io/providers/hashicorp/kubernetes-alpha/latest/docs/resources/kubernetes_manifest) resource of the `kubernetes-alpha` provider comes in. Together with the Terraform [`yamldecode()`](https://www.terraform.io/docs/language/functions/yamldecode.html) and [`templatefile()`](https://www.terraform.io/docs/language/functions/templatefile.html) functions, we get a pretty nice solution.
+Next, we add the staging and production `ClusterIssuer` cert-manager CRD resources that use Let's Encrypt servers. We will have to use regular Kubernetes YAML manifests since we cannot deploy CRDs with the `kubernetes` provider. Here, the [`kubernetes_manifest`](https://registry.terraform.io/providers/hashicorp/kubernetes-alpha/latest/docs/resources/kubernetes_manifest) resource of the `kubernetes-alpha` provider comes in. Together with the Terraform [`yamldecode()`](https://www.terraform.io/docs/language/functions/yamldecode.html) and [`templatefile()`](https://www.terraform.io/docs/language/functions/templatefile.html) functions, we get a pretty nice solution.
 
 Let's start by defining the `letsencrypt-issuer.tpl.yaml` template file:
 
@@ -361,7 +365,7 @@ Now we `terraform apply` the changes.
 
 To manage external access to our Kubernetes cluster, we need to configure Kubernetes [`Ingress` resources](https://kubernetes.io/docs/concepts/services-networking/ingress/). To satisfy an `Ingress`, we first need to configure an [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/). We will use Traefik for this.
 
-To manage ingress, we could also use the Traefik `IngressRoute` CRD. However, at the time of this writing, [cert-manager cannot directly interface with Traefik CRDs](https://doc.traefik.io/traefik/providers/kubernetes-crd/#letsencrypt-support-with-the-custom-resource-definition-provider), so we would have to manage `Certificate` and `Secret` resources manually, which is cumbersome.
+To manage ingress, we could also use the Traefik `IngressRoute` CRD. At the time of this writing, [cert-manager cannot directly interface with Traefik CRDs](https://doc.traefik.io/traefik/providers/kubernetes-crd/#letsencrypt-support-with-the-custom-resource-definition-provider), so we would have to manage `Certificate` and `Secret` resources manually, which is cumbersome.
 
 We add the following to the `k8s.tf` file:
 
@@ -571,7 +575,7 @@ terraform plan -out infrastructure.tfplan
 terraform apply infrastructure.tfplan
 ```
 
-I already mentioned this earlier. The need for the workaround above also stems from the fact that we stack Kubernetes cluster infrastructure with Kubernetes resources inside the same module which the [official Kubernetes provider documentation discourages](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources). To save you a headache, please adhere to the docs and separate cluster and Kubernetes resources into different modules, if you plan on using this code for production!
+I already mentioned this earlier. The need for the workaround above originates from stacking Kubernetes cluster infrastructure with Kubernetes resources which the [official Kubernetes provider documentation discourages](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources) recommend against that. Adhering to the docs and separate cluster and Kubernetes resources into different modules will probably save you a headache!
 
 Other than that, we created a pretty cool solution, fully managed by Terraform, did we not?
 

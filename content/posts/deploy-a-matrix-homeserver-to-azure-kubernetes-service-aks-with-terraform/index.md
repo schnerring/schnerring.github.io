@@ -26,7 +26,7 @@ Besides some basic knowledge about AKS, Kubernetes, and Terraform, we have to se
 
 We need an AKS cluster with a configured [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) to be able to expose our homeserver to the world. I use [Traefik 2](https://doc.traefik.io/traefik/) in combination with its [Kubernetes Ingress](https://doc.traefik.io/traefik/providers/kubernetes-ingress/) implementation.
 
-Synapse requires valid TLS certificates to work and [ships with functionality](https://github.com/matrix-org/synapse/blob/master/docs/ACME.md) to automatically provision certificates through [Let's Encrypt](https://letsencrypt.org/). However, I use [cert-manager](https://cert-manager.io/) as a certificate management solution for all my services. So we skip over that part of the configuration, too.
+Synapse requires valid TLS certificates to work and [ships with functionality](https://github.com/matrix-org/synapse/blob/master/docs/ACME.md) to automatically provision [Let's Encrypt](https://letsencrypt.org/) certificates. However, I use [cert-manager](https://cert-manager.io/) as a certificate management solution for all my services. So we skip over that part of the configuration, too.
 
 The last thing we have to set up is [Terraform](https://www.terraform.io/) with a [properly configured `kubernetes` provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs). If you do not want to use Terraform, transforming the code to regular YAML manifests is trivial.
 
