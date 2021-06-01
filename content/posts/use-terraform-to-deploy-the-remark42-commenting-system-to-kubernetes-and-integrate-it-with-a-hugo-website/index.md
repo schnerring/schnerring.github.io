@@ -1,11 +1,15 @@
 ---
 title: "Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website"
 date: 2021-05-09T09:31:13+02:00
+cover: "img/cover.svg"
+useRelativeCover: true
 draft: false
 hideReadMore: true
 comments: true
 tags:
   - hugo
+  - k8s
+  - kubernetes
   - remark42
   - terraform
 ---
@@ -18,7 +22,7 @@ Building upon our previous work, we will deploy [Remark42](https://remark42.com/
 
 > Remark42 is a self-hosted, lightweight, and simple (yet functional) commenting system, which doesn't spy on users.
 
-I like simplicity, I am somewhat of a privacy enthusiast, and I build this blog with that in mind. More popular, hands-off solutions like [Disqus](https://disqus.com/) offer easier integration and more sophisticated features, like automated spam moderation and advertising. But for my intents, it's too bloated and invasive. For low-traffic websites like mine, Remark42 is just the better fit.
+I like simplicity, I am a privacy enthusiast, and I build this blog with this in mind. More popular, hands-off solutions like [Disqus](https://disqus.com/) offer easier integration and more sophisticated features, like automated spam moderation and advertising. But for my intents, it's too bloated and invasive. For low-traffic websites like mine, Remark42 is just the better fit.
 
 ## Preparation
 
