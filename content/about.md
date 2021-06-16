@@ -10,7 +10,7 @@ I code by day and toy around with computers by night...
 - [GitHub](https://github.com/schnerring/)
 - Matrix: `@michael:schnerring.net`
 - [Twitter](https://twitter.com/schnerringo "@schnerringo")
-- [LinkedIn](www.linkedin.com/in/schnerring)
+- [LinkedIn](https://www.linkedin.com/in/schnerring)
 
 ## Legal
 
