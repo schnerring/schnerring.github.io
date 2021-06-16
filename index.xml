@@ -11,4 +11,7 @@
 &lt;img src="https://schnerring.net/posts/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare/img/cover.svg"/>
 &lt;p>In this beginner guide, you&amp;rsquo;ll create a Hugo website from scratch and publish the website on GitHub Pages. You&amp;rsquo;ll configure Cloudflare&amp;rsquo;s DNS and utilize its caching capabilities to optimize page speeds. Finally, implementing automated deployments with GitHub Pages will enable you to publish new content on your site easily.&lt;/p></description></item><item><title>Hello World</title><link>https://schnerring.net/posts/hello-world/</link><pubDate>Sun, 14 Mar 2021 15:00:21 +0100</pubDate><guid>https://schnerring.net/posts/hello-world/</guid><description>
 The first post of this blog</description></item><item><title>About</title><link>https://schnerring.net/about/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://schnerring.net/about/</guid><description>
-I code by day and toy around with computers by night&amp;hellip;</description></item></channel></rss>
+I code by day and toy around with computers by night&amp;hellip;
+Get In Touch GitHub Matrix: @michael:schnerring.net Twitter LinkedIn Legal The source code is licensed under the MIT license and content is licensed under the Creative Commons Attribution 4.0 International license. Both, source code and content of this site, is available on GitHub.
+Cover images created with draw.io.
+All trademarks are the property of their respective owners.</description></item></channel></rss>
