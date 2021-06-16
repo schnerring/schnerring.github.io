@@ -1,6 +1,6 @@
 # schnerring.github.io
 
-My personal website [schnerring.net](https://schnerring.net).
+My personal website, [schnerring.net](https://schnerring.net).
 
 ## Setup
 
