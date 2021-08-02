@@ -13,6 +13,14 @@ tags:
   - terraform
 ---
 
+### Update 2021-08-03
+
+With [v2.69.0 of the official Terraform azurerm provider](https://github.com/terraform-providers/terraform-provider-azurerm/releases/tag/v2.69.0) released two weeks ago, the [`active_directory_domain_service`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service) and [`active_directory_domain_service_replica_set`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service_replica_set) resources are now available. If you are newly adding AADDS, there is no point in reading any further — use the official resources.
+
+ I will switch in the coming weeks and write a short migration guide for the people using my [AADDS Terraform module](https://registry.terraform.io/modules/schnerring/aadds/azurerm/latest).
+
+---
+
 Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a _Microsoft-managed_ solution, providing a subset of [traditional AD DS features](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/compare-identity-solutions) without the need to _self-manage_ DCs.
 
 One such service that requires AD DS features is [Windows Virtual Desktop (WVD)](https://docs.microsoft.com/en-us/azure/virtual-desktop/overview). I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.
