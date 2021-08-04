@@ -6,6 +6,8 @@ useRelativeCover: true
 draft: false
 hideReadMore: true
 comments: true
+aliases:
+  - css-only-fold-out-burger-menu
 ---
 
 For the last couple of months, I have been working on a custom Hugo theme in my free time. Most recently, I implemented a CSS-only burger fold-out menu to increase its responsiveness. I based the implementation on [Erik Terwan's](https://twitter.com/erikterwan) nifty [pure CSS Hamburger fold-out menu](https://codepen.io/erikterwan/pen/EVzeRP) which is pretty popular on CodePen. I modernized it by utilizing SVG and newer CSS selectors to make the code more declarative and scalable. It comes with the price of not supporting as many browsers, but honestly, who cares about Internet Explorer users?
