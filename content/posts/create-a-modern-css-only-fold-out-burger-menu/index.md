@@ -65,7 +65,7 @@ Have a look at the result (it's interactive):
       transform: none;
     }
     #example-result .menu-burger input:checked ~ svg line {
-      color: #3c3836;
+      stroke: #3c3836;
     }
     #example-result .menu-burger svg line:nth-of-type(1)
     {
@@ -82,7 +82,7 @@ Have a look at the result (it's interactive):
     #example-result .menu-burger svg line {
       transition-duration: 0.5s;
       transition-property:
-        color,
+        stroke,
         opacity,
         transform;
       transition-timing-function: cubic-bezier(0.9, 0, 0.1, 1);
@@ -220,7 +220,7 @@ input:checked ~ .menu-burger__item-list {
 }
 
 .menu-burger input:checked ~ svg line {
-  color: #3c3836;
+  stroke: #3c3836;
 }
 ```
 
@@ -272,7 +272,7 @@ The rest is self-explanatory, generic CSS styling. Here is what we have so far:
       transform: none;
     }
     .menu-burger input:checked ~ svg line {
-      color: #3c3836;
+      stroke: #3c3836;
     }
   </style>
   <div class="menu-burger">
@@ -300,15 +300,15 @@ First, we style each `<line />` by using declarative [`nth-of-type` CSS selector
 
 ```css
 .collapsible__menu svg line:nth-of-type(1) {
-  color: red;
+  stroke: red;
 }
 
 .collapsible__menu svg line:nth-of-type(2) {
-  color: green;
+  stroke: green;
 }
 
 .collapsible__menu svg line:nth-of-type(3) {
-  color: blue;
+  stroke: blue;
 }
 ```
 
@@ -318,13 +318,13 @@ This styles the first, second and third `line` of `svg` like so:
 <div id="example-rgb" class="collapsible__menu">
   <style>
     #example-rgb svg line:nth-of-type(1) {
-      color: red;
+      stroke: red;
     }
     #example-rgb svg line:nth-of-type(2) {
-      color: green;
+      stroke: green;
     }
     #example-rgb svg line:nth-of-type(3) {
-      color: blue;
+      stroke: blue;
     }
   </style>
   <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="240" height="240" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -372,7 +372,7 @@ Next, use the `cubic-bezier` function again and apply it to every `line` propert
 .menu-burger svg line {
   transition-duration: 0.5s;
   transition-property:
-    color,
+    stroke,
     opacity,
     transform;
   transition-timing-function: cubic-bezier(0.9, 0, 0.1, 1);
@@ -406,7 +406,7 @@ Finally, we vertically center and then rotate the top and bottom `line`s:
 
 What do you think? Let me know in the comments or at me on Twitter.
 
-[I created a JSFiddle](https://jsfiddle.net/374tgz89/) for you to play around with the code. Here is the entire CSS for reference:
+[I created a JSFiddle](https://jsfiddle.net/dxLb79pu/3/) for you to play around with the code. Here is the entire CSS for reference:
 
 ```css
 .example {
@@ -456,7 +456,7 @@ input:checked ~ .menu-burger__item-list {
 }
 
 .menu-burger input:checked ~ svg line {
-  color: #3c3836;
+  stroke: #3c3836;
 }
 
 .menu-burger svg line:nth-of-type(1)
@@ -477,7 +477,7 @@ input:checked ~ .menu-burger__item-list {
 .menu-burger svg line {
   transition-duration: 0.5s;
   transition-property:
-    color,
+    stroke,
     opacity,
     transform;
   transition-timing-function: cubic-bezier(0.9, 0, 0.1, 1);
