@@ -30,7 +30,7 @@ Out of the blue, after more than a year of using this setup, I couldn't start th
 
 ## Reducing The Complexity
 
-I would have loved to get a [NitroPad X230](https://shop.nitrokey.com/shop/product/nitropad-x230-67), a [Qubes OS-certified](https://www.qubes-os.org/doc/certified-hardware/) laptop tinker around with Qubes OS some more. Also, the guys at [Nitrokey](https://www.nitrokey.com/) are doing a great job in the open-source space and deserve any support they get. But I ultimately decided to reduce the complexity of my crypto setup and went with a hardware wallet instead — the [Trezor Model T](https://shop.trezor.io/product/trezor-model-t).
+I would have loved to get a [NitroPad X230](https://shop.nitrokey.com/shop/product/nitropad-x230-67), a [Qubes OS-certified](https://www.qubes-os.org/doc/certified-hardware/) laptop to tinker around with Qubes OS some more. Also, the guys at [Nitrokey](https://www.nitrokey.com/) are doing a great job in the open-source space and deserve any support they get. But I ultimately decided to reduce the complexity of my crypto setup and went with a hardware wallet instead — the [Trezor Model T](https://shop.trezor.io/product/trezor-model-t).
 
 I'll guide you through my new "Whonix on VirtualBox" setup and the steps required to configure it.
 
@@ -121,7 +121,7 @@ Next, we launch the Trezor Suite by running `./Trezor-Suite-XX.XX.X-linux-x86_64
 
 The final step is to change two advanced settings of the Tor browser by navigating to `about:config` and clicking **Accept the Risk and Continue**. We set the `network.proxy.no_proxies_on` to `127.0.0.1:21325`, so traffic to the Trezor Bridge is not proxied through the Tor network. We also need to disable First-Party Isolation by setting `privacy.firstparty.isolate` to `false`.
 
-We can now use Adalite by navigating to [https://adalite.io](https://adalite.io). It might be a good idea to bookmark that address, so you don't fall victim to a phishing attack in case of a typ-o.
+We can now use Adalite by navigating to [https://adalite.io](https://adalite.io). It might be a good idea to bookmark that address, so you don't fall victim to a phishing attack in case of a typo.
 
 ## Closing Thoughts
 
