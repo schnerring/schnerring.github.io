@@ -249,7 +249,7 @@ Navigate to `Interfaces` &rarr; `Assignments`.
 
 ### Configure Gateway Monitoring
 
-Since the gateway address uses the local address of the tunnel, the gateway will always be online. Hence, failover will never occur, even if a WireGuard endpoint is unreachable. To mitigate this issue, a remote monitor IP must be configured. It's best to use highly reliable services like Cloudflare for this.
+Since the gateway address uses the local address of the tunnel, the gateway will always be online. Hence, failover will never occur, even if a WireGuard endpoint is unreachable. To mitigate this issue, configure a remote monitor IP for the gateway. It's best to use highly reliable services like Cloudflare for this.
 
 Navigate to `System` &rarr; `Gateways` &rarr; `Single`
 
@@ -280,6 +280,71 @@ Navigate to `System` &rarr; `Gateways` &rarr; `Group`
 4. `VPN1_WAN6`: `Tier 1`
 5. `Trigger Level`: `Packet Loss or High Latency`
 6. Click `Save` and `Apply changes`
+
+## DNS
+
+We make use of three DNS resolvers to provide name resolution across the network:
+
+- **Cloudflare DNS** for the guest network, supporting WAN failover
+- **DNS Forwarder (Dnsmasq DNS)** for the Clear network. Unbound handles local lookups and Quad9 handles external lookups with some basic privacy
+- **DNS Resolver (Unbound)** will be the authoritative name server for the private `internal.example.com` domain, so names as part of that domain are not forwarded to external DNS preventing information leakage
+
+The design of the system:
+
+- Support multiple gateways
+- Enable local device lookups for all non-guest interfaces
+- Prevent information leaking to the ISP
+- Prevent IP leaks by using VPN
+- Keep DNS queries within the VPN tunnel from secured networks
+- Optimize local performance with DNS lookup caching
+
+This requires that local devices only use OPNsense as DNS server. For cached and local names lookup results from Unbound, unknown names will be resolved externally with Quad9 or the Mullvad DNS server through the VPN tunnel. Unbound will only use the VPN_WAN interface, so DNS lookups won't be possible, which is why Clear and Guest networks serve as backups.
+
+### Configure DNS Resolver (Unbound)
+
+Navigate `Services` &rarr; `Unbound DNS` &rarr; `General`
+
+- `Show advanced options`
+- `Enable Unbound`
+- `Listen Port`: `53`
+- `Network Interfaces`: `LAN`, `VLAN10_MANAGE`, `VLAN20_VPN`
+- Check `Enable DNSSec Support`
+- Check `Register DHCP static mappings` to make using DHCP reservations more convenient
+- `Local Zone Type`: `static`
+- `Outgoing Network Interfaces`: `VPN0_WAN`, `VPN1_WAN`
+
+Navigate to `Services` &rarr; `Unbound DNS` &rarr; `Advanced`
+
+- Check `Prefetch Support`
+- Check `Prefetch DNS Key Support`
+- Check `Harden DNSSEC data`
+
+We also need to tell Unbound not to query external name servers for the private `internal.example.com` domain. We need to add a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) overriding the authoritative name server. We'll make use of [templates](https://docs.opnsense.org/development/backend/templates.html) to for [advanced Unbound configuration](https://docs.opnsense.org/manual/unbound.html#advanced-configurations). To configure them, you need to access OPNsense through either SSH or the serial console.
+
+Add a `+TARGETS` file by running `vi /usr/local/opnsense/service/templates/sampleuser/Unbound/+TARGETS` with the content:
+
+```text
+private_domains.conf:/usr/local/etc/unbound.opnsense.d/private_domains.conf
+```
+
+Add the template file by running `vi /usr/local/opnsense/service/templates/sampleuser/Unbound/private_domains.conf` with the content:
+
+```text
+server:
+  private-domain: internal.example.com
+  local-data: "internal.example.com. 10800 IN SOA opnsense.internal.example.com. root.example.com. 1 3600 1200 604800 10800"
+```
+
+Run the following to verify the configuration:
+
+```shell
+# generate template
+configctl template reload sampleuser/Unbound
+# show generated file
+cat /usr/local/etc/unbound.opnsense.d/private_domains.conf
+# check if configuration is valid
+configctl unbound check
+```
 
 ## NAT
 
