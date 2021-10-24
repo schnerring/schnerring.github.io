@@ -27,13 +27,34 @@ The [Mikrotik CRS328-24P-4S+RM](https://mikrotik.com/product/crs328_24p_4s_rm) i
 
 Usually managed switches that are 802.1Q-capable are suitable for these kinds of scenarios. With a VLAN configuration like this:
 
-| Description           | VLAN ID | Subnet              |
-| --------------------- | ------- | ------------------- |
-| Management (untagged) | 10      | 192.168.**10**.0/24 |
-| VPN                   | 20      | 192.168.**20**.0/24 |
-| Clear                 | 30      | 192.168.**30**.0/24 |
-| Guest                 | 40      | 192.168.**40**.0/24 |
+| Description | VLAN ID | Subnet              |
+| ----------- | ------- | ------------------- |
+| Native      | 1       | 192.168.**1**.0/24  |
+| Management  | 10      | 192.168.**10**.0/24 |
+| VPN         | 20      | 192.168.**20**.0/24 |
+| Clear       | 30      | 192.168.**30**.0/24 |
+| Guest       | 40      | 192.168.**40**.0/24 |
 
 My network looks like this:
 
 ![Network Diagram](img/network-diagram.png)
+
+## Port Mapping
+
+As per my requirements above, this is how I mapped my ports to VLANs:
+
+| Port      | Description                                    | VLANs                     |
+| --------- | ---------------------------------------------- | ------------------------- |
+| 1         | Trunk to OPNsense                              | 1, 10, 20, 30, 40         |
+| 2, 3      | Not used, reserved for future trunks using LAG |                           |
+| 4         | Hybrid port to Ubiquiti Unifi AP               | 10 (untagged), 20, 30, 40 |
+| 5-8       | Management VLAN                                | 10                        |
+| 9-12      | VPN VLAN                                       | 20                        |
+| 13-16     | Clear VLAN                                     | 30                        |
+| 17-20     | Guest VLAN                                     | 40                        |
+| 21-24     | Not used                                       |                           |
+| SFP1-SFP4 | Not used                                       |                           |
+
+## Configure The Switch
+
+Before configuring VLANs, enable **Independent VLAN Lookup** (IVL) in the **System** settings.
