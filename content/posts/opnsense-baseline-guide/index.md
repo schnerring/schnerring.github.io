@@ -143,11 +143,11 @@ Navigate to `Services` &rarr; `DHCPv4`.
 
 ## VPN Configuration
 
-The past couple of years, I've been using [Mullvad](https://mullvad.net/) as VPN provider and I'm a very happy customer. Back when _That One Privacy Site_ was still a thing, Mullvad earned a very good review which was when I decided to try it out. I have never looked back since. No personally idenfiable information is required to register, and paying cash via mail works perfectly.
+In recent years, I've been using [Mullvad](https://mullvad.net/) as a VPN provider. When _That One Privacy Site_ was still a thing, Mullvad was one of the top recommendations in the reviews. I decided to try it out and haven't looked back since. No personally identifiable information is required to register, and paying cash via mail works perfectly.
 
-I decided to go with the [WireGuard Road Warrior](https://docs.opnsense.org/manual/how-tos/wireguard-client.html) setup since I think WireGuard is the VPN protocol of the future. For more detailed step, check the [official OPNsense documentation on how to setup WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html). We'll also configure failover with two separate tunnels, in case one goes down.
+I decided to go with the [WireGuard Road Warrior](https://docs.opnsense.org/manual/how-tos/wireguard-client.html) setup since I think WireGuard is the VPN protocol of the future. For more detailed steps, check the [official OPNsense documentation on setting up WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html). We'll also configure failover with two separate tunnels in case one goes down.
 
-WireGuard is not (yet) a native part of FreeBSD, so you must install it as plugin. Navigate to `System` &rarr; `Firmware` &rarr; `Plugins` and install `os-wireguard`.
+WireGuard is not (yet) a native part of FreeBSD, so you must install it as a plugin. Navigate to `System` &rarr; `Firmware` &rarr; `Plugins` and install `os-wireguard`.
 
 After refreshing the browser, navigate to `VPN` &rarr; `WireGuard`.
 
@@ -194,11 +194,11 @@ Replace the `Tunnel Address` with these IP addresses.
 
 Repeat the steps above to create a second local peer named `mullvad1`. Don't forget to use a different `Listen Port`, e.g. `51821`.
 
-When you're done, select the `General` tab and check `Enable WireGuard`. Shortly after you should see two handshakes for the `wg0` and `wg1` tunnels on the `Handshakes` tab.
+Next, select the `General` tab and check `Enable WireGuard`. Check whether handshakes for the `wg0` and `wg1` tunnels appear on the `Handshakes` tab.
 
 ### WireGuard Interface Assignments and Addressing
 
-Next, we assign the wireguard tunnels to interfaces.
+Next, we assign the WireGuard tunnels to interfaces.
 
 ![Screenshot of WireGuard interface configuration](img/wireguard-interface-configuration.png)
 
@@ -286,7 +286,7 @@ Navigate to `System` &rarr; `Gateways` &rarr; `Group`
 We make use of three DNS resolvers to provide name resolution across the network:
 
 - **Cloudflare DNS** for the guest network, supporting WAN failover
-- **DNS Forwarder (Dnsmasq DNS)** for the Clear network. Unbound handles local lookups and Quad9 handles external lookups with some basic privacy
+- **DNS Forwarder (Dnsmasq DNS)** for the Clear network. Unbound handles local lookups, and Quad9 handles external lookups with some privacy
 - **DNS Resolver (Unbound)** will be the authoritative name server for the private `internal.example.com` domain, so names as part of that domain are not forwarded to external DNS preventing information leakage
 
 The design of the system:
@@ -298,7 +298,7 @@ The design of the system:
 - Keep DNS queries within the VPN tunnel from secured networks
 - Optimize local performance with DNS lookup caching
 
-This requires that local devices only use OPNsense as DNS server. For cached and local names lookup results from Unbound, unknown names will be resolved externally with Quad9 or the Mullvad DNS server through the VPN tunnel. Unbound will only use the VPN_WAN interface, so DNS lookups won't be possible, which is why Clear and Guest networks serve as backups.
+Local devices only use OPNsense as DNS server. Cached and local names lookup results from Unbound. Unknown names are resolved recursively from Quad9 (Clear) or Mullvad (VPN) DNS servers. Unbound will only use the VPN_WAN interface, so DNS lookups won't be possible, which is why Clear and Guest networks serve as backups.
 
 ### Configure DNS Resolver (Unbound)
 
@@ -346,72 +346,189 @@ cat /usr/local/etc/unbound.opnsense.d/private_domains.conf
 configctl unbound check
 ```
 
-## NAT
+## Firewall
+
+### Interface Groups
+
+[Interface groups](https://docs.opnsense.org/manual/firewall_groups.html) can be used to add policies to multiple interfaces at once. Do not use them for WAN interfaces, since they don't receive `reply-to`.
+
+Navigate to `Firewall` &rarr; `Groups`
+
+- Click `+`
+- `Name`: `LAN_INTERFACES`
+- `Description`: `Local LAN interfaces`
+- `Members`: `LAN`, `VLAN10_MANAGE`, `VLAN20_VPN`, `VLAN30_CLEAR`, `VLAN40_GUEST`
+- Click `Save`
+
+### Aliases
+
+To simplify the creation and maintenance of firewall rules, we define a few reusable [aliases]().
+
+Navigate to `Firewall` &rarr; `Aliases`
+
+#### Local Network
+
+- Click `+`
+- `Name`: `LAN_NETWORK`
+- `Type`: `Network(s)`
+- `Content`: `192.168.0.0/16`
+- `Description`: `Local network IP range 192.168.0.0-192.168.255.255`
+- Click `Save`
+
+#### Selective Routing Addresses
+
+Services like banks might object to traffic originating from known VPN end points, so some traffic from the VPN VLAN must be selectively routed through the WAN gateway.
+
+- Click `+`
+- `Name`: `SELECTIVE_ROUTING`
+- `Type`: `Host(s)`
+- `Description`: `Specific external hosts for which traffic is routed through the WAN gateway`
+- Click `Save`
+
+#### Admin / Anti-lockout Ports
+
+- Click `+`
+- `Name`: `ADMIN_PORTS`
+- `Type`: `Port(s)`
+- `Content`: `443` (Web UI), `22` (SSH, if desired)
+- `Description`: `Ports used for anti-lockout rules`
+- Click `Save`
+
+#### Ports Allowed To Communicate Between VLANs
+
+A list of ports allowing traffic between local VLANs. The following will get you started but require changes depending on your needs. Use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports.
+
+- Click `+`
+- `Name`: `OUT_PORTS_LAN`
+- `Type`: `Port(s)`
+- `Content`:
+  - `53` DNS
+  - `5353:5354` mDNS
+  - `123` NTP
+  - `21` FTP
+  - `22` SSH
+  - `161` SNMP
+  - `80` HTTP
+  - `8080`: HTTP alt / UniFi device and application communication
+  - `443` HTTPS
+  - `8443` HTTPS alt / UniFi application GUI/API as seen in a web browser
+  - `8880` UniFi HTTP portal redirection
+  - `8843` UniFi HTTPS portal redirection
+  - `10001` UniFi device discovery
+  - `5001` iperf
+  - `5900` IPMI
+  - `3389` RDP
+  - `49152:65535` ephemeral ports
+- `Description`: `VLAN egress ports`
+- Click `Save`
+
+#### Ports Allowed to Communicate with the Internet
+
+A list of ports allowing egress traffic to the internet. The following will get you started but require changes depending on your needs. Use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports.
+
+- Click `+`
+- `Name`: `OUT_PORTS_WAN`
+- `Type`: `Port(s)`
+- `Content`:
+  - `21` FTP
+  - `22` SSH
+  - `80` HTTP
+  - `8080` HTTP alt
+  - `443` HTTPS
+  - `8443` HTTPS alt
+  - `465` SMTPS
+  - `587`: SMTPS
+  - `993`: IMAPS
+  - `49152:65535` ephemeral ports
+- `Description`: `WAN egress ports`
+- Click `Save`
+
+---
+
+Click `Apply`
+
+### NAT
 
 NAT translates private to public IP addresses. We need to set this up for both the WAN and the VPN gateways:
 
 - All VLANs are translated to the WAN address range
 - VPN VLAN is translated to VPN_WAN and WAN ranges (selective routing)
 
-Navigate to `Firewall` &rarr; `NAT` &rarr; `Outbound`
+Navigate to **Firewall** &rarr; **NAT** &rarr; **Outbound**
 
 - Select `Manual outbound NAT rule generation`
 - Click `Save` and `Apply changes`
 
 If there are any rules, go ahead and delete them. Then add the following rules:
 
-### localhost to WAN
+#### localhost to WAN
 
 - Click `+`
 - `Interface`: `WAN`
 - `Source address`: `Loopback net`
 - `Description`: `localhost to WAN`
 
-### LAN to WAN
+#### LAN_INTERFACES to WAN
 
 - Click `+`
 - `Interface`: `WAN`
-- `Source address`: `LAN net`
-- `Description`: `LAN to WAN`
+- `Source address`: `LAN_INTERFACES net`
+- `Description`: `LAN_INTERFACES to WAN`
 
-### VLAN10_MANAGE to WAN
-
-- Click `+`
-- `Interface`: `WAN`
-- `Source address`: `VLAN10_MANAGE net`
-- `Description`: `VLAN10_MANAGE to WAN`
-
-### VLAN20_VPN to WAN
+#### VLAN20_VPN to VPN0_WAN
 
 - Click `+`
-- `Interface`: `WAN`
-- `Source address`: `VLAN20_VPN net`
-- `Description`: `VLAN20_VPN to WAN`
-
-### VLAN30_CLEAR to WAN
-
-- Click `+`
-- `Interface`: `WAN`
-- `Source address`: `VLAN30_CLEAR net`
-- `Description`: `VLAN30_CLEAR to WAN`
-
-### VLAN40_GUEST to WAN
-
-- Click `+`
-- `Interface`: `WAN`
-- `Source address`: `VLAN40_GUEST net`
-- `Description`: `VLAN40_GUEST to WAN`
-
-### VLAN20_VPN to VPN0_WAN
-
-- Click `+`
-- `Interface`: `WAN`
+- `Interface`: `VPN0_WAN`
 - `Source address`: `VLAN20_VPN net`
 - `Description`: `VLAN20_VPN to VPN0_WAN`
 
-### VLAN20_VPN to VPN1_WAN
+#### VLAN20_VPN to VPN1_WAN
 
 - Click `+`
-- `Interface`: `WAN`
+- `Interface`: `VPN1_WAN`
 - `Source address`: `VLAN20_VPN net`
 - `Description`: `VLAN20_VPN to VPN1_WAN`
+
+### Rules
+
+Navigate to `Firewall` &rarr; `Rules`
+
+#### LAN_INTERFACES Rules
+
+These rules apply to any local interface.
+
+Select `LAN_INTERFACES`.
+
+##### ICMP Debugging
+
+By default all VLANs allow ICMP pings from anywhere for debugging
+
+- Click `Add`
+- `Action`: `Pass`
+- `TCP/IP Version`: `IPv4`
+- `Protocol`: `ICMP`
+- `ICMP type`: `Echo Request`
+- `Source`: `LAN_INTERFACES net`
+- `Description`: `Allow inter-VLAN pings`
+
+##### Default Reject Rule
+
+By default we reject (not block) traffic on local interfaces. This provides a response to applications, preventing them to await lengthy timeouts.
+
+- Click `Add`
+- `Action`: `Reject`
+- Uncheck `Quick`
+- `TCP/IP Version`: `IPv4+IPv6`
+- `Protocol`: `any`
+- `Source`: `LAN_INTERFACES net`
+- `Description`: `Default reject rule for local interfaces`
+
+#### VLAN30_CLEAR Rules
+
+Requirements for the unencrypted, "clearnet" interface:
+
+- allow traffic to local networks on allowed ports
+- allow internet traffic on allowed ports via default gateway
+- redirect non-local NTP time lookups
+- redirect non-local DNS lookups to DNS forwarder
+- reject any other traffic
