@@ -537,7 +537,7 @@ By default we reject (not block) traffic on local interfaces. This provides a re
 - `Description`: `Default reject rule for local interfaces`
 - Click `Save`
 
-##### Allow Inter-VLAN Traffic rule
+##### Allow Inter-VLAN Traffic On Allowed Ports Rule
 
 By default allow inter-VLAN traffic on `ALLOWED_PORTS`. It's crucial to uncheck the **Quick** option to be able to override this rule for `VLAN40_GUEST`.
 
@@ -601,7 +601,48 @@ Navigate to {{< breadcrumb "Firewall" "Rules" "VLAN10_MANAGE" >}}.
 - {{< kv "Source" "VLAN10_MANAGE net" >}}
 - {{< kv "Destination" "VLAN10_MANAGE address" >}}
 - {{< kv "Destination port range" "ADMIN_PORTS" >}}
-- {{< kv "Description" "Ensure access to OPNsense at all times" >}}
+- {{< kv "Description" "Anti-lockout to ensure access to OPNsense at all times" >}}
+- Click `Save`
+
+##### VLAN10_MANAGE Allow WAN Egress On OUT_PORTS_WAN Ports
+
+- Click `+`
+- {{< kv "Action" "Pass" >}}
+- {{< kv "Interface" "VLAN10_MANAGE" >}}
+- {{< kv "Protocol" "TCP/UDP" >}}
+- {{< kv "Source" "VLAN10_MANAGE net" >}}
+- {{< kv "Destination / Invert" "checked" >}}
+- {{< kv "Destination" "VLAN10_MANAGE net" >}}
+- {{< kv "Destination port range" "OUT_PORTS_WAN" >}}
+- {{< kv "Description" "Allow WAN egress on allowed ports" >}}
+- Click `Save`
+
+#### VLAN20_VPN Rules
+
+##### VLAN20_VPN Allow WAN Egress On SELECTIVE_ROUTING Ports
+
+- Click `+`
+- {{< kv "Action" "Pass" >}}
+- {{< kv "Interface" "VLAN20_VPN" >}}
+- {{< kv "Protocol" "TCP/UDP" >}}
+- {{< kv "Source" "VLAN20_VPN net" >}}
+- {{< kv "Destination" "SELECTIVE_ROUTING" >}}
+- {{< kv "Destination port range" "OUT_PORTS_WAN" >}}
+- {{< kv "Description" "Allow WAN egress on SELECTIVE_ROUTING ports" >}}
+- Click `Save`
+
+##### VLAN20_VPN Allow VPN Egress On Allowed Ports
+
+- Click `+`
+- {{< kv "Action" "Pass" >}}
+- {{< kv "Interface" "VLAN20_VPN" >}}
+- {{< kv "Protocol" "TCP/UDP" >}}
+- {{< kv "Source" "VLAN20_VPN net" >}}
+- {{< kv "Destination / Invert" "checked" >}}
+- {{< kv "Destination" "VLAN20_VPN net" >}}
+- {{< kv "Destination port range" "OUT_PORTS_WAN" >}}
+- {{< kv "Description" "Allow VPN egress on allowed ports" >}}
+- {{< kv "Gateway" "VPN_GROUP" >}}
 - Click `Save`
 
 #### VLAN30_CLEAR Rules
@@ -625,7 +666,7 @@ Requirements for the unencrypted, "clearnet" interface:
 - {{< kv "Source" "LAN net" >}}
 - {{< kv "Destination" "LAN address" >}}
 - {{< kv "Destination port range" "ADMIN_PORTS" >}}
-- {{< kv "Description" "Ensure access to OPNsense at all times" >}}
+- {{< kv "Description" "Anti-lockout to ensure access to OPNsense at all times" >}}
 - Click `Save`
 - Move the rule to the top
 
