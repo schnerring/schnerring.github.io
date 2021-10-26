@@ -354,26 +354,35 @@ configctl unbound check
 
 Navigate to `Firewall` &rarr; `Groups`
 
+#### LAN_INTERFACES
+
 - Click `+`
-- `Name`: `LAN_INTERFACES`
-- `Description`: `Local LAN interfaces`
-- `Members`: `LAN`, `VLAN10_MANAGE`, `VLAN20_VPN`, `VLAN30_CLEAR`, `VLAN40_GUEST`
+- {{< kv "Name" "LAN_INTERFACES" >}}
+- {{< kv "Description" "All local interfaces" >}}
+- {{< kv "Members" "LAN, VLAN10_MANAGE, VLAN20_VPN, VLAN30_CLEAR, VLAN40_GUEST" >}}
+- Click `Save`
+
+#### NTP_LOCAL
+
+- Click `+`
+- {{< kv "Name" "NTP_LOCAL" >}}
+- {{< kv "Description" "Interfaces for which NTP traffic is forwarded to OPNsense" >}}
+- {{< kv "Members" "VLAN10_MANAGE, VLAN20_VPN, VLAN30_CLEAR" >}}
+- Click `Save`
+
+#### DNS_LOCAL
+
+- Click `+`
+- {{< kv "Name" "DNS_LOCAL" >}}
+- {{< kv "Description" "Interfaces for which DNS traffic is forwarded to OPNsense" >}}
+- {{< kv "Members" "VLAN10_MANAGE, VLAN20_VPN, VLAN30_CLEAR" >}}
 - Click `Save`
 
 ### Aliases
 
-To simplify the creation and maintenance of firewall rules, we define a few reusable [aliases]().
+To simplify the creation and maintenance of firewall rules, we define a few reusable [aliases](https://docs.opnsense.org/manual/aliases.html).
 
 Navigate to `Firewall` &rarr; `Aliases`
-
-#### Local Network
-
-- Click `+`
-- `Name`: `LAN_NETWORK`
-- `Type`: `Network(s)`
-- `Content`: `192.168.0.0/16`
-- `Description`: `Local network IP range 192.168.0.0-192.168.255.255`
-- Click `Save`
 
 #### Selective Routing Addresses
 
@@ -390,7 +399,7 @@ Services like banks might object to traffic originating from known VPN end point
 - Click `+`
 - `Name`: `ADMIN_PORTS`
 - `Type`: `Port(s)`
-- `Content`: `443` (Web UI), `22` (SSH, if desired)
+- `Content`: `443` (Web GUI), `22` (SSH, if desired)
 - `Description`: `Ports used for anti-lockout rules`
 - Click `Save`
 
@@ -467,6 +476,7 @@ If there are any rules, go ahead and delete them. Then add the following rules:
 - `Interface`: `WAN`
 - `Source address`: `Loopback net`
 - `Description`: `localhost to WAN`
+- Click `Save`
 
 #### LAN_INTERFACES to WAN
 
@@ -474,6 +484,7 @@ If there are any rules, go ahead and delete them. Then add the following rules:
 - `Interface`: `WAN`
 - `Source address`: `LAN_INTERFACES net`
 - `Description`: `LAN_INTERFACES to WAN`
+- Click `Save`
 
 #### VLAN20_VPN to VPN0_WAN
 
@@ -481,6 +492,7 @@ If there are any rules, go ahead and delete them. Then add the following rules:
 - `Interface`: `VPN0_WAN`
 - `Source address`: `VLAN20_VPN net`
 - `Description`: `VLAN20_VPN to VPN0_WAN`
+- Click `Save`
 
 #### VLAN20_VPN to VPN1_WAN
 
@@ -488,20 +500,19 @@ If there are any rules, go ahead and delete them. Then add the following rules:
 - `Interface`: `VPN1_WAN`
 - `Source address`: `VLAN20_VPN net`
 - `Description`: `VLAN20_VPN to VPN1_WAN`
+- Click `Save`
 
 ### Rules
-
-Navigate to `Firewall` &rarr; `Rules`
 
 #### LAN_INTERFACES Rules
 
 These rules apply to any local interface.
 
-Select `LAN_INTERFACES`.
+Navigate to `Firewall` &rarr; `Rules` &rarr; `LAN_INTERFACES`.
 
 ##### ICMP Debugging
 
-By default all VLANs allow ICMP pings from anywhere for debugging
+For debugging, by default all local interfaces allow ICMP pings from any other local interface
 
 - Click `Add`
 - `Action`: `Pass`
@@ -510,6 +521,7 @@ By default all VLANs allow ICMP pings from anywhere for debugging
 - `ICMP type`: `Echo Request`
 - `Source`: `LAN_INTERFACES net`
 - `Description`: `Allow inter-VLAN pings`
+- Click `Save`
 
 ##### Default Reject Rule
 
@@ -522,6 +534,30 @@ By default we reject (not block) traffic on local interfaces. This provides a re
 - `Protocol`: `any`
 - `Source`: `LAN_INTERFACES net`
 - `Description`: `Default reject rule for local interfaces`
+- Click `Save`
+
+#### VLAN10_MANAGE Rules
+
+- allow traffic to local interfaces on approved ports
+- allow internet traffic on approved ports
+- redirect any non-local NTP time lookups to OPNsense
+- allow internal and external DNS resolution
+
+Navigate to {{< breadcrumb "Firewall" "Rules" "VLAN10_MANAGE" >}}.
+
+##### VLAN10_MANAGE Anti-lockout Rule
+
+- Click `+`
+- {{< kv "Action" "Pass" >}}
+- {{< kv "Interface" "VLAN10_MANAGE" >}}
+- {{< kv "Protocol" "TCP/UDP" >}}
+- {{< kv "Source" "VLAN10_MANAGE net" >}}
+- {{< kv "Destination" "VLAN10_MANAGE address" >}}
+- {{< kv "Destination port range" >}}
+  - {{< kv "from" "ADMIN_PORTS" >}}
+  - {{< kv "to" "ADMIN_PORTS" >}}
+- {{< kv "Description" "Ensure access to OPNsense at all times" >}}
+- Click `Save`
 
 #### VLAN30_CLEAR Rules
 
@@ -532,3 +568,20 @@ Requirements for the unencrypted, "clearnet" interface:
 - redirect non-local NTP time lookups
 - redirect non-local DNS lookups to DNS forwarder
 - reject any other traffic
+
+#### LAN Rules
+
+##### LAN Anti-lockout Rule
+
+- Click `+`
+- {{< kv "Action" "Pass" >}}
+- {{< kv "Interface" "LAN" >}}
+- {{< kv "Protocol" "TCP/UDP" >}}
+- {{< kv "Source" "LAN net" >}}
+- {{< kv "Destination" "LAN address" >}}
+- {{< kv "Destination port range" >}}
+  - {{< kv "from" "ADMIN_PORTS" >}}
+  - {{< kv "to" "ADMIN_PORTS" >}}
+- {{< kv "Description" "Ensure access to OPNsense at all times" >}}
+- Click `Save`
+- Move the rule to the top
