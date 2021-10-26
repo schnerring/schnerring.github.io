@@ -552,6 +552,21 @@ Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}}
 - {{< kv "Redirect target port" "DNS" >}}
 - {{< kv "Description" "Redirect outbound DNS traffic to OPNsense" >}}
 
+#### NTP_LOCAL Rules
+
+Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}}
+
+- Click `+`
+- {{< kv "Interface" "NTP_LOCAL" >}}
+- {{< kv "Protocol" "UDP" >}}
+- {{< kv "Source" "NTP_LOCAL net" >}}
+- {{< kv "Destination / Invert" "☑" >}}
+- {{< kv "Destination" "NTP_LOCAL net" >}}
+- {{< kv "Destination port range" "NTP" >}}
+- {{< kv "Redirect target IP" "127.0.0.1" >}}
+- {{< kv "Redirect target port" "NTP" >}}
+- {{< kv "Description" "Redirect outbound NTP traffic to OPNsense" >}}
+
 #### VLAN10_MANAGE Rules
 
 - allow traffic to local interfaces on approved ports
@@ -597,3 +612,14 @@ Requirements for the unencrypted, "clearnet" interface:
 - {{< kv "Description" "Ensure access to OPNsense at all times" >}}
 - Click `Save`
 - Move the rule to the top
+
+##### Pass LAN To Any Rule
+
+This rule should by default exist. If not, create it.
+
+- Click `+`
+- {{< kv "Action" "Pass" >}}
+- {{< kv "Interface" "LAN" >}}
+- {{< kv "Source" "LAN net" >}}
+- {{< kv "Description" "Default allow LAN to any rule" >}}
+- Click `Save`
