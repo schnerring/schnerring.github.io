@@ -136,10 +136,11 @@ Navigate to `Services` &rarr; `DHCPv4`.
 
 #### VLAN40_GUEST DHCP
 
-1. Select `VLAN40_GUEST`
-2. Check `Enable DHCP server on the VLAN40_GUEST interface`
-3. Configure the `Range` from `192.168.40.100` to `192.168.40.199`
-4. Click `Save`
+- Select `VLAN40_GUEST`
+- Check `Enable DHCP server on the VLAN40_GUEST interface`
+- Configure the `Range` from `192.168.40.100` to `192.168.40.199`
+- {{< kv "DNS servers" "1.1.1.1, 1.0.0.1" >}}
+- Click `Save`
 
 ## VPN Configuration
 
@@ -366,7 +367,7 @@ Navigate to `Firewall` &rarr; `Groups`
 
 - Click `+`
 - {{< kv "Name" "NTP_LOCAL" >}}
-- {{< kv "Description" "Interfaces for which NTP traffic is forwarded to OPNsense" >}}
+- {{< kv "Description" "Interfaces for which outbound NTP traffic is redirected to OPNsense" >}}
 - {{< kv "Members" "VLAN10_MANAGE, VLAN20_VPN, VLAN30_CLEAR" >}}
 - Click `Save`
 
@@ -374,8 +375,8 @@ Navigate to `Firewall` &rarr; `Groups`
 
 - Click `+`
 - {{< kv "Name" "DNS_LOCAL" >}}
-- {{< kv "Description" "Interfaces for which DNS traffic is forwarded to OPNsense" >}}
-- {{< kv "Members" "VLAN10_MANAGE, VLAN20_VPN, VLAN30_CLEAR" >}}
+- {{< kv "Description" "Interfaces for which outbound DNS traffic is redirected to OPNsense" >}}
+- {{< kv "Members" "VLAN10_MANAGE, VLAN20_VPN" >}}
 - Click `Save`
 
 ### Aliases
@@ -536,6 +537,21 @@ By default we reject (not block) traffic on local interfaces. This provides a re
 - `Description`: `Default reject rule for local interfaces`
 - Click `Save`
 
+#### DNS_LOCAL Rules
+
+Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}}
+
+- Click `+`
+- {{< kv "Interface" "DNS_LOCAL" >}}
+- {{< kv "Protocol" "TCP/UDP" >}}
+- {{< kv "Source" "DNS_LOCAL net" >}}
+- {{< kv "Destination / Invert" "☑" >}}
+- {{< kv "Destination" "DNS_LOCAL net" >}}
+- {{< kv "Destination port range" "DNS" >}}
+- {{< kv "Redirect target IP" "127.0.0.1" >}}
+- {{< kv "Redirect target port" "DNS" >}}
+- {{< kv "Description" "Redirect outbound DNS traffic to OPNsense" >}}
+
 #### VLAN10_MANAGE Rules
 
 - allow traffic to local interfaces on approved ports
@@ -553,9 +569,7 @@ Navigate to {{< breadcrumb "Firewall" "Rules" "VLAN10_MANAGE" >}}.
 - {{< kv "Protocol" "TCP/UDP" >}}
 - {{< kv "Source" "VLAN10_MANAGE net" >}}
 - {{< kv "Destination" "VLAN10_MANAGE address" >}}
-- {{< kv "Destination port range" >}}
-  - {{< kv "from" "ADMIN_PORTS" >}}
-  - {{< kv "to" "ADMIN_PORTS" >}}
+- {{< kv "Destination port range" "ADMIN_PORTS" >}}
 - {{< kv "Description" "Ensure access to OPNsense at all times" >}}
 - Click `Save`
 
@@ -579,9 +593,7 @@ Requirements for the unencrypted, "clearnet" interface:
 - {{< kv "Protocol" "TCP/UDP" >}}
 - {{< kv "Source" "LAN net" >}}
 - {{< kv "Destination" "LAN address" >}}
-- {{< kv "Destination port range" >}}
-  - {{< kv "from" "ADMIN_PORTS" >}}
-  - {{< kv "to" "ADMIN_PORTS" >}}
+- {{< kv "Destination port range" "ADMIN_PORTS" >}}
 - {{< kv "Description" "Ensure access to OPNsense at all times" >}}
 - Click `Save`
 - Move the rule to the top
