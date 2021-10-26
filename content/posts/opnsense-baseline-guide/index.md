@@ -15,6 +15,98 @@ tags:
   - wireguard
 ---
 
+## Overview
+
+### WAN
+
+- one ISP WAN
+- WireGuard VPN multi-WAN (Mullvad)
+
+### LAN
+
+#### Management Network (VLAN 10)
+
+Used for native hardware access to WiFi access points, IPMI and headless servers.
+
+#### VPN Network (VLAN 20)
+
+Primary LAN network where all outbound traffic exists via multiple WireGuard VPN tunnels.
+
+#### "Clear" Network (VLAN 30)
+
+General purpose web access where encryption isn't required or possible.
+
+#### Guest Network (VLAN 40)
+
+Unsecured network used by visitors or as a backup. Access to other VLANs and user devices is denied.
+
+### Network Diagram
+
+(TODO)
+
+## Hardware Selection and Installation
+
+### Switch
+
+- 802.1Q switch is required
+- [Check Mikrotik Guide](TODO)
+
+### Hardware
+
+- [DEC630](https://www.deciso.com/product-catalog/dec630/)
+- See [Hardware sizing & setup](https://docs.opnsense.org/manual/hardware.html)
+
+### Installation
+
+- See [Initial Installation & Configuration](https://docs.opnsense.org/manual/install.html)
+
+## Initial Wizard Configuration
+
+Navigate to `192.168.1.1` in your browser and login with default credentials:
+
+- {{< kv "Username" "root" >}}
+- {{< kv "Password" "opnsense" >}}
+
+Click `Next` to leave the welcome screen and get started.
+
+### Wizard: General Information
+
+![Screenshot of wizard general information](img/wizard-general-information.png)
+
+|                       |                    |
+| --------------------- | ------------------ |
+| Domain                | `corp.example.com` |
+| Primary DNS Server    | `9.9.9.9`          |
+| Secondary DNS Server  | `149.112.112.112`  |
+| Override DNS          | `unchecked`        |
+| Enable DNSSEC Support | `checked`          |
+| Harden DNSSEC data    | `checked`          |
+
+I like to use [Quad9](https://quad9.org/) DNS as system DNS servers. Only clear and guest networks will use these. We'll configure Unbound (DNS resolver) to securely lookup DNS through VPN tunnels.
+
+For the domain, I like to use an internal subdomain of a domain I own. I consider `local.lan` pattern a relic of the past. To prevent local network architecture being leaked, we'll configure Unbound to to treat `corp.example.com` as private domain.
+
+Click `Next`.
+
+### Wizard: Time Server Information
+
+|                      |                                                                           |
+| -------------------- | ------------------------------------------------------------------------- |
+| Time server hostname | `0.ch.pool.ntp.org 1.ch.pool.ntp.org 2.ch.pool.ntp.org 3.ch.pool.ntp.org` |
+| Timezone             | `Europe/Zurich`                                                           |
+
+Choose the NTP servers which are geographically closest to your location. I'm based in Switzerland which is why I chose the [servers from the `ch.pool.ntp.org` pool](https://www.pool.ntp.org/zone/ch).
+
+Click `Next`.
+
+### Wizard: Configure WAN / LAN Interfaces
+
+Using DHCP for the WAN interface should work for most people. Click `Next` and keep the default settings for WAN and LAN interfaces.
+
+### Wizard: Set Root Password
+
+Make sure to choose a strong root password and click `Next`. Click `Reload` to apply all the changes.
+
 ## Interface Creation And Configuration
 
 ### Create VLANs
