@@ -511,30 +511,44 @@ These rules apply to any local interface.
 
 Navigate to `Firewall` &rarr; `Rules` &rarr; `LAN_INTERFACES`.
 
-##### ICMP Debugging
+##### ICMP Debugging Rule
 
 For debugging, by default all local interfaces allow ICMP pings from any other local interface
 
-- Click `Add`
+- Click `+`
 - `Action`: `Pass`
 - `TCP/IP Version`: `IPv4`
 - `Protocol`: `ICMP`
 - `ICMP type`: `Echo Request`
 - `Source`: `LAN_INTERFACES net`
-- `Description`: `Allow inter-VLAN pings`
+- {{< kv "Description" "Allow inter-VLAN pings" >}}
 - Click `Save`
 
 ##### Default Reject Rule
 
 By default we reject (not block) traffic on local interfaces. This provides a response to applications, preventing them to await lengthy timeouts.
 
-- Click `Add`
+- Click `+`
 - `Action`: `Reject`
-- Uncheck `Quick`
+- {{< kv "Quick" "unchecked" >}}
 - `TCP/IP Version`: `IPv4+IPv6`
 - `Protocol`: `any`
 - `Source`: `LAN_INTERFACES net`
 - `Description`: `Default reject rule for local interfaces`
+- Click `Save`
+
+##### Allow Inter-VLAN Traffic rule
+
+By default allow inter-VLAN traffic on `ALLOWED_PORTS`. It's crucial to uncheck the **Quick** option to be able to override this rule for `VLAN40_GUEST`.
+
+- Click `+`
+- {{< kv "Action" "Pass" >}}
+- {{< kv "Interface" "LAN_INTERFACES" >}}
+- {{< kv "Protocol" "TCP/UDP" >}}
+- {{< kv "Source" "LAN_INTERFACES net" >}}
+- {{< kv "Destination" "LAN_INTERFACES net" >}}
+- {{< kv "Destination port range" "OUT_PORTS_LAN" >}}
+- {{< kv "Description" "Allow inter-VLAN traffic on allowed ports" >}}
 - Click `Save`
 
 #### DNS_LOCAL Rules
@@ -545,12 +559,13 @@ Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}}
 - {{< kv "Interface" "DNS_LOCAL" >}}
 - {{< kv "Protocol" "TCP/UDP" >}}
 - {{< kv "Source" "DNS_LOCAL net" >}}
-- {{< kv "Destination / Invert" "☑" >}}
+- {{< kv "Destination / Invert" "checked" >}}
 - {{< kv "Destination" "DNS_LOCAL net" >}}
 - {{< kv "Destination port range" "DNS" >}}
 - {{< kv "Redirect target IP" "127.0.0.1" >}}
 - {{< kv "Redirect target port" "DNS" >}}
 - {{< kv "Description" "Redirect outbound DNS traffic to OPNsense" >}}
+- Click `Save`
 
 #### NTP_LOCAL Rules
 
@@ -560,12 +575,13 @@ Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}}
 - {{< kv "Interface" "NTP_LOCAL" >}}
 - {{< kv "Protocol" "UDP" >}}
 - {{< kv "Source" "NTP_LOCAL net" >}}
-- {{< kv "Destination / Invert" "☑" >}}
+- {{< kv "Destination / Invert" "checked" >}}
 - {{< kv "Destination" "NTP_LOCAL net" >}}
 - {{< kv "Destination port range" "NTP" >}}
 - {{< kv "Redirect target IP" "127.0.0.1" >}}
 - {{< kv "Redirect target port" "NTP" >}}
 - {{< kv "Description" "Redirect outbound NTP traffic to OPNsense" >}}
+- Click `Save`
 
 #### VLAN10_MANAGE Rules
 
