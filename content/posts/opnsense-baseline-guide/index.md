@@ -46,11 +46,6 @@ Unsecured network used by visitors or as a backup. Access to other VLANs and use
 
 ## Hardware Selection and Installation
 
-### Switch
-
-- 802.1Q switch is required
-- [Check Mikrotik Guide](TODO)
-
 ### Hardware
 
 - [DEC630](https://www.deciso.com/product-catalog/dec630/)
@@ -101,7 +96,7 @@ Click `Next`.
 
 ### Wizard: Configure WAN / LAN Interfaces
 
-Using DHCP for the WAN interface should work for most people. Click `Next` and keep the default settings for WAN and LAN interfaces.
+By default, the WAN interface obtains an IP address via DHCP. Additionally, DHCP is configured for the LAN interface. This should work for most people, so just keep the defaults and click `Next`.
 
 ### Wizard: Set Root Password
 
@@ -109,93 +104,113 @@ Make sure to choose a strong root password and click `Next`. Click `Reload` to a
 
 ## Interface Creation And Configuration
 
+### Switch
+
+- 802.1Q switch with properly configured VLANs is required
+- [Check Mikrotik Guide](TODO)
+
 ### Create VLANs
 
-We need to identify the physical parent interface which transfers all VLAN traffic. Typically an assignment to the logical `LAN` interface already exists, connecting your switch to the OPNsense router. In my case that's `igb0`.
+Typically, the `LAN` port will also carry the VLAN traffic and function as [trunk port](https://www.techopedia.com/definition/27008/trunk-port). For me it's the `igb0` port I chose as parent interface for VLANs.
 
-Navigate to `Interfaces` &rarr; `Other Types` &rarr; `VLAN`.
+Navigate to {{< breadcrumb "Interfaces" "Other Types" "VLAN" >}}.
 
 #### Management VLAN
 
-1. Click `+`:
-2. `Parent Interface`: the parent interface, e.g. `igb0`
-3. `VLAN tag`: `10`
-4. `Description`: `VLAN10_MANAGE`
-5. Click `Save`
+![Screenshot of VLAN configuration](img/vlan-configuration.png)
+
+Click `+`.
+
+|                  |                 |
+| ---------------- | --------------- |
+| Parent Interface | `igb0`          |
+| VLAN tag         | `10`            |
+| Description      | `VLAN10_MANAGE` |
+
+Click `Save`.
 
 #### VPN VLAN
 
-1. Click `+`:
-2. `Parent Interface`: the parent interface, e.g. `igb0`
-3. `VLAN tag`: `20`
-4. `Description`: `VLAN20_VPN`
-5. Click `Save`
+|                  |              |
+| ---------------- | ------------ |
+| Parent Interface | `igb0`       |
+| VLAN tag         | `20`         |
+| Description      | `VLAN20_VPN` |
 
 #### Clear VLAN
 
-1. Click `+`:
-2. `Parent Interface`: the parent interface, e.g. `igb0`
-3. `VLAN tag`: `30`
-4. `Description`: `VLAN30_CLEAR`
-5. Click `Save`
+|                  |                |
+| ---------------- | -------------- |
+| Parent Interface | `igb0`         |
+| VLAN tag         | `30`           |
+| Description      | `VLAN30_CLEAR` |
 
 #### Guest VLAN
 
-1. Click `+`:
-2. `Parent Interface`: the parent interface, e.g. `igb0`
-3. `VLAN tag`: `40`
-4. `Description`: `VLAN40_GUEST`
-5. Click `Save`
+|                  |                |
+| ---------------- | -------------- |
+| Parent Interface | `igb0`         |
+| VLAN tag         | `40`           |
+| Description      | `VLAN40_GUEST` |
 
 ### Create Logical Interfaces
 
-For each VLAN, create a logical interface. Navigate to `Interfaces` &rarr; `Assignments`
+For each VLAN, create a logical interface.
 
-1. Select `vlan 10`, add the description `VLAN10_MANAGE`, and click `+`
-2. Select `vlan 20`, add the description `VLAN20_VPN`, and click `+`
-3. Select `vlan 30`, add the description `VLAN30_CLEAR`, and click `+`
-4. Select `vlan 40`, add the description `VLAN40_GUEST`, and click `+`
-5. Click `Save`
+![Screenshot of interface assignments](img/interface-assignments.png)
+
+Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}
+
+- Select `vlan 10`, enter the description `VLAN10_MANAGE`, and click `+`
+- Select `vlan 20`, enter the description `VLAN20_VPN`, and click `+`
+- Select `vlan 30`, enter the description `VLAN30_CLEAR`, and click `+`
+- Select `vlan 40`, enter the description `VLAN40_GUEST`, and click `+`
+
+Click `Save`
 
 ### Configure Interface IP Addresses
 
-To easier remember which IP range belongs to which VLAN, a common approach is to match an octet of the IP range with the VLAN ID. E.g., the VLAN with the ID **10** would have a range of 192.168.**10**.0/24.
+To easier remember which IP range belongs to which VLAN, I like the convention of matching an octet of the IP range with the VLAN ID. E.g., the VLAN with the ID **10** would have a range of 192.168.**10**.0/24.
 
 ![Screenshot of VLAN logical interface configuration](img/configure-interface-ip-addresses.png)
 
-Navigate to `Interfaces` &rarr; `Assignments`.
+Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 
 #### VLAN10_MANAGE Interface
 
-1. Navigate to `VLAN10_MANAGE`
-2. `Enable Interface`
-3. `IPv4 Configuration Type`: `Static IPv4`
-4. `IPv4 Address`: `192.168.10.1/24`
-5. Click `Save` and `Apply changes` when prompted
+Navigate to `VLAN10_MANAGE`.
+
+|                         |                   |
+| ----------------------- | ----------------- |
+| Enable Interface        | `checked`         |
+| IPv4 Configuration Type | `Static IPv4`     |
+| IPv4 Address            | `192.168.10.1/24` |
+
+Click `Save` and `Apply changes`.
 
 #### VLAN20_VPN Interface
 
-1. Navigate to `VLAN20_VPN`
-2. `Enable Interface`
-3. `IPv4 Configuration Type`: `Static IPv4`
-4. `IPv4 Address`: `192.168.20.1/24`
-5. Click `Save` and `Apply changes` when prompted
+|                         |                   |
+| ----------------------- | ----------------- |
+| Enable Interface        | `checked`         |
+| IPv4 Configuration Type | `Static IPv4`     |
+| IPv4 Address            | `192.168.20.1/24` |
 
 #### VLAN30_CLEAR Interface
 
-1. Navigate to `VLAN30_CLEAR`
-2. `Enable Interface`
-3. `IPv4 Configuration Type`: `Static IPv4`
-4. `IPv4 Address`: `192.168.30.1/24`
-5. Click `Save` and `Apply changes` when prompted
+|                         |                   |
+| ----------------------- | ----------------- |
+| Enable Interface        | `checked`         |
+| IPv4 Configuration Type | `Static IPv4`     |
+| IPv4 Address            | `192.168.30.1/24` |
 
 #### VLAN40_GUEST Interface
 
-1. Navigate to `VLAN40_GUEST`
-2. `Enable Interface`
-3. `IPv4 Configuration Type`: `Static IPv4`
-4. `IPv4 Address`: `192.168.40.1/24`
-5. Click `Save` and `Apply changes` when prompted
+|                         |                   |
+| ----------------------- | ----------------- |
+| Enable Interface        | `checked`         |
+| IPv4 Configuration Type | `Static IPv4`     |
+| IPv4 Address            | `192.168.40.1/24` |
 
 ### Configure Interface DHCP
 
