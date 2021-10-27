@@ -7,10 +7,14 @@ draft: true
 hideReadMore: true
 comments: true
 tags:
+  - firewall
+  - homelab
+  - letsencrypt
   - mullvad
   - networking
   - opnsense
   - routing
+  - vlan
   - vpn
   - wireguard
 ---
@@ -110,18 +114,18 @@ Most of the general settings that follow are already set by default but worth do
 
 Navigate to {{< breadcrumb "System" "Settings" "General" >}}.
 
-|                    |                                                                              |
-| ------------------ | ---------------------------------------------------------------------------- |
-| DNS Server Options | `unchecked` Allow DNS server list to be overridden by DHCP/PPP on WAN        |
-| DNS Server Options | `unchecked` Do not use the local DNS service as a nameserver for this system |
+|                    |             |                                                                  |
+| ------------------ | ----------- | ---------------------------------------------------------------- |
+| DNS Server Options | `unchecked` | Allow DNS server list to be overridden by DHCP/PPP on WAN        |
+| DNS Server Options | `unchecked` | Do not use the local DNS service as a nameserver for this system |
 
 ### Web GUI Access
 
 Navigate to {{< breadcrumb "System" "Settings" "Administration" >}}.
 
-|               |                                         |
-| ------------- | --------------------------------------- |
-| HTTP Redirect | `checked` Disable web GUI redirect rule |
+|               |           |                               |
+| ------------- | --------- | ----------------------------- |
+| HTTP Redirect | `checked` | Disable web GUI redirect rule |
 
 ### SSH Access
 
@@ -131,10 +135,10 @@ If your device has a serial console port, like the Deciso DEC630, enabling SSH c
 
 Navigate to {{< breadcrumb "System" "Settings" "Administration" >}}.
 
-|                     |                                                                        |
-| ------------------- | ---------------------------------------------------------------------- |
-| Secure Shell Server | `checked`                                                              |
-| Sudo                | `Ask password` Permit sudo usage for administrators with shell access. |
+|                     |                |                                                         |
+| ------------------- | -------------- | ------------------------------------------------------- |
+| Secure Shell Server | `checked`      |                                                         |
+| Sudo                | `Ask password` | Permit sudo usage for administrators with shell access. |
 
 Navigate to {{< breadcrumb "System" "Access" "Users" >}} and click `+`.
 
@@ -146,6 +150,54 @@ Navigate to {{< breadcrumb "System" "Access" "Users" >}} and click `+`.
 | Group Memberships | `admins`                     |
 | Authorized keys   | `<valid SSH public key>`     |
 
+### Firewall Settings
+
+Navigate to {{< breadcrumb "Firewall" "Settings" "Advanced" >}}.
+
+By default, when a rule has a specific gateway set, and this gateway is down, rule is created and traffic is sent to default gateway. This option overrides that behavior and the rule is not created when gateway is down
+
+| Gateway Monitoring |           |
+| ------------------ | --------- |
+| Skip rules         | `checked` |
+
+Successive connections will be redirected to the servers in a round-robin manner with connections from the same source being sent to the same gateway. This 'sticky connection' will exist as long as there are states that refer to this connection. Once the states expire, so will the sticky connection. Further connections from that host will be redirected to the next gateway in the round-robin.
+
+| Multi-WAN          |           |
+| ------------------ | --------- |
+| Sticky connections | `checked` |
+
+Depending on your hardware you might tweak the following settings for some performance gains.
+
+| Miscellaneous                  |                                                                                                                                      |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Firewall Optimization          | `conservative` Tries to avoid dropping any legitimate idle connections at the expense of increased memory usage and CPU utilization. |
+| Firewall Maximum Table Entries | `2000000`                                                                                                                            |
+
+### Checksum Offloading
+
+Checksum offloading is broken in some hardware, particularly some Realtek cards. Rarely, drivers may have problems with checksum offloading and some specific NICs.
+
+Navigate to {{< breadcrumb "Interfaces" "Settings" "Advanced" >}}.
+
+|              |             |                                   |
+| ------------ | ----------- | --------------------------------- |
+| Hardware CRC | `unchecked` | Disable hardware checksum offload |
+
+### Miscellaneous
+
+Navigate to {{< breadcrumb "System" "Settings" "Miscellaneous" >}}.
+
+| Power Savings |              |
+| ------------- | ------------ |
+| Use PowerD    | `checked`    |
+| Power Mode    | `Hiadaptive` |
+
+Verify **Cryptography settings** and **Thermal Sensors** settings are compatible with your hardware.
+
+### Gateway Killswitch
+
+Navigate to {{< breadcrumb "Interfaces" "Settings" "Advanced" >}}.
+
 ## Interface Creation And Configuration
 
 ### Switch
@@ -155,7 +207,7 @@ Navigate to {{< breadcrumb "System" "Access" "Users" >}} and click `+`.
 
 ### Create VLANs
 
-Typically, the `LAN` port will also carry the VLAN traffic and function as [trunk port](https://www.techopedia.com/definition/27008/trunk-port). For me it's the `igb0` port I chose as parent interface for VLANs.
+Typically, the `LAN` port also carries the VLAN traffic and functions as [trunk port](https://www.techopedia.com/definition/27008/trunk-port). For me it's the `igb0` port which I choose as VLAN parent interface in the next steps.
 
 Navigate to {{< breadcrumb "Interfaces" "Other Types" "VLAN" >}}.
 
@@ -210,7 +262,7 @@ Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}
 - Select `vlan 30`, enter the description `VLAN30_CLEAR`, and click `+`
 - Select `vlan 40`, enter the description `VLAN40_GUEST`, and click `+`
 
-Click `Save`
+Click `Save`.
 
 ### Configure Interface IP Addresses
 
