@@ -1,5 +1,5 @@
 ---
-title: "OPNsense Baseline Guide"
+title: "OPNsense Baseline Guide with VPN Multi-WAN, Guest, and VLAN Support"
 date: 2021-10-23T23:37:35+02:00
 cover: "img/cover.svg"
 useRelativeCover: true
@@ -19,14 +19,28 @@ tags:
   - wireguard
 ---
 
+This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the amazing [pfSense baseline guide with VPN, Guest and VLAN support](https://nguvu.org/pfsense/pfsense-baseline-setup) that some of you guys might know, and I consider this guide to be an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use [OPNsense](https://opnsense.org/) instead of pfSense. I bit the bullet and bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance. Albeit expensive, and possibly overkill for my needs, I'm happy to support the open-source mission of Deciso, the maintainers of OPNsense.
+
+I followed the instructions of the pfSense guide to configure OPNsense and took notes on the differences. Some options moved to different menus, some options were deprecated, and some stuff was outdated. As my notes grew, I decided to publish them as a guide on my website.
+
+My goal was to create a beginner-friendly, comprehensive guide that's easy to follow. But I tried to strike a different balance in regards to brevity of the instructions compared to the pfSense guide. It's a matter of personal taste, but I find the instructions in that guide too verbose. I intentionally omit a lot of the repetitive "click save and apply" instructions and only list configuration changes deviating from defaults, making some exceptions for very important settings. I consider the OPNsense defaults to be stable enough for this approach and hope to reduce maintenance work and sources of error.
+
+I'm a homelab hobbyist, so be warned that this guide might contain errors. Please, verify the steps yourself and do your own research. I hope this guide is as helpful and inspiring to you as the pfSense guide was to me. Any feedback is greatly appreciated.
+
 ## Overview
+
+### Network Diagram
+
+(TODO)
 
 ### WAN
 
 - one ISP WAN
-- WireGuard VPN multi-WAN (Mullvad)
+- WireGuard VPN multi-WAN with [Mullvad](https://mullvad.net)
 
 ### LAN
+
+The local network is segregated into several areas with different requirements.
 
 #### Management Network (VLAN 10)
 
@@ -34,7 +48,7 @@ Used for native hardware access to WiFi access points, IPMI and headless servers
 
 #### VPN Network (VLAN 20)
 
-Primary LAN network where all outbound traffic exists via multiple WireGuard VPN tunnels.
+Primary LAN network where all outbound traffic exists via multiple WireGuard VPN tunnels to maximize privacy and security.
 
 #### "Clear" Network (VLAN 30)
 
@@ -44,11 +58,11 @@ General purpose web access where encryption isn't required or possible.
 
 Unsecured network used by visitors or as a backup. Access to other VLANs and user devices is denied.
 
-### Network Diagram
-
-(TODO)
-
 ## Hardware Selection and Installation
+
+The original pfSense guide features a [large section of hardware recommendations](https://nguvu.org/pfsense/pfsense-baseline-setup/#Hardware%20selection) and [installation instructions](https://nguvu.org/pfsense/pfsense-baseline-setup/#Install%20pfSense).
+
+I'm
 
 ### Hardware
 
