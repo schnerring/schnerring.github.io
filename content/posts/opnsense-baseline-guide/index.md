@@ -48,7 +48,7 @@ Unsecured network used by visitors or as a backup. Access to other VLANs and use
 
 ### Hardware
 
-- [DEC630](https://www.deciso.com/product-catalog/dec630/)
+- [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/)
 - See [Hardware sizing & setup](https://docs.opnsense.org/manual/hardware.html)
 
 ### Installation
@@ -101,6 +101,50 @@ By default, the WAN interface obtains an IP address via DHCP. Additionally, DHCP
 ### Wizard: Set Root Password
 
 Make sure to choose a strong root password and click `Next`. Click `Reload` to apply all the changes.
+
+## General Settings
+
+Most of the general settings that follow are already set by default but worth double-checking.
+
+### DNS Server Settings
+
+Navigate to {{< breadcrumb "System" "Settings" "General" >}}.
+
+|                    |                                                                              |
+| ------------------ | ---------------------------------------------------------------------------- |
+| DNS Server Options | `unchecked` Allow DNS server list to be overridden by DHCP/PPP on WAN        |
+| DNS Server Options | `unchecked` Do not use the local DNS service as a nameserver for this system |
+
+### Web GUI Access
+
+Navigate to {{< breadcrumb "System" "Settings" "Administration" >}}.
+
+|               |                                         |
+| ------------- | --------------------------------------- |
+| HTTP Redirect | `checked` Disable web GUI redirect rule |
+
+### SSH Access
+
+Permitting root user login and password login is a quick and dirty way of enabling SSH access that I'd strongly discourage from using. For good reasons both options are disabled by default and certificate- or [key-based authentication](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server) are recommended.
+
+If your device has a serial console port, like the Deciso DEC630, enabling SSH can be skipped.
+
+Navigate to {{< breadcrumb "System" "Settings" "Administration" >}}.
+
+|                     |                                                                        |
+| ------------------- | ---------------------------------------------------------------------- |
+| Secure Shell Server | `checked`                                                              |
+| Sudo                | `Ask password` Permit sudo usage for administrators with shell access. |
+
+Navigate to {{< breadcrumb "System" "Access" "Users" >}} and click `+`.
+
+|                   |                              |
+| ----------------- | ---------------------------- |
+| Username          | `<choose a username>`        |
+| Password          | `<choose a secure password>` |
+| Login shell       | `/usr/local/bin/bash`        |
+| Group Memberships | `admins`                     |
+| Authorized keys   | `<valid SSH public key>`     |
 
 ## Interface Creation And Configuration
 
