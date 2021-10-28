@@ -97,9 +97,7 @@ Click `Next` to leave the welcome screen and get started.
 
 I like to use [Quad9](https://quad9.org/) DNS as system DNS servers. Only clear and guest networks will use these. We'll configure Unbound (DNS resolver) to securely lookup DNS through VPN tunnels.
 
-For the domain, I like to use an internal subdomain of a domain I own. I consider `local.lan` pattern a relic of the past. To prevent local network architecture being leaked, we'll configure Unbound to to treat `corp.example.com` as private domain.
-
-Click `Next`.
+For the domain, I like to use an internal subdomain of a domain I own. You should consider the `local.lan` pattern a relic of the past. To prevent local network architecture being leaked, we'll configure Unbound to to treat `corp.example.com` as private domain.
 
 ### Wizard: Time Server Information
 
@@ -108,21 +106,19 @@ Click `Next`.
 | Time server hostname | `0.ch.pool.ntp.org 1.ch.pool.ntp.org 2.ch.pool.ntp.org 3.ch.pool.ntp.org` |
 | Timezone             | `Europe/Zurich`                                                           |
 
-Choose the NTP servers which are geographically closest to your location. I'm based in Switzerland which is why I chose the [servers from the `ch.pool.ntp.org` pool](https://www.pool.ntp.org/zone/ch).
-
-Click `Next`.
+Choose the NTP servers that are geographically closest to your location. I'm based in Switzerland which is why I chose the [servers from the `ch.pool.ntp.org` pool](https://www.pool.ntp.org/zone/ch).
 
 ### Wizard: Configure WAN / LAN Interfaces
 
-By default, the WAN interface obtains an IP address via DHCP. Additionally, DHCP is configured for the LAN interface. This should work for most people, so just keep the defaults and click `Next`.
+By default, the WAN interface obtains an IP address via DHCP. Additionally, DHCP is configured for the LAN interface. This should work for most people, so just keep the defaults.
 
 ### Wizard: Set Root Password
 
-Make sure to choose a strong root password and click `Next`. Click `Reload` to apply all the changes.
+Choose a strong root password and complete the wizard.
 
 ## General Settings
 
-Most of the general settings that follow are already set by default but worth double-checking.
+Most of the following, general settings are configured properly by default, but worth double-checking.
 
 ### DNS Server Settings
 
@@ -143,7 +139,7 @@ Navigate to {{< breadcrumb "System" "Settings" "Administration" >}}.
 
 ### SSH Access
 
-Permitting root user login and password login is a quick and dirty way of enabling SSH access that I'd strongly discourage from using. For good reasons both options are disabled by default and certificate- or [key-based authentication](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server) are recommended.
+Permitting root user login and password login is a quick and dirty way of enabling SSH access, but I strongly discourage you from using it. For good reasons both options are disabled by default and certificate- or [key-based authentication](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server) are recommended.
 
 If your device has a serial console port, like the Deciso DEC630, enabling SSH can be skipped.
 
@@ -154,19 +150,25 @@ Navigate to {{< breadcrumb "System" "Settings" "Administration" >}}.
 | Secure Shell Server | `checked`      |                                                         |
 | Sudo                | `Ask password` | Permit sudo usage for administrators with shell access. |
 
-Navigate to {{< breadcrumb "System" "Access" "Users" >}} and click `+`.
+Navigate to {{< breadcrumb "System" "Access" "Users" >}} and add a new user.
 
 |                   |                              |
 | ----------------- | ---------------------------- |
 | Username          | `<choose a username>`        |
 | Password          | `<choose a secure password>` |
-| Login shell       | `/usr/local/bin/bash`        |
+| Login shell       | `/bin/csh`                   |
 | Group Memberships | `admins`                     |
 | Authorized keys   | `<valid SSH public key>`     |
 
 ### Firewall Settings
 
 Navigate to {{< breadcrumb "Firewall" "Settings" "Advanced" >}}.
+
+First, we disable the auto-generated anti-lockout rule as we'll define them ourselves later.
+
+|                      |           |
+| -------------------- | --------- |
+| Disable anti-lockout | `checked` |
 
 By default, when a rule has a specific gateway set, and this gateway is down, rule is created and traffic is sent to default gateway. This option overrides that behavior and the rule is not created when gateway is down
 
@@ -180,7 +182,7 @@ Successive connections will be redirected to the servers in a round-robin manner
 | ------------------ | --------- |
 | Sticky connections | `checked` |
 
-Depending on your hardware you might tweak the following settings for some performance gains.
+Depending on your hardware you might want to tweak the following settings to increase performance.
 
 | Miscellaneous                  |                                                                                                                                      |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
@@ -191,7 +193,7 @@ Depending on your hardware you might tweak the following settings for some perfo
 
 Checksum offloading is broken in some hardware, particularly some Realtek cards. Rarely, drivers may have problems with checksum offloading and some specific NICs.
 
-Navigate to {{< breadcrumb "Interfaces" "Settings" "Advanced" >}}.
+Navigate to {{< breadcrumb "Interfaces" "Settings" >}}.
 
 |              |             |                                   |
 | ------------ | ----------- | --------------------------------- |
@@ -208,36 +210,27 @@ Navigate to {{< breadcrumb "System" "Settings" "Miscellaneous" >}}.
 
 Verify **Cryptography settings** and **Thermal Sensors** settings are compatible with your hardware.
 
-### Gateway Killswitch
-
-Navigate to {{< breadcrumb "Interfaces" "Settings" "Advanced" >}}.
-
 ## Interface Creation And Configuration
 
-### Switch
+### About VLANs and Switch Choice
 
-- 802.1Q switch with properly configured VLANs is required
-- [Check Mikrotik Guide](TODO)
+To configure VLANs, a 802.1Q-capable switch with properly configured VLANs is required. Check my [Router on a Stick VLAN Configuration guide](TODO) if you want to learn more.
 
 ### Create VLANs
 
-Typically, the `LAN` port also carries the VLAN traffic and functions as [trunk port](https://www.techopedia.com/definition/27008/trunk-port). For me it's the `igb0` port which I choose as VLAN parent interface in the next steps.
+Typically, the `LAN` port also carries the VLAN traffic and functions as [trunk port](https://www.techopedia.com/definition/27008/trunk-port). For the Deciso DEC630, `igb0` is the port and selected as parent interface for all VLANs in the next steps.
 
-Navigate to {{< breadcrumb "Interfaces" "Other Types" "VLAN" >}}.
+Navigate to {{< breadcrumb "Interfaces" "Other Types" "VLAN" >}} and add the VLANs.
 
 #### Management VLAN
 
 ![Screenshot of VLAN configuration](img/vlan-configuration.png)
-
-Click `+`.
 
 |                  |                 |
 | ---------------- | --------------- |
 | Parent Interface | `igb0`          |
 | VLAN tag         | `10`            |
 | Description      | `VLAN10_MANAGE` |
-
-Click `Save`.
 
 #### VPN VLAN
 
@@ -265,11 +258,9 @@ Click `Save`.
 
 ### Create Logical Interfaces
 
-For each VLAN, create a logical interface.
+For each VLAN, create a logical interface. Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 
 ![Screenshot of interface assignments](img/interface-assignments.png)
-
-Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}
 
 - Select `vlan 10`, enter the description `VLAN10_MANAGE`, and click `+`
 - Select `vlan 20`, enter the description `VLAN20_VPN`, and click `+`
@@ -280,11 +271,11 @@ Click `Save`.
 
 ### Configure Interface IP Addresses
 
-To easier remember which IP range belongs to which VLAN, I like the convention of matching an octet of the IP range with the VLAN ID. E.g., the VLAN with the ID **10** would have a range of 192.168.**10**.0/24.
-
-![Screenshot of VLAN logical interface configuration](img/configure-interface-ip-addresses.png)
+To easier remember which IP range belongs to which VLAN, I like the convention of matching an octet of the IP range with the VLAN ID. E.g., the VLAN with the ID **10** has a range of 192.168.**10**.0/24.
 
 Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
+
+![Screenshot of VLAN logical interface configuration](img/configure-interface-ip-addresses.png)
 
 #### VLAN10_MANAGE Interface
 
@@ -296,7 +287,7 @@ Navigate to `VLAN10_MANAGE`.
 | IPv4 Configuration Type | `Static IPv4`     |
 | IPv4 Address            | `192.168.10.1/24` |
 
-Click `Save` and `Apply changes`.
+Click `Save`.
 
 #### VLAN20_VPN Interface
 
@@ -324,99 +315,112 @@ Click `Save` and `Apply changes`.
 
 ### Configure Interface DHCP
 
-Depending on your needs, you might have to adjust the DHCP ranges. For my homelab I chose `x.x.x.100-199` for dynamic addresses and `x.x.x.10.10-99` for static addresses.
+You might want to adjust the DHCP ranges depending on your needs. I like `x.x.x.100-199` for dynamic and `x.x.x.10.10-99` for static IP address assignments.
+
+Navigate to {{< breadcrumb "Services" "DHCPv4" >}}.
+
+#### DHCP: VLAN10_MANAGE
 
 ![Screenshot of VLAN interface DHCP configuration](img/vlan-interface-dhcp-configuration.png)
 
-Navigate to `Services` &rarr; `DHCPv4`.
+Select `VLAN10_MANAGE`.
 
-#### VLAN10_MANAGE DHCP
+|        |                                           |
+| ------ | ----------------------------------------- |
+| Enable | `checked`                                 |
+| Range  | from `192.168.10.100` to `192.168.10.199` |
 
-1. Select `VLAN10_MANAGE`
-2. Check `Enable DHCP server on the VLAN10_MANAGE interface`
-3. Configure the `Range` from `192.168.10.100` to `192.168.10.199`
-4. Click `Save`
+Click `Save`.
 
-#### VLAN20_VPN DHCP
+#### DHCP: VLAN20_VPN
 
-1. Select `VLAN20_VPN`
-2. Check `Enable DHCP server on the VLAN20_VPN interface`
-3. Configure the `Range` from `192.168.20.100` to `192.168.20.199`
-4. Click `Save`
+|        |                                           |
+| ------ | ----------------------------------------- |
+| Enable | `checked`                                 |
+| Range  | from `192.168.20.100` to `192.168.20.199` |
 
-#### VLAN30_CLEAR DHCP
+#### DHCP: VLAN30_CLEAR
 
-1. Select `VLAN30_CLEAR`
-2. Check `Enable DHCP server on the VLAN30_CLEAR interface`
-3. Configure the `Range` from `192.168.30.100` to `192.168.30.199`
-4. Click `Save`
+|        |                                           |
+| ------ | ----------------------------------------- |
+| Enable | `checked`                                 |
+| Range  | from `192.168.30.100` to `192.168.30.199` |
 
-#### VLAN40_GUEST DHCP
+#### DHCP: VLAN40_GUEST
 
-- Select `VLAN40_GUEST`
-- Check `Enable DHCP server on the VLAN40_GUEST interface`
-- Configure the `Range` from `192.168.40.100` to `192.168.40.199`
-- {{< kv "DNS servers" "1.1.1.1, 1.0.0.1" >}}
-- Click `Save`
+|        |                                           |
+| ------ | ----------------------------------------- |
+| Enable | `checked`                                 |
+| Range  | from `192.168.40.100` to `192.168.40.199` |
+
+#### DHCP: LAN
+
+|       |                                         |
+| ----- | --------------------------------------- |
+| Range | from `192.168.1.100` to `192.168.1.199` |
 
 ## VPN Configuration
 
-In recent years, I've been using [Mullvad](https://mullvad.net/) as a VPN provider. When _That One Privacy Site_ was still a thing, Mullvad was one of the top recommendations in the reviews. I decided to try it out and haven't looked back since. No personally identifiable information is required to register, and paying cash via mail works perfectly.
+In recent years, [Mullvad](https://mullvad.net/) has been my VPN provider of choice. When _That One Privacy Site_ was still a thing, Mullvad was reviewed as one of the top recommendations. I decided to try it out and haven't looked back since. No personally identifiable information is required to register, and paying cash via mail works perfectly.
 
-I decided to go with the [WireGuard Road Warrior](https://docs.opnsense.org/manual/how-tos/wireguard-client.html) setup since I think WireGuard is the VPN protocol of the future. For more detailed steps, check the [official OPNsense documentation on setting up WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html). We'll also configure failover with two separate tunnels in case one goes down.
+I decided to go with the [WireGuard Road Warrior](https://docs.opnsense.org/manual/how-tos/wireguard-client.html) setup because I think WireGuard is the VPN protocol of the future. For more detailed steps, check the [official OPNsense documentation on setting up WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html).
 
-WireGuard is not (yet) a native part of FreeBSD, so you must install it as a plugin. Navigate to `System` &rarr; `Firmware` &rarr; `Plugins` and install `os-wireguard`.
+You'll also configure a multi-WAN gateway group load balancing with two tunnels in case one of them goes down.
 
-After refreshing the browser, navigate to `VPN` &rarr; `WireGuard`.
+Please note that FreeBSD (as of yet) lacks native WireGuard support, and possibly doesn't meet your requirements for maturity, stability, security, or performance. To use WireGuard with OPNsense, you must install it as plugin.
 
-### Setup the Endpoint (Client Peer)
+Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wireguard`. Refresh the browser and navigate to {{< breadcrumb "VPN" "WireGuard" >}}.
+
+### Endpoints
 
 ![Screenshot of WireGuard Endpoint configuration](img/wireguard-endpoint-configuration.png)
 
-Select one or more WireGuard servers from [Mullvad's server list](https://mullvad.net/en/servers/) and take note of their name and public key.
+Select WireGuard servers from [Mullvad's server list](https://mullvad.net/en/servers/) and take note of their name and public key. It's worth spending some time to benchmark server performance before making a choice.
 
-1. Select the `Endpoints` tab
-2. Click `Add`
-3. `Name`: e.g., `mullvad-ch5-wireguard`
-4. `Public Key`: e.g, `/iivwlyqWqxQ0BVWmJRhcXIFdJeo0WbHQ/hZwuXaN3g=`
-5. `Allowed IPs`: `0.0.0.0/0`, `::/0`
-6. `Endpoint Address`: `<server name>.mullvad.net` e.g., `ch5-wireguard.mullvad.net`
-7. `Endpoint Port`: `51820`
-8. Click `Save`
+Then select the `Endpoints` tab and click `Add`.
 
-Repeat the steps above and add another server, e.g., `ch6-wireguard`. If you want to mitigate the risk against DNS poisoning, enter the resolved IP as `Endpoint Address` instead of the hostname.
+|                  |                                                                                  |
+| ---------------- | -------------------------------------------------------------------------------- |
+| Name             | e.g., `mullvad-ch5-wireguard`                                                    |
+| Public key       | e.g, `/iivwlyqWqxQ0BVWmJRhcXIFdJeo0WbHQ/hZwuXaN3g=`                              |
+| Allowed IPs      | `0.0.0.0/0`, `::/0`                                                              |
+| Endpoint Address | `<server name>.mullvad.net` e.g., `ch5-wireguard.mullvad.net` or `193.32.127.66` |
+| Endpoint Port    | `51820`                                                                          |
+| Keepalive        | `25`                                                                             |
 
-### Setup the Local Peer (Server)
+Repeat the steps above to add another server, e.g., `ch6-wireguard`. If you want to mitigate the risks against DNS poisoning, resolve the `Endpoint Address` hostname and enter the IP instead.
+
+### Local Peers
 
 ![Screenshot of WireGuard Local Peer configuration](img/wireguard-local-peer-configuration.png)
 
-1. Select the `Local` tab
-2. Click `Add`
-3. Enable `advanced mode`
-4. `Name`: e.g., `mullvad0`
-5. `Listen Port`: `51820`
-6. `DNS Server`: `193.138.218.74` (public Mullvad DNS)
-7. `Tunnel Address`: leave empty for now
-8. `Peers`: e.g., `ch5-wireguard`
-9. Click `Save`
-10. Click `Edit` and copy the generated `Public Key`
-11. Check `Disable Routes`
+Select the `Local` tab and click `Add`, and enable the `advanced mode`.
 
-The following command will output an IPv4 and IPv6 IP address:
+|                |                                     |
+| -------------- | ----------------------------------- |
+| Name           | e.g., `mullvad0`                    |
+| Listen Port    | `51820`                             |
+| DNS Server     | `193.138.218.74` public Mullvad DNS |
+| Tunnel Address | `<empty for now>`                   |
+| Peers          | e.g., `ch5-wireguard`               |
+| Disable Routes | `checked`                           |
+| Gateway        | `172.16.200.1`                      |
+
+Choose an arbitrary, unused IP for the `Gateway`. Some people like to increment the `Tunnel Address` by one, I like to use a private IP address — it's a matter of personal preference.
+
+Click `Save`, then `Edit`, and copy the generated `Public Key`. Next, run the following shell command and copy IPv4 and IPv6 IP addresses which are output to the `Tunnel Address` field:
 
 ```shell
-curl -sSL https://api.mullvad.net/wg/ -d account=<account number> --data-urlencode pubkey=<public key>
+curl -sSL https://api.mullvad.net/wg/ -d account=<account number> --data-urlencode pubkey=<generated public key>
 ```
 
-Replace the `Tunnel Address` with these IP addresses.
+Repeat the steps above to create a second local peer named `mullvad1`. Remember to use a different `Listen Port` and `Gateway`: e.g., `51821` and `172.16.201.1`.
 
-Repeat the steps above to create a second local peer named `mullvad1`. Don't forget to use a different `Listen Port`, e.g. `51821`.
-
-Next, select the `General` tab and check `Enable WireGuard`. Check whether handshakes for the `wg0` and `wg1` tunnels appear on the `Handshakes` tab.
+When you're finished, select the `General` tab and check `Enable WireGuard`. You should now see handshakes for the `wg0` and `wg1` tunnels on the `Handshakes` tab.
 
 ### WireGuard Interface Assignments and Addressing
 
-Next, we assign the WireGuard tunnels to interfaces.
+Next, assign the WireGuard tunnels to interfaces.
 
 ![Screenshot of WireGuard interface configuration](img/wireguard-interface-configuration.png)
 
