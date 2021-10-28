@@ -418,90 +418,67 @@ Repeat the steps above to create a second local peer named `mullvad1`. Remember 
 
 When you're finished, select the `General` tab and check `Enable WireGuard`. You should now see handshakes for the `wg0` and `wg1` tunnels on the `Handshakes` tab.
 
-### WireGuard Interface Assignments and Addressing
+### Assign WireGuard Interfaces
 
-Next, assign the WireGuard tunnels to interfaces.
+To assign the WireGuard tunnels to interfaces, navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 
 ![Screenshot of WireGuard interface configuration](img/wireguard-interface-configuration.png)
 
-Navigate to `Interfaces` &rarr; `Assignments`.
+- Select `wg0`, add the description `VPN0_WAN`, and click `+`
+- Select `wg1`, add the description `VPN1_WAN`, and click `+`
 
-1. Select `wg0`, add the description `VPN0_WAN`, and click `+`
-2. Select `wg1`, add the description `VPN1_WAN`, and click `+`
+Enable the newly created interfaces, click `Apply changes` and restart WireGuard under {{< breadcrumb "VPN" "WireGuard" "General" >}}.
 
-#### VPN0 Interface
+### Create VPN Gateways
 
-1. Navigate to `VPN0_WAN`
-2. `Enable Interface`
-3. `IPv4 Configuration Type`: `Static IPv4`
-4. `IPv4 Address`: IPv4 address of the `mullvad0` local peer
-5. `IPv4 Upstream Gateway`
-   1. Click `+`
-   2. `Gateway Name`: `VPN0_WAN`
-   3. `Gateway IPv4`: IPv4 address of the `mullvad0` local peer
-   4. Click `Save` and select the new gateway
-6. `IPv6 Configuration Type`: `Static IPv6`
-7. `IPv6 Address`: IPv6 address of the `mullvad0` local peer
-8. `IPv6 Upstream Gateway`
-   1. Click `+`
-   2. `Gateway Name`: `VPN0_WAN6`
-   3. `Gateway IPv6`: IPv6 address of the `mullvad0` local peer
-   4. Click `Save` and select the new gateway
-9. Click `Save` and `Apply changes`
+Navigate to {{< breadcrumb "System" "Gateways" "Single" >}}.
 
-#### VPN1 Interface
+#### VPN0_WAN
 
-1. Navigate to `VPN1_WAN`
-2. `Enable Interface`
-3. `IPv4 Configuration Type`: `Static IPv4`
-4. `IPv4 Address`: IPv4 address of the `mullvad1` local peer
-5. `IPv4 Upstream Gateway`
-   1. Click `+`
-   2. `Gateway Name`: `VPN1_WAN`
-   3. `Gateway IPv4`: IPv4 address of the `mullvad1` local peer
-   4. Click `Save` and select the new gateway
-6. `IPv6 Configuration Type`: `Static IPv6`
-7. `IPv6 Address`: IPv6 address of the `mullvad1` local peer
-8. `IPv6 Upstream Gateway`
-   1. Click `+`
-   2. `Gateway Name`: `VPN1_WAN6`
-   3. `Gateway IPv6`: IPv6 address of the `mullvad1` local peer
-   4. Click `Save` and select the new gateway
-9. Click `Save` and `Apply changes`
+Click `Add`.
 
-### Configure Gateway Monitoring
+|                            |                       |
+| -------------------------- | --------------------- |
+| Name                       | `VPN0_WAN`            |
+| Interface                  | `VPN0_WAN`            |
+| Address Family             | `IPv4`                |
+| IP Address                 | `172.16.200.1`        |
+| Far Gateway                | `checked`             |
+| Disable Gateway Monitoring | `unchecked`           |
+| Monitor IP                 | `1.1.1.1` (temporary) |
 
-Since the gateway address uses the local address of the tunnel, the gateway will always be online. Hence, failover will never occur, even if a WireGuard endpoint is unreachable. To mitigate this issue, configure a remote monitor IP for the gateway. It's best to use highly reliable services like Cloudflare for this.
+#### VPN1_WAN
 
-Navigate to `System` &rarr; `Gateways` &rarr; `Single`
+|                            |                       |
+| -------------------------- | --------------------- |
+| Name                       | `VPN1_WAN`            |
+| Interface                  | `VPN1_WAN`            |
+| Address Family             | `IPv4`                |
+| IP Address                 | `172.16.201.1`        |
+| Far Gateway                | `checked`             |
+| Disable Gateway Monitoring | `unchecked`           |
+| Monitor IP                 | `1.0.0.1` (temporary) |
 
-1. `Edit` the `VPN0_WAN` gateway, enter `1.1.1.1` as `Monitor IP`, and click `Save`
-2. `Edit` the `VPN1_WAN` gateway, enter `1.0.0.1` as `Monitor IP`, and click `Save`
-3. `Edit` the `VPN0_WAN6` gateway, enter `2606:4700:4700::1111` as `Monitor IP`, and click `Save`
-4. `Edit` the `VPN1_WAN6` gateway, enter `2606:4700:4700::1001` as `Monitor IP`, and click `Save`
-5. Click `Apply changes`
+#### Monitoring IPs
 
-### Configure Gateway Failover
+[From the OPNsense docs about WireGuard gateway configuration](https://docs.opnsense.org/manual/how-tos/wireguard-selective-routing.html#step-6-create-a-gateway):
 
-Navigate to `System` &rarr; `Gateways` &rarr; `Group`
+> Specifying the endpoint VPN tunnel IP is preferable. As an alternative, you could include an external IP such as 1.1.1.1 or 8.8.8.8, but be aware that this IP will only be accessible through the VPN tunnel (OPNsense creates a static route for it), and therefore will not accessible from local hosts that are not using the tunnel
+>
+> Some VPN providers will include the VPN tunnel IP of the endpoint in the configuration data they provide. For others (such as Mullvad), you can get the IP by running a traceroute from a host that is using the tunnel - the first hop after OPNsense is the VPN provider’s tunnel IP
 
-#### IPv4 Gateway Failover
+You'll revisit monitoring IPs after taking care of NAT and firewall rules.
 
-1. Click `+`
-2. `Group Name`: `VPN_GROUP`
-3. `VPN0_WAN`: `Tier 1`
-4. `VPN1_WAN`: `Tier 1`
-5. `Trigger Level`: `Packet Loss or High Latency`
-6. Click `Save` and `Apply changes`
+### Configure Gateway Group
 
-#### IPv6 Gateway Failover
+Configuring multi-WAN is next. Navigate to {{< breadcrumb "System" "Gateways" "Group" >}} and click `Add`.
 
-1. Click `+`
-2. `Group Name`: `VPN_GROUP6`
-3. `VPN0_WAN6`: `Tier 1`
-4. `VPN1_WAN6`: `Tier 1`
-5. `Trigger Level`: `Packet Loss or High Latency`
-6. Click `Save` and `Apply changes`
+|               |                               |
+| ------------- | ----------------------------- |
+| Group Name    | `VPN_WAN_GROUP`               |
+| VPN0_WAN      | `Tier 1`                      |
+| VPN1_WAN      | `Tier 1`                      |
+| Trigger Level | `Packet Loss or High Latency` |
 
 ## DNS
 
@@ -524,7 +501,7 @@ Local devices only use OPNsense as DNS server. Cached and local names lookup res
 
 ### Configure DNS Resolver (Unbound)
 
-Navigate `Services` &rarr; `Unbound DNS` &rarr; `General`
+Navigate to `Services` &rarr; `Unbound DNS` &rarr; `General`
 
 - `Show advanced options`
 - `Enable Unbound`
