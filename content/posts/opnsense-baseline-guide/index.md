@@ -404,17 +404,20 @@ Select the `Local` tab and click `Add`, and enable the `advanced mode`.
 | Tunnel Address | `<empty for now>`                   |
 | Peers          | e.g., `ch5-wireguard`               |
 | Disable Routes | `checked`                           |
-| Gateway        | `172.16.200.1`                      |
-
-Choose an arbitrary, unused IP for the `Gateway`. Some people like to increment the `Tunnel Address` by one, I like to use a private IP address — it's a matter of personal preference.
+| Gateway        | `<empty for now>`                   |
 
 Click `Save`, then `Edit`, and copy the generated `Public Key`. Next, run the following shell command and copy IPv4 and IPv6 IP addresses which are output to the `Tunnel Address` field:
 
 ```shell
-curl -sSL https://api.mullvad.net/wg/ -d account=<account number> --data-urlencode pubkey=<generated public key>
+curl -sSL https://api.mullvad.net/app/v1/wireguard-keys \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Token <account number>" \
+  -d '{"pubkey":"<generated public key>"}'
 ```
 
-Repeat the steps above to create a second local peer named `mullvad1`. Remember to use a different `Listen Port` and `Gateway`: e.g., `51821` and `172.16.201.1`.
+Subtract one from the `Tunnel Address` and enter the result as `Gateway` IP, e.g., if the tunnel address is `10.`, enter `10.`.
+
+Repeat the steps above to create a second local peer named `mullvad1`. Remember to use a different `Listen Port` (e.g., `51821`) and `Gateway`.
 
 When you're finished, select the `General` tab and check `Enable WireGuard`. You should now see handshakes for the `wg0` and `wg1` tunnels on the `Handshakes` tab.
 
@@ -484,49 +487,50 @@ Configuring multi-WAN is next. Navigate to {{< breadcrumb "System" "Gateways" "G
 
 We make use of three DNS resolvers to provide name resolution across the network:
 
-- **Cloudflare DNS** for the guest network, supporting WAN failover
-- **DNS Forwarder (Dnsmasq DNS)** for the Clear network. Unbound handles local lookups, and Quad9 handles external lookups with some privacy
+- **Cloudflare DNS** for the `VLAN40_GUEST`
+- **DNS Forwarder (Dnsmasq DNS)** for `VLAN20_CLEAR`. Unbound handles local lookups, and Quad9 handles external lookups retaining some privacy
 - **DNS Resolver (Unbound)** will be the authoritative name server for the private `internal.example.com` domain, so names as part of that domain are not forwarded to external DNS preventing information leakage
 
 The design of the system:
 
 - Support multiple gateways
 - Enable local device lookups for all non-guest interfaces
-- Prevent information leaking to the ISP
+- Prevent information leaks to the ISP
 - Prevent IP leaks by using VPN
 - Keep DNS queries within the VPN tunnel from secured networks
 - Optimize local performance with DNS lookup caching
 
-Local devices only use OPNsense as DNS server. Cached and local names lookup results from Unbound. Unknown names are resolved recursively from Quad9 (Clear) or Mullvad (VPN) DNS servers. Unbound will only use the VPN_WAN interface, so DNS lookups won't be possible, which is why Clear and Guest networks serve as backups.
+Local devices only use OPNsense as DNS server. Cached and local names lookup results from Unbound. Unknown names are resolved recursively from Quad9 (Clear) or Mullvad (VPN) DNS servers. Unbound will bind to only the VPN_WAN_GROUP interface, so DNS lookups won't be possible if the interface is down. In such rare cases, clear and guest networks serve as backups.
 
 ### Configure DNS Resolver (Unbound)
 
-Navigate to `Services` &rarr; `Unbound DNS` &rarr; `General`
+Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}} and click `Show advanced option`.
 
-- `Show advanced options`
-- `Enable Unbound`
-- `Listen Port`: `53`
-- `Network Interfaces`: `LAN`, `VLAN10_MANAGE`, `VLAN20_VPN`
-- Check `Enable DNSSec Support`
-- Check `Register DHCP static mappings` to make using DHCP reservations more convenient
-- `Local Zone Type`: `static`
-- `Outgoing Network Interfaces`: `VPN0_WAN`, `VPN1_WAN`
+|                               |                                    |
+| ----------------------------- | ---------------------------------- |
+| Network Interfaces            | `LAN` `VLAN10_MANAGE` `VLAN20_VPN` |
+| DNSSEC                        | `checked`                          |
+| Register DHCP static mappings | `checked`                          |
+| Local Zone Type               | `static`                           |
+| Outgoing Network Interfaces   | `VPN0_WAN` `VPN1_WAN`              |
 
-Navigate to `Services` &rarr; `Unbound DNS` &rarr; `Advanced`
+Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 
-- Check `Prefetch Support`
-- Check `Prefetch DNS Key Support`
-- Check `Harden DNSSEC data`
+|                          |           |
+| ------------------------ | --------- |
+| Prefetch Support         | `checked` |
+| Prefetch DNS Key Support | `checked` |
+| Harden DNSSEC data       | `checked` |
 
-We also need to tell Unbound not to query external name servers for the private `internal.example.com` domain. We need to add a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) overriding the authoritative name server. We'll make use of [templates](https://docs.opnsense.org/development/backend/templates.html) to for [advanced Unbound configuration](https://docs.opnsense.org/manual/unbound.html#advanced-configurations). To configure them, you need to access OPNsense through either SSH or the serial console.
+Finally, you need to configure Unbound to not recurse to external name servers for the local `internal.example.com` subdomain. Adding a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone, makes Unbound the authoritative name server for that domain. [Templates](https://docs.opnsense.org/development/backend/templates.html) must be used for this kind of [advanced Unbound configuration](https://docs.opnsense.org/manual/unbound.html#advanced-configurations).
 
-Add a `+TARGETS` file by running `vi /usr/local/opnsense/service/templates/sampleuser/Unbound/+TARGETS` with the content:
+Connect to OPNsense via serial console or SSH and add a `+TARGETS` file by running `vi /usr/local/opnsense/service/templates/sampleuser/Unbound/+TARGETS` containing:
 
 ```text
 private_domains.conf:/usr/local/etc/unbound.opnsense.d/private_domains.conf
 ```
 
-Add the template file by running `vi /usr/local/opnsense/service/templates/sampleuser/Unbound/private_domains.conf` with the content:
+Add the template file by running `vi /usr/local/opnsense/service/templates/sampleuser/Unbound/private_domains.conf` containing:
 
 ```text
 server:
@@ -545,241 +549,245 @@ cat /usr/local/etc/unbound.opnsense.d/private_domains.conf
 configctl unbound check
 ```
 
+### Configure DNS Forwarder (Dnsmasq)
+
+(TODO)
+
 ## Firewall
 
 ### Interface Groups
 
-[Interface groups](https://docs.opnsense.org/manual/firewall_groups.html) can be used to add policies to multiple interfaces at once. Do not use them for WAN interfaces, since they don't receive `reply-to`.
+[Interface groups](https://docs.opnsense.org/manual/firewall_groups.html) are used to apply policies to multiple interfaces at once. Do not use them for WAN interfaces, since they don't receive `reply-to`.
 
-Navigate to `Firewall` &rarr; `Groups`
+Navigate to {{< breadcrumb "Firewall" "Groups" >}} and add the following interface groups.
 
-#### LAN_INTERFACES
+#### IFGRP_LOCAL
 
-- Click `+`
-- {{< kv "Name" "LAN_INTERFACES" >}}
-- {{< kv "Description" "All local interfaces" >}}
-- {{< kv "Members" "LAN, VLAN10_MANAGE, VLAN20_VPN, VLAN30_CLEAR, VLAN40_GUEST" >}}
-- Click `Save`
+|             |                                                                  |
+| ----------- | ---------------------------------------------------------------- |
+| Name        | `IFGRP_LOCAL`                                                    |
+| Description | `All local interfaces`                                           |
+| Members     | `LAN` `VLAN10_MANAGE` `VLAN20_VPN` `VLAN30_CLEAR` `VLAN40_GUEST` |
 
-#### NTP_LOCAL
+#### IFGRP_LOCAL_DNS
 
-- Click `+`
-- {{< kv "Name" "NTP_LOCAL" >}}
-- {{< kv "Description" "Interfaces for which outbound NTP traffic is redirected to OPNsense" >}}
-- {{< kv "Members" "VLAN10_MANAGE, VLAN20_VPN, VLAN30_CLEAR" >}}
-- Click `Save`
+|             |                                                                            |
+| ----------- | -------------------------------------------------------------------------- |
+| Name        | `IFGRP_LOCAL_DNS`                                                          |
+| Description | `Local interfaces of which outbound DNS traffic is redirected to OPNsense` |
+| Members     | `VLAN10_MANAGE` `VLAN20_VPN`                                               |
 
-#### DNS_LOCAL
+#### IFGRP_LOCAL_NTP
 
-- Click `+`
-- {{< kv "Name" "DNS_LOCAL" >}}
-- {{< kv "Description" "Interfaces for which outbound DNS traffic is redirected to OPNsense" >}}
-- {{< kv "Members" "VLAN10_MANAGE, VLAN20_VPN" >}}
-- Click `Save`
+|             |                                                                            |
+| ----------- | -------------------------------------------------------------------------- |
+| Name        | `IFGRP_LOCAL_NTP`                                                          |
+| Description | `Local interfaces of which outbound NTP traffic is redirected to OPNsense` |
+| Members     | `VLAN10_MANAGE` `VLAN20_VPN` `VLAN30_CLEAR`                                |
 
 ### Aliases
 
 To simplify the creation and maintenance of firewall rules, we define a few reusable [aliases](https://docs.opnsense.org/manual/aliases.html).
 
-Navigate to `Firewall` &rarr; `Aliases`
+Navigate to {{< breadcrumb "Firewall" "Aliases" >}} and create the following aliases.
 
 #### Selective Routing Addresses
 
-Services like banks might object to traffic originating from known VPN end points, so some traffic from the VPN VLAN must be selectively routed through the WAN gateway.
+Services like banks might object to traffic originating from known VPN end points, so some traffic from the VPN VLAN must be selectively routed through the default WAN gateway.
 
-- Click `+`
-- `Name`: `SELECTIVE_ROUTING`
-- `Type`: `Host(s)`
-- `Description`: `Specific external hosts for which traffic is routed through the WAN gateway`
-- Click `Save`
+|             |                                                                              |
+| ----------- | ---------------------------------------------------------------------------- |
+| Name        | `SELECTIVE_ROUTING`                                                          |
+| Type        | `Host(s)`                                                                    |
+| Description | `Specific external hosts of which traffic is routed through the WAN gateway` |
 
 #### Admin / Anti-lockout Ports
 
-- Click `+`
-- `Name`: `ADMIN_PORTS`
-- `Type`: `Port(s)`
-- `Content`: `443` (Web GUI), `22` (SSH, if desired)
-- `Description`: `Ports used for anti-lockout rules`
-- Click `Save`
+|             |                                        |
+| ----------- | -------------------------------------- |
+| Name        | `PORTS_ANTI_LOCKOUT`                   |
+| Type        | `Port(s)`                              |
+| Content     | `443` Web GUI<br>`22` SSH, if desired  |
+| Description | `Ports that must always be accessible` |
 
 #### Ports Allowed To Communicate Between VLANs
 
 A list of ports allowing traffic between local VLANs. The following will get you started but require changes depending on your needs. Use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports.
 
-- Click `+`
-- `Name`: `OUT_PORTS_LAN`
-- `Type`: `Port(s)`
-- `Content`:
-  - `53` DNS
-  - `5353:5354` mDNS
-  - `123` NTP
-  - `21` FTP
-  - `22` SSH
-  - `161` SNMP
-  - `80` HTTP
-  - `8080`: HTTP alt / UniFi device and application communication
-  - `443` HTTPS
-  - `8443` HTTPS alt / UniFi application GUI/API as seen in a web browser
-  - `8880` UniFi HTTP portal redirection
-  - `8843` UniFi HTTPS portal redirection
-  - `10001` UniFi device discovery
-  - `5001` iperf
-  - `5900` IPMI
-  - `3389` RDP
-  - `49152:65535` ephemeral ports
-- `Description`: `VLAN egress ports`
-- Click `Save`
+|             |                    |
+| ----------- | ------------------ |
+| Name        | `PORTS_OUT_LAN`    |
+| Type        | `Port(s)`          |
+| Description | `Inter-VLAN ports` |
+
+Content:
+
+- `53` DNS
+- `5353:5354` mDNS
+- `123` NTP
+- `21` FTP
+- `22` SSH
+- `161` SNMP
+- `80` HTTP
+- `8080`: HTTP alt / UniFi device and application communication
+- `443` HTTPS
+- `8443` HTTPS alt / UniFi application GUI/API as seen in a web browser
+- `8880` UniFi HTTP portal redirection
+- `8843` UniFi HTTPS portal redirection
+- `10001` UniFi device discovery
+- `5001` iperf
+- `5900` IPMI
+- `3389` RDP
+- `49152:65535` ephemeral ports
 
 #### Ports Allowed to Communicate with the Internet
 
 A list of ports allowing egress traffic to the internet. The following will get you started but require changes depending on your needs. Use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports.
 
-- Click `+`
-- `Name`: `OUT_PORTS_WAN`
-- `Type`: `Port(s)`
-- `Content`:
-  - `21` FTP
-  - `22` SSH
-  - `80` HTTP
-  - `8080` HTTP alt
-  - `443` HTTPS
-  - `8443` HTTPS alt
-  - `465` SMTPS
-  - `587`: SMTPS
-  - `993`: IMAPS
-  - `49152:65535` ephemeral ports
-- `Description`: `WAN egress ports`
-- Click `Save`
+|             |                    |
+| ----------- | ------------------ |
+| Name        | `PORTS_OUT_WAN`    |
+| Type        | `Port(s)`          |
+| Description | `WAN egress ports` |
 
----
+Content:
 
-Click `Apply`
+- `21` FTP
+- `22` SSH
+- `80` HTTP
+- `8080` HTTP alt
+- `443` HTTPS
+- `8443` HTTPS alt
+- `465` SMTPS
+- `587`: SMTPS
+- `993`: IMAPS
+- `49152:65535` ephemeral ports
 
 ### NAT
 
-NAT translates private to public IP addresses. We need to set this up for both the WAN and the VPN gateways:
+NAT is required to translate private to public IP addresses:
 
-- All VLANs are translated to the WAN address range
-- VPN VLAN is translated to VPN_WAN and WAN ranges (selective routing)
+- All VLAN IPs are translated to the WAN address range
+- VPN VLAN IPs are translated to VPN_WAN and WAN ranges (selective routing)
 
-Navigate to **Firewall** &rarr; **NAT** &rarr; **Outbound**
+Navigate to {{< breadcrumb "Firewall" "NAT" "Outbound" >}}.
 
-- Select `Manual outbound NAT rule generation`
-- Click `Save` and `Apply changes`
-
-If there are any rules, go ahead and delete them. Then add the following rules:
+Select `Manual outbound NAT rule generation`, click `Save`, click `Apply changes`, and add the following rules.
 
 #### localhost to WAN
 
-- Click `+`
-- `Interface`: `WAN`
-- `Source address`: `Loopback net`
-- `Description`: `localhost to WAN`
-- Click `Save`
+|                |                    |
+| -------------- | ------------------ |
+| Interface      | `WAN`              |
+| Source address | `Loopback net`     |
+| Description    | `localhost to WAN` |
 
-#### LAN_INTERFACES to WAN
+#### IFGRP_LOCAL to WAN
 
-- Click `+`
-- `Interface`: `WAN`
-- `Source address`: `LAN_INTERFACES net`
-- `Description`: `LAN_INTERFACES to WAN`
-- Click `Save`
+|                |                      |
+| -------------- | -------------------- |
+| Interface      | `WAN`                |
+| Source address | `IFGRP_LOCAL net`    |
+| Description    | `IFGRP_LOCAL to WAN` |
 
 #### VLAN20_VPN to VPN0_WAN
 
-- Click `+`
-- `Interface`: `VPN0_WAN`
-- `Source address`: `VLAN20_VPN net`
-- `Description`: `VLAN20_VPN to VPN0_WAN`
-- Click `Save`
+|                |                          |
+| -------------- | ------------------------ |
+| Interface      | `VPN0_WAN`               |
+| Source address | `VLAN20_VPN net`         |
+| Description    | `VLAN20_VPN to VPN0_WAN` |
 
 #### VLAN20_VPN to VPN1_WAN
 
-- Click `+`
-- `Interface`: `VPN1_WAN`
-- `Source address`: `VLAN20_VPN net`
-- `Description`: `VLAN20_VPN to VPN1_WAN`
-- Click `Save`
+|                |                          |
+| -------------- | ------------------------ |
+| Interface      | `VPN1_WAN`               |
+| Source address | `VLAN20_VPN net`         |
+| Description    | `VLAN20_VPN to VPN1_WAN` |
 
 ### Rules
 
-#### LAN_INTERFACES Rules
+#### IFGRP_LOCAL Rules
 
 These rules apply to any local interface.
 
-Navigate to `Firewall` &rarr; `Rules` &rarr; `LAN_INTERFACES`.
+Navigate to {{< breadcrumb "Firewall" "Rules" "IFGRP_LOCAL" >}} and add the following rules.
 
 ##### ICMP Debugging Rule
 
-For debugging, by default all local interfaces allow ICMP pings from any other local interface
+By default all local interfaces allow ICMP pings from any other local interface.
 
-- Click `+`
-- `Action`: `Pass`
-- `TCP/IP Version`: `IPv4`
-- `Protocol`: `ICMP`
-- `ICMP type`: `Echo Request`
-- `Source`: `LAN_INTERFACES net`
-- {{< kv "Description" "Allow inter-VLAN pings" >}}
-- Click `Save`
+|                |                          |
+| -------------- | ------------------------ |
+| Action         | `Pass`                   |
+| Interface      | `IFGRP_LOCAL`            |
+| TCP/IP Version | `IPv4`                   |
+| Protocol       | `ICMP`                   |
+| ICMP type      | `Echo Request`           |
+| Source         | `IFGRP_LOCAL net`        |
+| Description    | `Allow inter-VLAN pings` |
 
 ##### Default Reject Rule
 
-By default we reject (not block) traffic on local interfaces. This provides a response to applications, preventing them to await lengthy timeouts.
+By default we reject (not block) traffic on local interfaces providing an immediate response to applications.
 
-- Click `+`
-- `Action`: `Reject`
-- {{< kv "Quick" "unchecked" >}}
-- `TCP/IP Version`: `IPv4+IPv6`
-- `Protocol`: `any`
-- `Source`: `LAN_INTERFACES net`
-- `Description`: `Default reject rule for local interfaces`
-- Click `Save`
+|                |                                                |
+| -------------- | ---------------------------------------------- |
+| Action         | `Reject`                                       |
+| Quick          | `unchecked`                                    |
+| Interface      | `IFGRP_LOCAL`                                  |
+| TCP/IP Version | `IPv4+IPv6`                                    |
+| Protocol       | `any`                                          |
+| Source         | `IFGRP_LOCAL net`                              |
+| Log            | `checked`                                      |
+| Description    | `Default reject all rule for local interfaces` |
 
 ##### Allow Inter-VLAN Traffic On Allowed Ports Rule
 
 By default allow inter-VLAN traffic on `ALLOWED_PORTS`. It's crucial to uncheck the **Quick** option to be able to override this rule for `VLAN40_GUEST`.
 
-- Click `+`
-- {{< kv "Action" "Pass" >}}
-- {{< kv "Interface" "LAN_INTERFACES" >}}
-- {{< kv "Protocol" "TCP/UDP" >}}
-- {{< kv "Source" "LAN_INTERFACES net" >}}
-- {{< kv "Destination" "LAN_INTERFACES net" >}}
-- {{< kv "Destination port range" "OUT_PORTS_LAN" >}}
-- {{< kv "Description" "Allow inter-VLAN traffic on allowed ports" >}}
-- Click `Save`
+|                        |                                             |
+| ---------------------- | ------------------------------------------- |
+| Action                 | `Pass`                                      |
+| Interface              | `IFGRP_LOCAL`                               |
+| Protocol               | `TCP/UDP`                                   |
+| Source                 | `IFGRP_LOCAL net`                           |
+| Destination            | `IFGRP_LOCAL net`                           |
+| Destination port range | `PORTS_OUT_LAN`                             |
+| Description            | `Allow inter-VLAN traffic on allowed ports` |
 
-#### DNS_LOCAL Rules
+#### IFGRP_LOCAL_DNS Rules
 
-Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}}
+Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and click `Add`.
 
-- Click `+`
-- {{< kv "Interface" "DNS_LOCAL" >}}
-- {{< kv "Protocol" "TCP/UDP" >}}
-- {{< kv "Source" "DNS_LOCAL net" >}}
-- {{< kv "Destination / Invert" "checked" >}}
-- {{< kv "Destination" "DNS_LOCAL net" >}}
-- {{< kv "Destination port range" "DNS" >}}
-- {{< kv "Redirect target IP" "127.0.0.1" >}}
-- {{< kv "Redirect target port" "DNS" >}}
-- {{< kv "Description" "Redirect outbound DNS traffic to OPNsense" >}}
-- Click `Save`
+|                        |                                             |
+| ---------------------- | ------------------------------------------- |
+| Interface              | `IFGRP_LOCAL_DNS`                           |
+| Protocol               | `TCP/UDP`                                   |
+| Source                 | `IFGRP_LOCAL_DNS net`                       |
+| Destination / Invert   | `checked`                                   |
+| Destination            | `IFGRP_LOCAL_DNS net`                       |
+| Destination port range | `DNS`                                       |
+| Redirect target IP     | `127.0.0.1`                                 |
+| Redirect target port   | `DNS`                                       |
+| Description            | `Redirect outbound DNS traffic to OPNsense` |
 
-#### NTP_LOCAL Rules
+#### IFGRP_LOCAL_NTP Rules
 
-Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}}
+Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and click `Add`.
 
-- Click `+`
-- {{< kv "Interface" "NTP_LOCAL" >}}
-- {{< kv "Protocol" "UDP" >}}
-- {{< kv "Source" "NTP_LOCAL net" >}}
-- {{< kv "Destination / Invert" "checked" >}}
-- {{< kv "Destination" "NTP_LOCAL net" >}}
-- {{< kv "Destination port range" "NTP" >}}
-- {{< kv "Redirect target IP" "127.0.0.1" >}}
-- {{< kv "Redirect target port" "NTP" >}}
-- {{< kv "Description" "Redirect outbound NTP traffic to OPNsense" >}}
-- Click `Save`
+|                        |                                             |
+| ---------------------- | ------------------------------------------- |
+| Interface              | `IFGRP_LOCAL_NTP`                           |
+| Protocol               | `UDP`                                       |
+| Source                 | `IFGRP_LOCAL_NTP net`                       |
+| Destination / Invert   | `checked`                                   |
+| Destination            | `IFGRP_LOCAL_NTP net`                       |
+| Destination port range | `NTP`                                       |
+| Redirect target IP     | `127.0.0.1`                                 |
+| Redirect target port   | `NTP`                                       |
+| Description            | `Redirect outbound NTP traffic to OPNsense` |
 
 #### VLAN10_MANAGE Rules
 
@@ -802,7 +810,7 @@ Navigate to {{< breadcrumb "Firewall" "Rules" "VLAN10_MANAGE" >}}.
 - {{< kv "Description" "Anti-lockout to ensure access to OPNsense at all times" >}}
 - Click `Save`
 
-##### VLAN10_MANAGE Allow WAN Egress On OUT_PORTS_WAN Ports
+##### VLAN10_MANAGE Allow WAN Egress On PORTS_OUT_WAN Ports
 
 - Click `+`
 - {{< kv "Action" "Pass" >}}
@@ -811,7 +819,7 @@ Navigate to {{< breadcrumb "Firewall" "Rules" "VLAN10_MANAGE" >}}.
 - {{< kv "Source" "VLAN10_MANAGE net" >}}
 - {{< kv "Destination / Invert" "checked" >}}
 - {{< kv "Destination" "VLAN10_MANAGE net" >}}
-- {{< kv "Destination port range" "OUT_PORTS_WAN" >}}
+- {{< kv "Destination port range" "PORTS_OUT_WAN" >}}
 - {{< kv "Description" "Allow WAN egress on allowed ports" >}}
 - Click `Save`
 
@@ -819,29 +827,29 @@ Navigate to {{< breadcrumb "Firewall" "Rules" "VLAN10_MANAGE" >}}.
 
 ##### VLAN20_VPN Allow WAN Egress On SELECTIVE_ROUTING Ports
 
-- Click `+`
-- {{< kv "Action" "Pass" >}}
-- {{< kv "Interface" "VLAN20_VPN" >}}
-- {{< kv "Protocol" "TCP/UDP" >}}
-- {{< kv "Source" "VLAN20_VPN net" >}}
-- {{< kv "Destination" "SELECTIVE_ROUTING" >}}
-- {{< kv "Destination port range" "OUT_PORTS_WAN" >}}
-- {{< kv "Description" "Allow WAN egress on SELECTIVE_ROUTING ports" >}}
-- Click `Save`
+|                        |                                               |
+| ---------------------- | --------------------------------------------- |
+| Action                 | `Pass`                                        |
+| Interface              | `VLAN20_VPN`                                  |
+| Protocol               | `TCP/UDP`                                     |
+| Source                 | `VLAN20_VPN net`                              |
+| Destination            | `SELECTIVE_ROUTING`                           |
+| Destination port range | `PORTS_OUT_WAN`                               |
+| Description            | `Allow WAN egress on SELECTIVE_ROUTING ports` |
 
 ##### VLAN20_VPN Allow VPN Egress On Allowed Ports
 
-- Click `+`
-- {{< kv "Action" "Pass" >}}
-- {{< kv "Interface" "VLAN20_VPN" >}}
-- {{< kv "Protocol" "TCP/UDP" >}}
-- {{< kv "Source" "VLAN20_VPN net" >}}
-- {{< kv "Destination / Invert" "checked" >}}
-- {{< kv "Destination" "VLAN20_VPN net" >}}
-- {{< kv "Destination port range" "OUT_PORTS_WAN" >}}
-- {{< kv "Description" "Allow VPN egress on allowed ports" >}}
-- {{< kv "Gateway" "VPN_GROUP" >}}
-- Click `Save`
+|                        |                                     |
+| ---------------------- | ----------------------------------- |
+| Action                 | `Pass`                              |
+| Quick                  | `VLAN20_VPN`                        |
+| Protocol               | `TCP/UDP`                           |
+| Source                 | `VLAN20_VPN net`                    |
+| Destination / Invert   | `checked`                           |
+| Destination            | `VLAN20_VPN net`                    |
+| Destination port range | `PORTS_OUT_WAN`                     |
+| Description            | `Allow VPN egress on allowed ports` |
+| Gateway                | `VPN_WAN_GROUP`                     |
 
 #### VLAN30_CLEAR Rules
 
