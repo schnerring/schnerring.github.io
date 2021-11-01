@@ -14,6 +14,17 @@ tags:
 
 I've been using [Mullvad VPN](https://mullvad.net/) for a while now but only ever used it with the official client on my workstation. I use DNS extensively in my home network, so as soon as I activate Mullvad, I can't resolve DNS names locally. Of course, this is by design and expected. I own an [OPNsense](https://opnsense.org/) appliance, so the natural solution is to move the tunnel there.
 
+## TL;DR
+
+Use the following shell command to request an IP with no DNS hijacking:
+
+```shell
+curl -sSL https://api.mullvad.net/app/v1/wireguard-keys \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Token YOURMULLVADACCOUNTNUMBER" \
+  -d '{"pubkey":"YOURWIREGUARDPUBLICKEY"}'
+```
+
 ## Mullvad Hijacks DNS Queries Over WireGuard Tunnels
 
 Instead of using the OpenVPN protocol, I decided to go with the latest and greatest: [WireGuard](https://www.wireguard.com/). OPNsense is a fork of FreeBSD but lacks a kernel implementation of WireGuard, requiring a plugin. It's good enough for me to try, and I hope WireGuard will be natively supported soon.
@@ -34,9 +45,7 @@ Searching through the docs, I found the [WireGuard on a router article explainin
 curl https://api.mullvad.net/wg/ -d account=YOURMULLVADACCOUNTNUMBER --data-urlencode pubkey=YOURPUBLICKEY
 ```
 
-Let's look at what the app does next. [Fortunately it's open-source and available on GitHub](https://github.com/mullvad/mullvadvpn-app/issues/473#issuecomment-852064948), so the only reverse-engineering we're going to be doing is reading some code.
-
-[It turns out that the app uses a different API to request IPs, found in the `push_wg_key` function](https://github.com/mullvad/mullvadvpn-app/blob/b214ba74cafc18b6a13ee5678055355302386cde/mullvad-rpc/src/lib.rs): `https://api.mullvad.net/app/v1/wireguard-keys`.
+Next, let's look at how the app requests IPs. [Fortunately it's open-source and available on GitHub](https://github.com/mullvad/mullvadvpn-app/issues/473#issuecomment-852064948), so the only reverse-engineering we're going to be doing is reading some code. [It turns out that the app uses a different API to request IPs, found in the `push_wg_key` function](https://github.com/mullvad/mullvadvpn-app/blob/b214ba74cafc18b6a13ee5678055355302386cde/mullvad-rpc/src/lib.rs): `https://api.mullvad.net/app/v1/wireguard-keys`.
 
 ## Testing Both APIs
 
@@ -83,11 +92,11 @@ Next, we use the API the app uses to request the Mullvad IPs. We expect to get a
 After revoking the key, we run the following command:
 
 ```shell
- curl -sSL https://api.mullvad.net/app/v1/wireguard-keys -H "Content-Type: application/json" -H "Authorization: Token YOURMULLVADACCOUNTNUMBER" -d '{"pubkey":"YOURPUBLICKEY"}'
+curl -sSL https://api.mullvad.net/app/v1/wireguard-keys -H "Content-Type: application/json" -H "Authorization: Token YOURMULLVADACCOUNTNUMBER" -d '{"pubkey":"YOURPUBLICKEY"}'
 ```
 
 Next, we replace the IP in `Address` field of the WireGuard config with the new IP we received. Then we re-activate the tunnel and visit [Mullvad's connection check](mullvad.net/check):
 
 ![Screenshot of Mullvad connection check with leak](img/mullvad-connection-check-leak.png)
 
-Hooray, the Quad9 DNS servers leak through! Which means that Mullvad is not hijacking our DNS traffic for this tunnel.
+Hooray, the Quad9 DNS servers leak through, so Mullvad is not hijacking our DNS traffic for this tunnel!
