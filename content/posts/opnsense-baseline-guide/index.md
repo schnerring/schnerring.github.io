@@ -1,7 +1,7 @@
 ---
 title: "OPNsense Baseline Guide with VPN Multi-WAN, Guest, and VLAN Support"
 date: 2021-10-23T23:37:35+02:00
-cover: "img/cover.svg"
+cover: "img/cover.png"
 useRelativeCover: true
 draft: true
 hideReadMore: true
@@ -19,59 +19,52 @@ tags:
   - wireguard
 ---
 
-This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the amazing [pfSense baseline guide with VPN, Guest and VLAN support](https://nguvu.org/pfsense/pfsense-baseline-setup) that some of you guys might know, and I consider this guide to be an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use [OPNsense](https://opnsense.org/) instead of pfSense. I bit the bullet and bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance. Albeit expensive, and possibly overkill for my needs, I'm happy to support the open-source mission of Deciso, the maintainers of OPNsense.
+This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the amazing [pfSense baseline guide with VPN, Guest and VLAN support](https://nguvu.org/pfsense/pfsense-baseline-setup) that some of you guys might know, and this is the migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use [OPNsense](https://opnsense.org/) instead of pfSense. I bit the bullet and bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance. Albeit expensive, and possibly overkill for my needs, I'm happy to support the open-source mission of Deciso, the maintainers of OPNsense.
 
 I followed the instructions of the pfSense guide to configure OPNsense and took notes on the differences. Some options moved to different menus, some options were deprecated, and some stuff was outdated. As my notes grew, I decided to publish them as a guide on my website.
 
-My goal was to create a beginner-friendly, comprehensive guide that's easy to follow. But I tried to strike a different balance in regards to brevity of the instructions compared to the pfSense guide. It's a matter of personal taste, but I find the instructions in that guide too verbose. I intentionally omit a lot of the repetitive "click save and apply" instructions and only list configuration changes deviating from defaults, making some exceptions for very important settings. I consider the OPNsense defaults to be stable enough for this approach and hope to reduce maintenance work and sources of error.
+My goal was to create a beginner-friendly, comprehensive guide that's easy to follow. But I tried to strike a different balance in regards to brevity of the instructions compared to the pfSense guide. It's a matter of personal taste, but I find the instructions in that guide too verbose. I intentionally omit a lot of the repetitive "click save and apply" instructions and only list configuration changes deviating from defaults, making some exceptions for very important settings. I consider the OPNsense defaults to be stable enough for this approach and hope to keep the effort required to maintain this guide to a minimum.
 
-I'm a homelab hobbyist, so be warned that this guide might contain errors. Please, verify the steps yourself and do your own research. I hope this guide is as helpful and inspiring to you as the pfSense guide was to me. Any feedback is greatly appreciated.
+I'm a homelab hobbyist, so be warned that this guide likely contains errors. Please, verify the steps yourself and do your own research. I hope this guide is as helpful and inspiring to you as the pfSense guide was to me. Any feedback is greatly appreciated.
 
-## Overview
-
-### Network Diagram
-
-(TODO)
+## Network Topology
 
 ### WAN
 
-- one ISP WAN
-- WireGuard VPN multi-WAN with [Mullvad](https://mullvad.net)
+- Single ISP WAN
+- [Mullvad VPN](https://mullvad.net) multi-gateway load balancing
 
 ### LAN
 
-The local network is segregated into several areas with different requirements.
+We segregate the local into several areas with different requirements.
 
 #### Management Network (VLAN 10)
 
-Used for native hardware access to WiFi access points, IPMI and headless servers.
+The management network connects to management interfaces like WiFi access points, IPMI and headless servers.
 
 #### VPN Network (VLAN 20)
 
-Primary LAN network where all outbound traffic exists via multiple WireGuard VPN tunnels to maximize privacy and security.
+Primary LAN network where all outbound traffic exists via multiple WireGuard VPN tunnels to maximize privacy and security. If the VPN tunnels fail, outbound connection will not be possible.
 
 #### "Clear" Network (VLAN 30)
 
-General purpose web access where encryption isn't required or possible.
+General purpose web access where encryption isn't required or possible and outgoing connections are routed out the WAN gateway. It mostly serves as a backup network in case of the VPN connections going down.
 
 #### Guest Network (VLAN 40)
 
-Unsecured network used by visitors or as a backup. Access to other VLANs and user devices is denied.
+An unsecured network used by visitors. Access to other VLANs and user devices is denied.
+
+### DNS Servers
+
+We'll configure a DNS resolver (Unbound), as well as a DNS forwarder (Dnsmasq) on OPNsense. Secure networks will use the resolver and insecure networks the forwarder. [We'll dig into the details later](#dns).
 
 ## Hardware Selection and Installation
 
 The original pfSense guide features a [large section of hardware recommendations](https://nguvu.org/pfsense/pfsense-baseline-setup/#Hardware%20selection) and [installation instructions](https://nguvu.org/pfsense/pfsense-baseline-setup/#Install%20pfSense).
 
-I'm
+As already mentioned earlier, I bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance from Deciso which is why I'm not advising on hardware choices. Have a look on the [official hardware sizing & setup guidelines](https://docs.opnsense.org/manual/hardware.html) for more information.
 
-### Hardware
-
-- [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/)
-- See [Hardware sizing & setup](https://docs.opnsense.org/manual/hardware.html)
-
-### Installation
-
-- See [Initial Installation & Configuration](https://docs.opnsense.org/manual/install.html)
+Similarly, I haven't had to re-install OPNsense from scratch, I only ever factory reset. See [Initial Installation & Configuration](https://docs.opnsense.org/manual/install.html) for more information.
 
 ## Initial Wizard Configuration
 
@@ -84,7 +77,7 @@ Click `Next` to leave the welcome screen and get started.
 
 ### Wizard: General Information
 
-![Screenshot of wizard general information](img/wizard-general-information.png)
+![Screenshot of wizard general information](wizard-general-information.png)
 
 |                       |                    |
 | --------------------- | ------------------ |
@@ -95,7 +88,7 @@ Click `Next` to leave the welcome screen and get started.
 | Enable DNSSEC Support | `checked`          |
 | Harden DNSSEC data    | `checked`          |
 
-I like to use [Quad9](https://quad9.org/) DNS as system DNS servers. Only clear and guest networks will use these. We'll configure Unbound (DNS resolver) to securely lookup DNS through VPN tunnels.
+I like [Quad9](https://quad9.org/). Only clear and guest networks will use these. Only "clear" and guest networks will use these, as secured networks will use Unbound instead. If your ISP awards DNS servers via DHCP and you prefer to use these, don't enter DNS servers and leave `Override DNS` checked.
 
 For the domain, I like to use an internal subdomain of a domain I own. You should consider the `local.lan` pattern a relic of the past. To prevent local network architecture being leaked, we'll configure Unbound to to treat `corp.example.com` as private domain.
 
@@ -106,7 +99,7 @@ For the domain, I like to use an internal subdomain of a domain I own. You shoul
 | Time server hostname | `0.ch.pool.ntp.org 1.ch.pool.ntp.org 2.ch.pool.ntp.org 3.ch.pool.ntp.org` |
 | Timezone             | `Europe/Zurich`                                                           |
 
-Choose the NTP servers that are geographically closest to your location. I'm based in Switzerland which is why I chose the [servers from the `ch.pool.ntp.org` pool](https://www.pool.ntp.org/zone/ch).
+Choose the NTP servers that are geographically closest to your location. I'm based in Switzerland which makes the [servers from the `ch.pool.ntp.org` pool](https://www.pool.ntp.org/zone/ch) the natural choice.
 
 ### Wizard: Configure WAN / LAN Interfaces
 
@@ -124,31 +117,44 @@ Most of the following, general settings are configured properly by default, but 
 
 Navigate to {{< breadcrumb "System" "Settings" "General" >}}.
 
-|                    |             |                                                                  |
-| ------------------ | ----------- | ---------------------------------------------------------------- |
-| DNS Server Options | `unchecked` | Allow DNS server list to be overridden by DHCP/PPP on WAN        |
-| DNS Server Options | `unchecked` | Do not use the local DNS service as a nameserver for this system |
+Although IPv6 is something I want to do, it's out of scope for this guide, so check the following:
 
-### Web GUI Access
+|                       |           |
+| --------------------- | --------- |
+| Prefer IPv4 over IPv6 | `checked` |
+
+The DNS servers we entered will be used by the DNS forwarder, utilized only by clear and guest networks. Selecting `WAN_DHCP` for the **Use gateway** option ensures that DNS services are always available for these networks. If outbound VPN connections fail, I want to prevent DNS traffic leaking from secured networks. In such cases it's handy to have the clear net as a backup.
+
+![Screenshot of VLAN configuration](general-dns-use-gateway.png)
+
+| DNS Server Options                                               |             |
+| ---------------------------------------------------------------- | ----------- |
+| Allow DNS server list to be overridden by DHCP/PPP on WAN        | `unchecked` |
+| Do not use the local DNS service as a nameserver for this system | `unchecked` |
+
+We'll use multiple gateways and want the [default gateway](https://docs.opnsense.org/manual/gateways.html#default-gateways) to change in case a VPN tunnel goes down:
+
+| Gateway switching               |           |
+| ------------------------------- | --------- |
+| Allow default gateway switching | `checked` |
+
+### Access
 
 Navigate to {{< breadcrumb "System" "Settings" "Administration" >}}.
 
-|               |           |                               |
-| ------------- | --------- | ----------------------------- |
-| HTTP Redirect | `checked` | Disable web GUI redirect rule |
+| HTTP Redirect                 |           |
+| ----------------------------- | --------- |
+| Disable web GUI redirect rule | `checked` |
 
-### SSH Access
+Permitting root user login and password login is a quick and dirty way of enabling SSH access, but I strongly discourage you from using it. For good reasons both options are disabled by default and certificate- or [key-based authentication](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server) are recommended. If your device has a serial console port, like the Deciso DEC630, enabling SSH is not required.
 
-Permitting root user login and password login is a quick and dirty way of enabling SSH access, but I strongly discourage you from using it. For good reasons both options are disabled by default and certificate- or [key-based authentication](https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server) are recommended.
+| Secure Shell        |           |     |
+| ------------------- | --------- | --- |
+| Secure Shell Server | `checked` |     |
 
-If your device has a serial console port, like the Deciso DEC630, enabling SSH can be skipped.
-
-Navigate to {{< breadcrumb "System" "Settings" "Administration" >}}.
-
-|                     |                |                                                         |
-| ------------------- | -------------- | ------------------------------------------------------- |
-| Secure Shell Server | `checked`      |                                                         |
-| Sudo                | `Ask password` | Permit sudo usage for administrators with shell access. |
+| Authentication |                |                                                         |
+| -------------- | -------------- | ------------------------------------------------------- |
+| Sudo           | `Ask password` | Permit sudo usage for administrators with shell access. |
 
 Navigate to {{< breadcrumb "System" "Access" "Users" >}} and add a new user.
 
@@ -160,23 +166,29 @@ Navigate to {{< breadcrumb "System" "Access" "Users" >}} and add a new user.
 | Group Memberships | `admins`                     |
 | Authorized keys   | `<valid SSH public key>`     |
 
+Configuring the SSH client and generating keys is out of scope for this guide, so I'll just refer you to a [good DigitalOcean tutorial covering SSH essentials](https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys).
+
 ### Firewall Settings
 
 Navigate to {{< breadcrumb "Firewall" "Settings" "Advanced" >}}.
 
-First, we disable the auto-generated anti-lockout rule as we'll define them ourselves later.
+|            |             |
+| ---------- | ----------- |
+| Allow IPv6 | `unchecked` |
+
+We disable the auto-generated anti-lockout rule, because we'll define one ourselves later.
 
 |                      |           |
 | -------------------- | --------- |
 | Disable anti-lockout | `checked` |
 
-By default, when a rule has a specific gateway set, and this gateway is down, rule is created and traffic is sent to default gateway. This option overrides that behavior and the rule is not created when gateway is down
+By default, when a rule has a specific gateway set, and this gateway is down, a rule is created and traffic is sent to default gateway. This option overrides that behavior and the rule is not created when the gateway is down.
 
 | Gateway Monitoring |           |
 | ------------------ | --------- |
 | Skip rules         | `checked` |
 
-Successive connections will be redirected to the servers in a round-robin manner with connections from the same source being sent to the same gateway. This 'sticky connection' will exist as long as there are states that refer to this connection. Once the states expire, so will the sticky connection. Further connections from that host will be redirected to the next gateway in the round-robin.
+Successive connections will be redirected to the servers in a round-robin manner with connections from the same source being sent to the same gateway. This "sticky connection" will exist as long as there are states that refer to this connection. Once the states expire, so will the sticky connection. Further connections from that host will be redirected to the next gateway in the round-robin.
 
 | Multi-WAN          |           |
 | ------------------ | --------- |
@@ -184,20 +196,10 @@ Successive connections will be redirected to the servers in a round-robin manner
 
 Depending on your hardware you might want to tweak the following settings to increase performance.
 
-| Miscellaneous                  |                                                                                                                                      |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
-| Firewall Optimization          | `conservative` Tries to avoid dropping any legitimate idle connections at the expense of increased memory usage and CPU utilization. |
-| Firewall Maximum Table Entries | `2000000`                                                                                                                            |
-
-### Checksum Offloading
-
-Checksum offloading is broken in some hardware, particularly some Realtek cards. Rarely, drivers may have problems with checksum offloading and some specific NICs.
-
-Navigate to {{< breadcrumb "Interfaces" "Settings" >}}.
-
-|              |             |                                   |
-| ------------ | ----------- | --------------------------------- |
-| Hardware CRC | `unchecked` | Disable hardware checksum offload |
+| Miscellaneous                  |                |                                                                                                                       |
+| ------------------------------ | -------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Firewall Optimization          | `conservative` | Tries to avoid dropping any legitimate idle connections at the expense of increased memory usage and CPU utilization. |
+| Firewall Maximum Table Entries | `2000000`      | default is 1'000'000                                                                                                  |
 
 ### Miscellaneous
 
@@ -210,21 +212,31 @@ Navigate to {{< breadcrumb "System" "Settings" "Miscellaneous" >}}.
 
 Verify **Cryptography settings** and **Thermal Sensors** settings are compatible with your hardware.
 
+### Checksum Offloading
+
+Checksum offloading is broken in some hardware, particularly some Realtek cards. Rarely, drivers may have problems with checksum offloading and some specific NICs.
+
+Navigate to {{< breadcrumb "Interfaces" "Settings" >}}.
+
+|              |             |                                   |
+| ------------ | ----------- | --------------------------------- |
+| Hardware CRC | `unchecked` | Disable hardware checksum offload |
+
 ## Interface Creation And Configuration
 
 ### About VLANs and Switch Choice
 
-To configure VLANs, a 802.1Q-capable switch with properly configured VLANs is required. Check my [Router on a Stick VLAN Configuration guide](TODO) if you want to learn more.
+To configure VLANs, a 802.1Q-capable switch with properly configured VLANs is required. Check my [Router on a Stick VLAN Configuration guide (TODO)]() if you want to learn more.
 
 ### Create VLANs
 
 Typically, the `LAN` port also carries the VLAN traffic and functions as [trunk port](https://www.techopedia.com/definition/27008/trunk-port). For the Deciso DEC630, `igb0` is the port and selected as parent interface for all VLANs in the next steps.
 
+![Screenshot of VLAN configurations](vlan-configuration.png)
+
 Navigate to {{< breadcrumb "Interfaces" "Other Types" "VLAN" >}} and add the VLANs.
 
 #### Management VLAN
-
-![Screenshot of VLAN configuration](img/vlan-configuration.png)
 
 |                  |                 |
 | ---------------- | --------------- |
@@ -258,9 +270,9 @@ Navigate to {{< breadcrumb "Interfaces" "Other Types" "VLAN" >}} and add the VLA
 
 ### Create Logical Interfaces
 
-For each VLAN, create a logical interface. Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
+We create a logical interface for each VLAN. Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 
-![Screenshot of interface assignments](img/interface-assignments.png)
+![Screenshot of interface assignments](interface-assignments.png)
 
 - Select `vlan 10`, enter the description `VLAN10_MANAGE`, and click `+`
 - Select `vlan 20`, enter the description `VLAN20_VPN`, and click `+`
@@ -271,15 +283,13 @@ Click `Save`.
 
 ### Configure Interface IP Addresses
 
-To easier remember which IP range belongs to which VLAN, I like the convention of matching an octet of the IP range with the VLAN ID. E.g., the VLAN with the ID **10** has a range of 192.168.**10**.0/24.
+To easier remember which IP range belongs to which VLAN, I like the convention of matching the third octet of the IP range with the VLAN ID. E.g., the VLAN with the ID **10** has an address range of 192.168.**10**.0/24.
 
-Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
-
-![Screenshot of VLAN logical interface configuration](img/configure-interface-ip-addresses.png)
+![Screenshot of VLAN logical interface configuration](configure-interface-ip-addresses.png)
 
 #### VLAN10_MANAGE Interface
 
-Navigate to `VLAN10_MANAGE`.
+Select the `VLAN10_MANAGE` interface.
 
 |                         |                   |
 | ----------------------- | ----------------- |
@@ -317,11 +327,11 @@ Click `Save`.
 
 You might want to adjust the DHCP ranges depending on your needs. I like `x.x.x.100-199` for dynamic and `x.x.x.10.10-99` for static IP address assignments.
 
+![Screenshot of VLAN interface DHCP configuration](vlan-interface-dhcp-configuration.png)
+
 Navigate to {{< breadcrumb "Services" "DHCPv4" >}}.
 
 #### DHCP: VLAN10_MANAGE
-
-![Screenshot of VLAN interface DHCP configuration](img/vlan-interface-dhcp-configuration.png)
 
 Select `VLAN10_MANAGE`.
 
@@ -361,126 +371,165 @@ Click `Save`.
 
 ## VPN Configuration
 
-In recent years, [Mullvad](https://mullvad.net/) has been my VPN provider of choice. When _That One Privacy Site_ was still a thing, Mullvad was reviewed as one of the top recommendations. I decided to try it out and haven't looked back since. No personally identifiable information is required to register, and paying cash via mail works perfectly.
+In recent years, [Mullvad](https://mullvad.net/) has been my VPN provider of choice. When _That One Privacy Site_ was still a thing, Mullvad was one of the top recommendations. I decided to try it out and haven't looked back since. No personally identifiable information is required to register, and paying cash via mail works perfectly.
 
 I decided to go with the [WireGuard Road Warrior](https://docs.opnsense.org/manual/how-tos/wireguard-client.html) setup because I think WireGuard is the VPN protocol of the future. For more detailed steps, check the [official OPNsense documentation on setting up WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html).
 
-You'll also configure a multi-WAN gateway group load balancing with two tunnels in case one of them goes down.
+We'll also configure multi-gateway load balancing with two tunnels in case one of them goes down.
 
-Please note that FreeBSD (as of yet) lacks native WireGuard support, and possibly doesn't meet your requirements for maturity, stability, security, or performance. To use WireGuard with OPNsense, you must install it as plugin.
+Please note that the FreeBSD kernel does not (yet) natively support WireGuard, so you must install it as a plugin. Possibly, this doesn't meet your requirements for maturity, stability, security, or performance. I decided to ride the bleeding edge. 😎
 
 Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wireguard`. Refresh the browser and navigate to {{< breadcrumb "VPN" "WireGuard" >}}.
 
-### Endpoints
+### Remote Peers
 
-![Screenshot of WireGuard Endpoint configuration](img/wireguard-endpoint-configuration.png)
+Select WireGuard your preferred servers from [Mullvad's server list](https://mullvad.net/en/servers/) and take note of their name and public key. It's worth spending some time to benchmark server performance before making a choice.
 
-Select WireGuard servers from [Mullvad's server list](https://mullvad.net/en/servers/) and take note of their name and public key. It's worth spending some time to benchmark server performance before making a choice.
+![Screenshot of WireGuard Endpoints configuration](wireguard-endpoint-configurations.png)
 
-Then select the `Endpoints` tab and click `Add`.
+Select the `Endpoints` tab and click `Add`. This is what the `ch5-wireguard` endpoint would look like:
 
-|                  |                                                                                  |
-| ---------------- | -------------------------------------------------------------------------------- |
-| Name             | e.g., `mullvad-ch5-wireguard`                                                    |
-| Public key       | e.g, `/iivwlyqWqxQ0BVWmJRhcXIFdJeo0WbHQ/hZwuXaN3g=`                              |
-| Allowed IPs      | `0.0.0.0/0`, `::/0`                                                              |
-| Endpoint Address | `<server name>.mullvad.net` e.g., `ch5-wireguard.mullvad.net` or `193.32.127.66` |
-| Endpoint Port    | `51820`                                                                          |
-| Keepalive        | `25`                                                                             |
+|                  |                                                |
+| ---------------- | ---------------------------------------------- |
+| Name             | `mullvad-ch5-wireguard`                        |
+| Public key       | `/iivwlyqWqxQ0BVWmJRhcXIFdJeo0WbHQ/hZwuXaN3g=` |
+| Allowed IPs      | `0.0.0.0/0`                                    |
+| Endpoint Address | `193.32.127.66`                                |
+| Endpoint Port    | `51820`                                        |
+| Keepalive        | `25`                                           |
 
-Repeat the steps above to add another server, e.g., `ch6-wireguard`. If you want to mitigate the risks against DNS poisoning, resolve the `Endpoint Address` hostname and enter the IP instead.
+To mitigate risks against DNS poisoning, resolve the server's hostname and enter its IP as `Endpoint Address`. You can do this by running `nslookup ch5-wireguard.mullvad.net` in a.
+
+Repeat the steps above to add another server, e.g., `ch6-wireguard`. Note that for all endpoint configurations, the **Endpoint Port** is `51820`.
 
 ### Local Peers
 
-![Screenshot of WireGuard Local Peer configuration](img/wireguard-local-peer-configuration.png)
+Select the `Local` tab, click `Add`, and enable the `advanced mode`.
 
-Select the `Local` tab and click `Add`, and enable the `advanced mode`.
+|                |                       |
+| -------------- | --------------------- |
+| Name           | e.g., `mullvad0`      |
+| Listen Port    | `51820`               |
+| Tunnel Address | `<empty for now>`     |
+| Peers          | e.g., `ch5-wireguard` |
+| Disable Routes | `checked`             |
+| Gateway        | `<empty for now>`     |
 
-|                |                                     |
-| -------------- | ----------------------------------- |
-| Name           | e.g., `mullvad0`                    |
-| Listen Port    | `51820`                             |
-| DNS Server     | `193.138.218.74` public Mullvad DNS |
-| Tunnel Address | `<empty for now>`                   |
-| Peers          | e.g., `ch5-wireguard`               |
-| Disable Routes | `checked`                           |
-| Gateway        | `<empty for now>`                   |
-
-Click `Save`, then `Edit`, and copy the generated `Public Key`. Next, run the following shell command and copy IPv4 and IPv6 IP addresses which are output to the `Tunnel Address` field:
+Click `Save`, then `Edit`, and copy the generated `Public Key`. Next, run the following shell command:
 
 ```shell
 curl -sSL https://api.mullvad.net/app/v1/wireguard-keys \
   -H "Content-Type: application/json" \
-  -H "Authorization: Token <account number>" \
+  -H "Authorization: Token <Mullvad account number>" \
   -d '{"pubkey":"<generated public key>"}'
 ```
 
-Subtract one from the `Tunnel Address` and enter the result as `Gateway` IP, e.g., if the tunnel address is `10.`, enter `10.`.
+It returns a JSON response like this:
 
-Repeat the steps above to create a second local peer named `mullvad1`. Remember to use a different `Listen Port` (e.g., `51821`) and `Gateway`.
+```json
+{
+  "id": "ufO5jCni55uvioHM%2FeLBgyrrUMocEXsADPc2OvYhF3k%3D",
+  "pubkey": "ufO5jCni55uvioHM/eLBgyrrUMocEXsADPc2OvYhF3k=",
+  "ipv4_address": "10.105.248.51/32",
+  "ipv6_address": "fc00:bbbb:bbbb:bb01::2a:f832/128"
+}
+```
 
-When you're finished, select the `General` tab and check `Enable WireGuard`. You should now see handshakes for the `wg0` and `wg1` tunnels on the `Handshakes` tab.
+Copy the IPv4 IP address to the **Tunnel Address** field. Subtract one from the **Tunnel Address** and enter the result as **Gateway** IP. For the above example that would be `10.105.248.50`. It's just a convention I like, but you can use any unused [private IP](https://datatracker.ietf.org/doc/html/rfc1918).
+
+![Screenshot of WireGuard Local Peer configuration](wireguard-local-peer-configuration.png)
+
+Repeat the steps above to create a second local peer named `mullvad1`. Remember to use a different **Listen Port** (e.g., `51821`).
+
+![Screenshot of WireGuard Local Peer configurations](wireguard-local-peer-configurations.png)
+
+When you finish, select the `General` tab and check **Enable WireGuard**. You should now see handshakes for the `wg0` and `wg1` tunnels on the `Handshakes` tab.
 
 ### Assign WireGuard Interfaces
 
-To assign the WireGuard tunnels to interfaces, navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
+Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 
-![Screenshot of WireGuard interface configuration](img/wireguard-interface-configuration.png)
+![Screenshot of WireGuard interface configuration](wireguard-interface-configuration.png)
 
-- Select `wg0`, add the description `VPN0_WAN`, and click `+`
-- Select `wg1`, add the description `VPN1_WAN`, and click `+`
+- Select `wg0`, add the description `WAN_VPN0`, and click `+`
+- Select `wg1`, add the description `WAN_VPN1`, and click `+`
 
-Enable the newly created interfaces, click `Apply changes` and restart WireGuard under {{< breadcrumb "VPN" "WireGuard" "General" >}}.
+Enable the newly created interfaces and then restart the WireGuard service. This ensures the newly created interfaces get an IP address from WireGuard.
+
+### Static Routes For VPN Gateways
+
+Traffic originating from services running on OPNsense, like Unbound, use the default gateway. We want that traffic to leave through VPNs by default, so the VPN gateways need to be considered as default gateway candidates. To keep tunnel connections alive, we need to statically route traffic destined for tunnel endpoint IPs through the ISP WAN gateway.
+
+![Screenshot of static routes for WireGuard tunnels](static-routes-wireguard.png)
+
+Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`.
+
+|                 |                                                                |
+| --------------- | -------------------------------------------------------------- |
+| Network Address | `193.32.127.66/32`                                             |
+| Gateway         | `WAN_DHCP`                                                     |
+| Description     | `Static route for mullvad-ch5-wireguard remote WireGuard peer` |
+
+Repeat the same steps for each WireGuard endpoint you defined.
 
 ### Create VPN Gateways
 
+![Screenshot of gateway configuration overview](gateway-config.png)
+
 Navigate to {{< breadcrumb "System" "Gateways" "Single" >}}.
 
-#### VPN0_WAN
+#### WAN_VPN0
 
 Click `Add`.
 
-|                            |                       |
-| -------------------------- | --------------------- |
-| Name                       | `VPN0_WAN`            |
-| Interface                  | `VPN0_WAN`            |
-| Address Family             | `IPv4`                |
-| IP Address                 | `172.16.200.1`        |
-| Far Gateway                | `checked`             |
-| Disable Gateway Monitoring | `unchecked`           |
-| Monitor IP                 | `1.1.1.1` (temporary) |
+|                            |                 |
+| -------------------------- | --------------- |
+| Name                       | `WAN_VPN0`      |
+| Interface                  | `WAN_VPN0`      |
+| Address Family             | `IPv4`          |
+| IP Address                 | `10.105.248.50` |
+| Upstream Gateway           | `checked`       |
+| Far Gateway                | `checked`       |
+| Disable Gateway Monitoring | `unchecked`     |
+| Monitor IP                 | `100.64.0.1`    |
 
-#### VPN1_WAN
+Gateways with **Upstream Gateway** are prioritized by OPNsense when determining the default gateway candidates.
 
-|                            |                       |
-| -------------------------- | --------------------- |
-| Name                       | `VPN1_WAN`            |
-| Interface                  | `VPN1_WAN`            |
-| Address Family             | `IPv4`                |
-| IP Address                 | `172.16.201.1`        |
-| Far Gateway                | `checked`             |
-| Disable Gateway Monitoring | `unchecked`           |
-| Monitor IP                 | `1.0.0.1` (temporary) |
+#### WAN_VPN1
+
+|                            |                                       |
+| -------------------------- | ------------------------------------- |
+| Name                       | `WAN_VPN1`                            |
+| Interface                  | `WAN_VPN1`                            |
+| Address Family             | `IPv4`                                |
+| IP Address                 | `<Gateway IP of mullvad1 local peer>` |
+| Upstream Gateway           | `checked`                             |
+| Far Gateway                | `checked`                             |
+| Disable Gateway Monitoring | `unchecked`                           |
+| Monitor IP                 | `100.64.0.2`                          |
 
 #### Monitoring IPs
 
-[From the OPNsense docs about WireGuard gateway configuration](https://docs.opnsense.org/manual/how-tos/wireguard-selective-routing.html#step-6-create-a-gateway):
+Each gateway requires a monitoring IP. Setting a monitoring IP automatically installs a static route, so the IP must be unique. Optimally, the monitoring IP should the least possible amount of hops away from gateway. For Mullvad specifically, the following IPs are **one hop** away from the tunnel exit:
 
-> Specifying the endpoint VPN tunnel IP is preferable. As an alternative, you could include an external IP such as 1.1.1.1 or 8.8.8.8, but be aware that this IP will only be accessible through the VPN tunnel (OPNsense creates a static route for it), and therefore will not accessible from local hosts that are not using the tunnel
->
-> Some VPN providers will include the VPN tunnel IP of the endpoint in the configuration data they provide. For others (such as Mullvad), you can get the IP by running a traceroute from a host that is using the tunnel - the first hop after OPNsense is the VPN provider’s tunnel IP
+- `100.64.0.1` to `100.64.0.3`
+  [Mullvad's ad-blocking and tracker-blocking DNS service servers](https://mullvad.net/it/blog/2021/5/27/how-set-ad-blocking-our-app/)
+- `10.64.0.1`  
+  Local Mullvad gateway / proxy
 
-You'll revisit monitoring IPs after taking care of NAT and firewall rules.
+You can easily verify the above by running `traceroute 100.64.0.1` from a host connected to Mullvad.
 
 ### Configure Gateway Group
 
-Configuring multi-WAN is next. Navigate to {{< breadcrumb "System" "Gateways" "Group" >}} and click `Add`.
+The next step is configuring load balancing.
+
+Navigate to {{< breadcrumb "System" "Gateways" "Group" >}} and click `Add`.
 
 |               |                               |
 | ------------- | ----------------------------- |
-| Group Name    | `VPN_WAN_GROUP`               |
-| VPN0_WAN      | `Tier 1`                      |
-| VPN1_WAN      | `Tier 1`                      |
+| Group Name    | `WAN_VPN_GROUP`               |
+| WAN_VPN0      | `Tier 1`                      |
+| WAN_VPN1      | `Tier 1`                      |
 | Trigger Level | `Packet Loss or High Latency` |
 
 ## DNS
@@ -500,7 +549,7 @@ The design of the system:
 - Keep DNS queries within the VPN tunnel from secured networks
 - Optimize local performance with DNS lookup caching
 
-Local devices only use OPNsense as DNS server. Cached and local names lookup results from Unbound. Unknown names are resolved recursively from Quad9 (Clear) or Mullvad (VPN) DNS servers. Unbound will bind to only the VPN_WAN_GROUP interface, so DNS lookups won't be possible if the interface is down. In such rare cases, clear and guest networks serve as backups.
+Local devices only use OPNsense as DNS server. Cached and local names lookup results from Unbound. Unknown names are resolved recursively from Quad9 (Clear) or Mullvad (VPN) DNS servers. Unbound will bind to only the VPN_WAN_GROUP interface, so DNS lookups won't be possible if the interface is down. In such rare cases, the clear and guest networks serve as backups.
 
 ### Configure DNS Resolver (Unbound)
 
@@ -512,7 +561,6 @@ Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}} and click `Sho
 | DNSSEC                        | `checked`                          |
 | Register DHCP static mappings | `checked`                          |
 | Local Zone Type               | `static`                           |
-| Outgoing Network Interfaces   | `VPN0_WAN` `VPN1_WAN`              |
 
 Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 
@@ -522,7 +570,7 @@ Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 | Prefetch DNS Key Support | `checked` |
 | Harden DNSSEC data       | `checked` |
 
-Finally, you need to configure Unbound to not recurse to external name servers for the local `internal.example.com` subdomain. Adding a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone, makes Unbound the authoritative name server for that domain. [Templates](https://docs.opnsense.org/development/backend/templates.html) must be used for this kind of [advanced Unbound configuration](https://docs.opnsense.org/manual/unbound.html#advanced-configurations).
+Finally, you need to configure Unbound to not recurse to external name servers for the local `internal.example.com` subdomain. Adding a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone, makes Unbound the authoritative name server for that domain. We must use [Templates](https://docs.opnsense.org/development/backend/templates.html) this kind of [advanced Unbound configuration](https://docs.opnsense.org/manual/unbound.html#advanced-configurations).
 
 Connect to OPNsense via serial console or SSH and add a `+TARGETS` file by running `vi /usr/local/opnsense/service/templates/sampleuser/Unbound/+TARGETS` containing:
 
@@ -690,21 +738,21 @@ Select `Manual outbound NAT rule generation`, click `Save`, click `Apply changes
 | Source address | `IFGRP_LOCAL net`    |
 | Description    | `IFGRP_LOCAL to WAN` |
 
-#### VLAN20_VPN to VPN0_WAN
+#### VLAN20_VPN to WAN_VPN0
 
 |                |                          |
 | -------------- | ------------------------ |
-| Interface      | `VPN0_WAN`               |
+| Interface      | `WAN_VPN0`               |
 | Source address | `VLAN20_VPN net`         |
-| Description    | `VLAN20_VPN to VPN0_WAN` |
+| Description    | `VLAN20_VPN to WAN_VPN0` |
 
-#### VLAN20_VPN to VPN1_WAN
+#### VLAN20_VPN to WAN_VPN1
 
 |                |                          |
 | -------------- | ------------------------ |
-| Interface      | `VPN1_WAN`               |
+| Interface      | `WAN_VPN1`               |
 | Source address | `VLAN20_VPN net`         |
-| Description    | `VLAN20_VPN to VPN1_WAN` |
+| Description    | `VLAN20_VPN to WAN_VPN1` |
 
 ### Rules
 
