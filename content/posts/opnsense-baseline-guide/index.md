@@ -557,7 +557,7 @@ Let's summarize our goals:
 
 ### DNS Resolver (Unbound)
 
-Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}} and click `Show advanced option`.
+Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}}.
 
 |                               |                                    |
 | ----------------------------- | ---------------------------------- |
@@ -566,7 +566,7 @@ Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}} and click `Sho
 | Register DHCP static mappings | `checked`                          |
 | Local Zone Type               | `static`                           |
 
-Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
+Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}. The following options will increase performance at the cost of hardware utilization.
 
 |                          |           |
 | ------------------------ | --------- |
@@ -574,7 +574,7 @@ Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 | Prefetch DNS Key Support | `checked` |
 | Harden DNSSEC data       | `checked` |
 
-Finally, you need to configure Unbound to not recurse to external name servers for the local `internal.example.com` subdomain. Adding a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone, makes Unbound the authoritative name server for that domain. We must use [Templates](https://docs.opnsense.org/development/backend/templates.html) this kind of [advanced Unbound configuration](https://docs.opnsense.org/manual/unbound.html#advanced-configurations).
+As a final step, we need to configure Unbound to not recurse to external name servers for the local `internal.example.com` subdomain. Adding a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone makes Unbound the authoritative name server for that subdomain. We must use [Templates](https://docs.opnsense.org/development/backend/templates.html) for this kind of [advanced Unbound configuration](https://docs.opnsense.org/manual/unbound.html#advanced-configurations).
 
 Connect to OPNsense via serial console or SSH and add a `+TARGETS` file by running `vi /usr/local/opnsense/service/templates/sampleuser/Unbound/+TARGETS` containing:
 
