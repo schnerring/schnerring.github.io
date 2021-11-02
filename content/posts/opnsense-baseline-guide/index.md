@@ -559,42 +559,59 @@ Let's summarize our goals:
 
 Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}}.
 
-|                               |                                    |
-| ----------------------------- | ---------------------------------- |
-| Network Interfaces            | `LAN` `VLAN10_MANAGE` `VLAN20_VPN` |
-| DNSSEC                        | `checked`                          |
-| Register DHCP static mappings | `checked`                          |
-| Local Zone Type               | `static`                           |
+|                      |                                    |
+| -------------------- | ---------------------------------- |
+| Network Interfaces   | `LAN` `VLAN10_MANAGE` `VLAN20_VPN` |
+| DNSSEC               | `checked`                          |
+| DHCP registration    | `checked`                          |
+| DHCP static mappings | `checked`                          |
+| Local Zone Type      | `static`                           |
 
-Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}. The following options will increase performance at the cost of hardware utilization.
+Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 
 |                          |           |
 | ------------------------ | --------- |
+| Hide Identity            | `checked` |
+| Hide Version             | `checked` |
 | Prefetch Support         | `checked` |
 | Prefetch DNS Key Support | `checked` |
 | Harden DNSSEC data       | `checked` |
 
 As a final step, we need to configure Unbound to not recurse to external name servers for the local `internal.example.com` subdomain. Adding a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone makes Unbound the authoritative name server for that subdomain. We must use [Templates](https://docs.opnsense.org/development/backend/templates.html) for this kind of [advanced Unbound configuration](https://docs.opnsense.org/manual/unbound.html#advanced-configurations).
 
-Connect to OPNsense via serial console or SSH and add a `+TARGETS` file by running `vi /usr/local/opnsense/service/templates/sampleuser/Unbound/+TARGETS` containing:
+Connect to OPNsense via serial console or SSH and add a `+TARGETS` file by running `sudo vi /usr/local/opnsense/service/templates/OPNsense/Unbound/+TARGETS` containing:
 
 ```text
 private_domains.conf:/usr/local/etc/unbound.opnsense.d/private_domains.conf
 ```
 
-Add the template file by running `vi /usr/local/opnsense/service/templates/sampleuser/Unbound/private_domains.conf` containing:
+Add the template file by running `sudo vi /usr/local/opnsense/service/templates/OPNsense/Unbound/private_domains.conf` containing:
 
 ```text
 server:
   private-domain: internal.example.com
-  local-data: "internal.example.com. 10800 IN SOA opnsense.internal.example.com. root.example.com. 1 3600 1200 604800 10800"
+  local-data: "internal.example.com. 3600 IN SOA opnsense.internal.example.com. root.example.com. 2021110201 86400 7200 3600000 3600"
 ```
+
+This is a translation of what the SOA record means:
+
+|                     |                                 |
+| ------------------- | ------------------------------- |
+| Name                | `internal.example.com`          |
+| Record Type         | `SOA`                           |
+| Primary Name Server | `opnsense.internal.example.com` |
+| Administrator Email | `root@example.com`              |
+| Serial              | `2021110201` (YYMMDDnn)         |
+| Refresh             | `86400` (24 hours)              |
+| Retry               | `7200` (2 hours)                |
+| Expire              | `3600000` (1000 hours)          |
+| TTL                 | `3600` (1 hour)                 |
 
 Run the following to verify the configuration:
 
 ```shell
 # generate template
-configctl template reload sampleuser/Unbound
+configctl template reload OPNsense/Unbound
 # show generated file
 cat /usr/local/etc/unbound.opnsense.d/private_domains.conf
 # check if configuration is valid
@@ -603,7 +620,20 @@ configctl unbound check
 
 ### DNS Forwarder (Dnsmasq)
 
-(TODO)
+Dnsmasq will forward DNS requests to the configured system DNS servers. These are either manually configured or advertised from your ISP via the WAN interface, depending on what you configured earlier. Because Unbound already uses port 53, we'll use port 5335 for Dnsmasq. We'll later create rules to port forward DNS traffic to this port.
+
+Navigate to {{< breadcrumb "Services" "Dnsmasq DNS" "Settings" >}}.
+
+|             |           |
+| ----------- | --------- |
+| Enable      | `checked` |
+| Listen Port | `5335`    |
+
+To forward reverse DNS lookups of private IP addresses originating from the clear network to Unbound(?TODO), add the following **Domain Override**:
+
+| Domain                  | IP           | Description                                                |
+| ----------------------- | ------------ | ---------------------------------------------------------- |
+| 20.168.192.in-addr.arpa | 192.168.20.1 | Forward reverse lookups of private IP addresses to Unbound |
 
 ## Firewall
 
