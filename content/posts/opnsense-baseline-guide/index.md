@@ -7,6 +7,7 @@ draft: true
 hideReadMore: true
 comments: true
 tags:
+  - dnsmasq
   - firewall
   - homelab
   - letsencrypt
@@ -14,6 +15,7 @@ tags:
   - networking
   - opnsense
   - routing
+  - unbound
   - vlan
   - vpn
   - wireguard
@@ -123,7 +125,7 @@ Although IPv6 is something I want to do, it's out of scope for this guide, so ch
 | --------------------- | --------- |
 | Prefer IPv4 over IPv6 | `checked` |
 
-The DNS servers we entered will be used by the DNS forwarder, utilized only by clear and guest networks. Selecting `WAN_DHCP` for the **Use gateway** option ensures that DNS services are always available for these networks. If outbound VPN connections fail, I want to prevent DNS traffic leaking from secured networks. In such cases it's handy to have the clear net as a backup.
+The DNS servers we entered will be used by the DNS forwarder, utilized only by clear and guest networks. Selecting `WAN_DHCP` for the **Use gateway** option ensures that DNS services are always available for these networks. If outbound VPN connections fail, I want to prevent DNS traffic leaking from secured networks. In such cases it's handy to have the clear network as a backup.
 
 ![Screenshot of VLAN configuration](general-dns-use-gateway.png)
 
@@ -131,6 +133,8 @@ The DNS servers we entered will be used by the DNS forwarder, utilized only by c
 | ---------------------------------------------------------------- | ----------- |
 | Allow DNS server list to be overridden by DHCP/PPP on WAN        | `unchecked` |
 | Do not use the local DNS service as a nameserver for this system | `unchecked` |
+
+If you prefer using your ISP's DNS servers, leave the **Allow DNS server list to be overridden by DHCP/PPP on WAN** options checked.
 
 We'll use multiple gateways and want the [default gateway](https://docs.opnsense.org/manual/gateways.html#default-gateways) to change in case a VPN tunnel goes down:
 
@@ -385,7 +389,7 @@ Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wir
 
 Select WireGuard your preferred servers from [Mullvad's server list](https://mullvad.net/en/servers/) and take note of their name and public key. It's worth spending some time to benchmark server performance before making a choice.
 
-![Screenshot of WireGuard Endpoints configuration](wireguard-endpoint-configurations.png)
+![Screenshot of WireGuard Endpoints configuration](wireguard-remote-peer-configurations.png)
 
 Select the `Endpoints` tab and click `Add`. This is what the `ch5-wireguard` endpoint would look like:
 
@@ -449,8 +453,6 @@ When you finish, select the `General` tab and check **Enable WireGuard**. You sh
 
 Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 
-![Screenshot of WireGuard interface configuration](wireguard-interface-configuration.png)
-
 - Select `wg0`, add the description `WAN_VPN0`, and click `+`
 - Select `wg1`, add the description `WAN_VPN1`, and click `+`
 
@@ -464,11 +466,11 @@ Traffic originating from services running on OPNsense, like Unbound, use the def
 
 Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`.
 
-|                 |                                                                |
-| --------------- | -------------------------------------------------------------- |
-| Network Address | `193.32.127.66/32`                                             |
-| Gateway         | `WAN_DHCP`                                                     |
-| Description     | `Static route for mullvad-ch5-wireguard remote WireGuard peer` |
+|                 |                                               |
+| --------------- | --------------------------------------------- |
+| Network Address | `193.32.127.66/32`                            |
+| Gateway         | `WAN_DHCP`                                    |
+| Description     | `Keep tunnels to mullvad-ch5-wireguard alive` |
 
 Repeat the same steps for each WireGuard endpoint you defined.
 
@@ -534,24 +536,26 @@ Navigate to {{< breadcrumb "System" "Gateways" "Group" >}} and click `Add`.
 
 ## DNS
 
-We make use of three DNS resolvers to provide name resolution across the network:
+OPNsense includes both a DNS _resolver_ (Unbound) and a DNS _forwarder_ (Dnsmasq / Unbound in forwarding mode). Simple setups usually use one of either, but we'll use both.
 
-- **Cloudflare DNS** for the `VLAN40_GUEST`
-- **DNS Forwarder (Dnsmasq DNS)** for `VLAN20_CLEAR`. Unbound handles local lookups, and Quad9 handles external lookups retaining some privacy
-- **DNS Resolver (Unbound)** will be the authoritative name server for the private `internal.example.com` domain, so names as part of that domain are not forwarded to external DNS preventing information leakage
+A DNS forwarder simply forwards DNS requests to an external resolver, like an ISP, Cloudflare, or Google DNS. We'll configure the forwarder for the clear and guest networks. In case the primary, secured networks lose connectivity, the clear network can serve as a backup. We'll also use the forwarder for the guest network, because we'll use Unbound for internal DNS resolution, so exposing Unbound to the guest network isn't a good idea.
 
-The design of the system:
+One of the major advantages of self-hosting a DNS resolver is privacy. A resolver iteratively queries a chain of one or more DNS servers to resolve a request, so there isn't a single instance knowing all your DNS requests. It comes at the cost of speed when resolving a hostname for the first time, which diminishes as Unbound's cache grows. We'll configure our primary networks to use Unbound.
 
-- Support multiple gateways
-- Enable local device lookups for all non-guest interfaces
-- Prevent information leaks to the ISP
-- Prevent IP leaks by using VPN
-- Keep DNS queries within the VPN tunnel from secured networks
-- Optimize local performance with DNS lookup caching
+We'll also keep DNS traffic from Unbound within the VPN tunnels. In the rare case of a VPN outage, we'll want local DNS services to fail and not leak through the ISP WAN. The reason for this isn't privacy as you might think. In some cases this might even hurt your privacy. Why? Either your ISP or VPN provider wil see the iterative DNS queries Unbound sends. So it becomes a question of who you rather entrust with this data. But if there are no privacy benefits, why do it? Personally, I don't require such a setup. I configured it for educational purposes and my desire to tinker with it. Some more valid reasons, that don't personally affect me, are:
 
-Local devices only use OPNsense as DNS server. Cached and local names lookup results from Unbound. Unknown names are resolved recursively from Quad9 (Clear) or Mullvad (VPN) DNS servers. Unbound will bind to only the VPN_WAN_GROUP interface, so DNS lookups won't be possible if the interface is down. In such rare cases, the clear and guest networks serve as backups.
+- ISP selling user data
+- ISP enforcing censorship
+- ISP hijacking DNS traffic to redirect it to their own DNS resolver; this makes running a DNS resolver impossible
 
-### Configure DNS Resolver (Unbound)
+Let's summarize our goals:
+
+- Prevent DNS leaks to the ISP from management and VPN networks
+- Resolve private domain hostnames for management and VPN networks
+- Support DNS forwarding for clear and guest networks
+- Support multi-WAN
+
+### DNS Resolver (Unbound)
 
 Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}} and click `Show advanced option`.
 
@@ -597,7 +601,7 @@ cat /usr/local/etc/unbound.opnsense.d/private_domains.conf
 configctl unbound check
 ```
 
-### Configure DNS Forwarder (Dnsmasq)
+### DNS Forwarder (Dnsmasq)
 
 (TODO)
 
@@ -605,7 +609,7 @@ configctl unbound check
 
 ### Interface Groups
 
-[Interface groups](https://docs.opnsense.org/manual/firewall_groups.html) are used to apply policies to multiple interfaces at once. Do not use them for WAN interfaces, since they don't receive `reply-to`.
+[Interface groups](https://docs.opnsense.org/manual/firewall_groups.html) are used to apply policies to multiple interfaces at once. Do not use them for WAN interfaces, because they don't use the `reply-to` directive.
 
 Navigate to {{< breadcrumb "Firewall" "Groups" >}} and add the following interface groups.
 
@@ -934,3 +938,11 @@ This rule should by default exist. If not, create it.
 - {{< kv "Source" "LAN net" >}}
 - {{< kv "Description" "Default allow LAN to any rule" >}}
 - Click `Save`
+
+## NTP
+
+Except the guest network, my entire homelab is synchronized to my OPNsense router. We earlier configured NTP servers with the wizard but we want to set a couple of more things:
+
+|            |                                |
+| ---------- | ------------------------------ |
+| Interfaces | `VLAN10_MANAGE` `VLAN20_VPN` ` |
