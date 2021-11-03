@@ -1,7 +1,7 @@
 ---
 title: "OPNsense Baseline Guide with VPN Multi-WAN, Guest, and VLAN Support"
 date: 2021-10-23T23:37:35+02:00
-cover: "img/cover.png"
+cover: "cover.png"
 useRelativeCover: true
 draft: true
 hideReadMore: true
@@ -21,52 +21,54 @@ tags:
   - wireguard
 ---
 
-This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the amazing [pfSense baseline guide with VPN, Guest and VLAN support](https://nguvu.org/pfsense/pfsense-baseline-setup) that some of you guys might know, and this is the migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use [OPNsense](https://opnsense.org/) instead of pfSense. I bit the bullet and bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance. Albeit expensive, and possibly overkill for my needs, I'm happy to support the open-source mission of Deciso, the maintainers of OPNsense.
+This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the amazing [pfSense baseline guide with VPN, Guest and VLAN support](https://nguvu.org/pfsense/pfsense-baseline-setup) that some of you guys might know, and this is an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use [OPNsense](https://opnsense.org/) instead of pfSense. I bit the bullet and bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance. Albeit expensive, and possibly overkill for my needs, I'm happy to support the open-source mission of Deciso, the maintainers of OPNsense.
 
 I followed the instructions of the pfSense guide to configure OPNsense and took notes on the differences. Some options moved to different menus, some options were deprecated, and some stuff was outdated. As my notes grew, I decided to publish them as a guide on my website.
 
 My goal was to create a beginner-friendly, comprehensive guide that's easy to follow. But I tried to strike a different balance in regards to brevity of the instructions compared to the pfSense guide. It's a matter of personal taste, but I find the instructions in that guide too verbose. I intentionally omit a lot of the repetitive "click save and apply" instructions and only list configuration changes deviating from defaults, making some exceptions for very important settings. I consider the OPNsense defaults to be stable enough for this approach and hope to keep the effort required to maintain this guide to a minimum.
 
-I'm a homelab hobbyist, so be warned that this guide likely contains errors. Please, verify the steps yourself and do your own research. I hope this guide is as helpful and inspiring to you as the pfSense guide was to me. Any feedback is greatly appreciated.
+I'm a homelab hobbyist, so be warned that this guide likely contains errors. Please, verify the steps yourself and do your own research. I hope this guide is as helpful and inspiring to you as the pfSense guide was to me. Your feedback is always welcome and very much appreciated.
 
 ## Network Topology
 
 ### WAN
 
-- Single ISP WAN
+- DHCP WAN from a single Internet Service Provider (ISP)
 - [Mullvad VPN](https://mullvad.net) multi-gateway load balancing
 
 ### LAN
 
-We segregate the local into several areas with different requirements.
+We segregate the local network into several areas with different requirements.
 
 #### Management Network (VLAN 10)
 
-The management network connects to management interfaces like WiFi access points, IPMI and headless servers.
+The management network connects to management interfaces like WiFi access points, IPMI interfaces and headless servers.
 
 #### VPN Network (VLAN 20)
 
-Primary LAN network where all outbound traffic exists via multiple WireGuard VPN tunnels to maximize privacy and security. If the VPN tunnels fail, outbound connection will not be possible.
+The primary LAN network where traffic is load-balanced across multiple WireGuard VPN tunnels, maximizing privacy and security. If the VPN tunnels fail, outbound connections won't be possible. Specific exceptions can be configured to selectively route traffic out the ISP WAN gateway instead.
 
 #### "Clear" Network (VLAN 30)
 
-General purpose web access where encryption isn't required or possible and outgoing connections are routed out the WAN gateway. It mostly serves as a backup network in case of the VPN connections going down.
+General purpose web access where encryption isn't required or possible and outgoing connections are routed out the ISP WAN gateway. It mostly serves as a backup network in case of the VPN connections going down.
 
 #### Guest Network (VLAN 40)
 
 An unsecured network used by visitors. Access to other VLANs and user devices is denied.
 
+#### LAN Network
+
+"Native" VLAN, used to debug an test new configurations.
+
 ### DNS Servers
 
-We'll configure a DNS resolver (Unbound), as well as a DNS forwarder (Dnsmasq) on OPNsense. Secure networks will use the resolver and insecure networks the forwarder. [We'll dig into the details later](#dns).
+We'll configure a DNS resolver (Unbound), as well as a DNS forwarder (Dnsmasq) on OPNsense. Secure primary networks will use the resolver and secondary networks the forwarder. [We'll dig into the details later](#dns).
 
 ## Hardware Selection and Installation
 
 The original pfSense guide features a [large section of hardware recommendations](https://nguvu.org/pfsense/pfsense-baseline-setup/#Hardware%20selection) and [installation instructions](https://nguvu.org/pfsense/pfsense-baseline-setup/#Install%20pfSense).
 
-As already mentioned earlier, I bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance from Deciso which is why I'm not advising on hardware choices. Have a look on the [official hardware sizing & setup guidelines](https://docs.opnsense.org/manual/hardware.html) for more information.
-
-Similarly, I haven't had to re-install OPNsense from scratch, I only ever factory reset. See [Initial Installation & Configuration](https://docs.opnsense.org/manual/install.html) for more information.
+As already mentioned earlier, I bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance from Deciso which is why I'm not advising on hardware choices. Have a look on the [official hardware sizing & setup guidelines](https://docs.opnsense.org/manual/hardware.html) for more information. See also [Initial Installation & Configuration](https://docs.opnsense.org/manual/install.html).
 
 ## Initial Wizard Configuration
 
@@ -81,6 +83,10 @@ Click `Next` to leave the welcome screen and get started.
 
 ![Screenshot of wizard general information](wizard-general-information.png)
 
+I prefer using the DNS servers of [Quad9](https://quad9.org/) over the ones of my ISP. Only the clear and guest networks use these anyway, as secured networks use Unbound instead. If your ISP awards DNS servers via DHCP and you prefer to use those, you can leave `Override DNS` checked.
+
+For the domain, I prefer to use an subdomain of a domain name I own and only use it internally. I consider the `local.lan` pattern a relic of the past. To prevent the structure of our local network being leaked, we'll configure Unbound to to treat `corp.example.com` as private domain.
+
 |                       |                    |
 | --------------------- | ------------------ |
 | Domain                | `corp.example.com` |
@@ -90,57 +96,26 @@ Click `Next` to leave the welcome screen and get started.
 | Enable DNSSEC Support | `checked`          |
 | Harden DNSSEC data    | `checked`          |
 
-I like [Quad9](https://quad9.org/). Only clear and guest networks will use these. Only "clear" and guest networks will use these, as secured networks will use Unbound instead. If your ISP awards DNS servers via DHCP and you prefer to use these, don't enter DNS servers and leave `Override DNS` checked.
-
-For the domain, I like to use an internal subdomain of a domain I own. You should consider the `local.lan` pattern a relic of the past. To prevent local network architecture being leaked, we'll configure Unbound to to treat `corp.example.com` as private domain.
+If you prefer using your ISP's DNS servers, leave the **Override DNS** option checked.
 
 ### Wizard: Time Server Information
+
+Choose the NTP servers geographically closest to your location. I'm based in Switzerland which makes the [servers from the `ch.pool.ntp.org` pool](https://www.pool.ntp.org/zone/ch) the natural choice.
 
 |                      |                                                                           |
 | -------------------- | ------------------------------------------------------------------------- |
 | Time server hostname | `0.ch.pool.ntp.org 1.ch.pool.ntp.org 2.ch.pool.ntp.org 3.ch.pool.ntp.org` |
 | Timezone             | `Europe/Zurich`                                                           |
 
-Choose the NTP servers that are geographically closest to your location. I'm based in Switzerland which makes the [servers from the `ch.pool.ntp.org` pool](https://www.pool.ntp.org/zone/ch) the natural choice.
-
 ### Wizard: Configure WAN / LAN Interfaces
 
-By default, the WAN interface obtains an IP address via DHCP. Additionally, DHCP is configured for the LAN interface. This should work for most people, so just keep the defaults.
+By default, the WAN interface is configured to obtain an IP via DHCP from your ISP. DHCP is also configured for the LAN interface by default and has the IP `192.168.1.1`. This works for most people, so we just keep the defaults.
 
 ### Wizard: Set Root Password
 
 Choose a strong root password and complete the wizard.
 
 ## General Settings
-
-Most of the following, general settings are configured properly by default, but worth double-checking.
-
-### DNS Server Settings
-
-Navigate to {{< breadcrumb "System" "Settings" "General" >}}.
-
-Although IPv6 is something I want to do, it's out of scope for this guide, so check the following:
-
-|                       |           |
-| --------------------- | --------- |
-| Prefer IPv4 over IPv6 | `checked` |
-
-The DNS servers we entered will be used by the DNS forwarder, utilized only by clear and guest networks. Selecting `WAN_DHCP` for the **Use gateway** option ensures that DNS services are always available for these networks. If outbound VPN connections fail, I want to prevent DNS traffic leaking from secured networks. In such cases it's handy to have the clear network as a backup.
-
-![Screenshot of VLAN configuration](general-dns-use-gateway.png)
-
-| DNS Server Options                                               |             |
-| ---------------------------------------------------------------- | ----------- |
-| Allow DNS server list to be overridden by DHCP/PPP on WAN        | `unchecked` |
-| Do not use the local DNS service as a nameserver for this system | `unchecked` |
-
-If you prefer using your ISP's DNS servers, leave the **Allow DNS server list to be overridden by DHCP/PPP on WAN** options checked.
-
-We'll use multiple gateways and want the [default gateway](https://docs.opnsense.org/manual/gateways.html#default-gateways) to change in case a VPN tunnel goes down:
-
-| Gateway switching               |           |
-| ------------------------------- | --------- |
-| Allow default gateway switching | `checked` |
 
 ### Access
 
@@ -170,21 +145,28 @@ Navigate to {{< breadcrumb "System" "Access" "Users" >}} and add a new user.
 | Group Memberships | `admins`                     |
 | Authorized keys   | `<valid SSH public key>`     |
 
-Configuring the SSH client and generating keys is out of scope for this guide, so I'll just refer you to a [good DigitalOcean tutorial covering SSH essentials](https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys).
+Configuring the SSH client and generating keys is out of scope for this guide, so I'll just refer to a [good DigitalOcean tutorial covering SSH essentials](https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys).
+
+### Miscellaneous
+
+Navigate to {{< breadcrumb "System" "Settings" "Miscellaneous" >}}.
+
+| Power Savings |              |
+| ------------- | ------------ |
+| Use PowerD    | `checked`    |
+| Power Mode    | `Hiadaptive` |
+
+Verify **Cryptography settings** and **Thermal Sensors** settings are compatible with your hardware.
 
 ### Firewall Settings
 
 Navigate to {{< breadcrumb "Firewall" "Settings" "Advanced" >}}.
 
+Although IPv6 is something I want to use, it's out of scope for this guide, so we uncheck the following:
+
 |            |             |
 | ---------- | ----------- |
 | Allow IPv6 | `unchecked` |
-
-We disable the auto-generated anti-lockout rule, because we'll define one ourselves later.
-
-|                      |           |
-| -------------------- | --------- |
-| Disable anti-lockout | `checked` |
 
 By default, when a rule has a specific gateway set, and this gateway is down, a rule is created and traffic is sent to default gateway. This option overrides that behavior and the rule is not created when the gateway is down.
 
@@ -198,27 +180,22 @@ Successive connections will be redirected to the servers in a round-robin manner
 | ------------------ | --------- |
 | Sticky connections | `checked` |
 
-Depending on your hardware you might want to tweak the following settings to increase performance.
+Depending on your hardware, you might want to tweak the following settings to improve performance.
 
 | Miscellaneous                  |                |                                                                                                                       |
 | ------------------------------ | -------------- | --------------------------------------------------------------------------------------------------------------------- |
 | Firewall Optimization          | `conservative` | Tries to avoid dropping any legitimate idle connections at the expense of increased memory usage and CPU utilization. |
 | Firewall Maximum Table Entries | `2000000`      | default is 1'000'000                                                                                                  |
 
-### Miscellaneous
+We disable the auto-generated anti-lockout rule, because we'll define it manually later.
 
-Navigate to {{< breadcrumb "System" "Settings" "Miscellaneous" >}}.
-
-| Power Savings |              |
-| ------------- | ------------ |
-| Use PowerD    | `checked`    |
-| Power Mode    | `Hiadaptive` |
-
-Verify **Cryptography settings** and **Thermal Sensors** settings are compatible with your hardware.
+|                      |           |
+| -------------------- | --------- |
+| Disable anti-lockout | `checked` |
 
 ### Checksum Offloading
 
-Checksum offloading is broken in some hardware, particularly some Realtek cards. Rarely, drivers may have problems with checksum offloading and some specific NICs.
+Checksum offloading is broken in some hardware, particularly some Realtek cards. Rarely, drivers may have problems with checksum offloading and some specific NICs. If your hardware is incompatible with checksum offloading, disable it.
 
 Navigate to {{< breadcrumb "Interfaces" "Settings" >}}.
 
@@ -230,11 +207,11 @@ Navigate to {{< breadcrumb "Interfaces" "Settings" >}}.
 
 ### About VLANs and Switch Choice
 
-To configure VLANs, a 802.1Q-capable switch with properly configured VLANs is required. Check my [Router on a Stick VLAN Configuration guide (TODO)]() if you want to learn more.
+A a 802.1Q-capable switch with properly configured VLANs is required. Check my [Router on a Stick VLAN Configuration guide (TODO)]() if you want to see an example setup with a [Mikrotik](https://mikrotik.com/) switch.
 
-### Create VLANs
+### VLAN Definitions
 
-Typically, the `LAN` port also carries the VLAN traffic and functions as [trunk port](https://www.techopedia.com/definition/27008/trunk-port). For the Deciso DEC630, `igb0` is the port and selected as parent interface for all VLANs in the next steps.
+Typically, the `LAN` port also carries the VLAN traffic and functions as [trunk port](https://www.techopedia.com/definition/27008/trunk-port). For the Deciso DEC630, it's the `igb0` port. It is selected as parent interface for all VLANs in the next steps.
 
 ![Screenshot of VLAN configurations](vlan-configuration.png)
 
@@ -272,9 +249,9 @@ Navigate to {{< breadcrumb "Interfaces" "Other Types" "VLAN" >}} and add the VLA
 | VLAN tag         | `40`           |
 | Description      | `VLAN40_GUEST` |
 
-### Create Logical Interfaces
+### VLAN Interfaces
 
-We create a logical interface for each VLAN. Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
+We add an interface for each VLAN. Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 
 ![Screenshot of interface assignments](interface-assignments.png)
 
@@ -285,13 +262,13 @@ We create a logical interface for each VLAN. Navigate to {{< breadcrumb "Interfa
 
 Click `Save`.
 
-### Configure Interface IP Addresses
+### VLAN Interface IPs
 
-To easier remember which IP range belongs to which VLAN, I like the convention of matching the third octet of the IP range with the VLAN ID. E.g., the VLAN with the ID **10** has an address range of 192.168.**10**.0/24.
+To easier remember which IP range belongs to which VLAN, I like the convention of matching the third octet of the IP with the VLAN ID. I.e., assigning the VLAN with the ID **10** the address 192.168.**10**.0/24.
 
 ![Screenshot of VLAN logical interface configuration](configure-interface-ip-addresses.png)
 
-#### VLAN10_MANAGE Interface
+#### Interface: VLAN10_MANAGE
 
 Select the `VLAN10_MANAGE` interface.
 
@@ -303,7 +280,7 @@ Select the `VLAN10_MANAGE` interface.
 
 Click `Save`.
 
-#### VLAN20_VPN Interface
+#### Interface: VLAN20_VPN
 
 |                         |                   |
 | ----------------------- | ----------------- |
@@ -311,7 +288,7 @@ Click `Save`.
 | IPv4 Configuration Type | `Static IPv4`     |
 | IPv4 Address            | `192.168.20.1/24` |
 
-#### VLAN30_CLEAR Interface
+#### Interface: VLAN30_CLEAR
 
 |                         |                   |
 | ----------------------- | ----------------- |
@@ -319,7 +296,7 @@ Click `Save`.
 | IPv4 Configuration Type | `Static IPv4`     |
 | IPv4 Address            | `192.168.30.1/24` |
 
-#### VLAN40_GUEST Interface
+#### Interface: VLAN40_GUEST
 
 |                         |                   |
 | ----------------------- | ----------------- |
@@ -327,9 +304,9 @@ Click `Save`.
 | IPv4 Configuration Type | `Static IPv4`     |
 | IPv4 Address            | `192.168.40.1/24` |
 
-### Configure Interface DHCP
+### VLAN Interface DHCP
 
-You might want to adjust the DHCP ranges depending on your needs. I like `x.x.x.100-199` for dynamic and `x.x.x.10.10-99` for static IP address assignments.
+I personally use the convention `x.x.x.100-199` for dynamic and `x.x.x.10.10-99` for static IP address assignments. You might want to amend these ranges to your requirements.
 
 ![Screenshot of VLAN interface DHCP configuration](vlan-interface-dhcp-configuration.png)
 
@@ -373,25 +350,25 @@ Click `Save`.
 | ----- | --------------------------------------- |
 | Range | from `192.168.1.100` to `192.168.1.199` |
 
-## VPN Configuration
+## WireGuard VPN Configuration with Mullvad
 
-In recent years, [Mullvad](https://mullvad.net/) has been my VPN provider of choice. When _That One Privacy Site_ was still a thing, Mullvad was one of the top recommendations. I decided to try it out and haven't looked back since. No personally identifiable information is required to register, and paying cash via mail works perfectly.
+In recent years, [Mullvad](https://mullvad.net/) has been my VPN provider of choice. When _That One Privacy Site_ was still a thing, Mullvad was one of the top recommendations there. After reading the review, I decided to try it out and haven't looked back since. No personally identifiable information is required to register, and paying cash via mail works perfectly.
 
-I decided to go with the [WireGuard Road Warrior](https://docs.opnsense.org/manual/how-tos/wireguard-client.html) setup because I think WireGuard is the VPN protocol of the future. For more detailed steps, check the [official OPNsense documentation on setting up WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html).
+I decided to go with a [WireGuard](https://www.wireguard.com/) because I think WireGuard is the VPN protocol of the future. For more detailed steps, check the official OPNsense documentation on setting up [WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html) and [WireGuard selective routing](https://docs.opnsense.org/manual/how-tos/wireguard-selective-routing.html).
 
-We'll also configure multi-gateway load balancing with two tunnels in case one of them goes down.
+Please note that the FreeBSD kernel does not (yet) natively support WireGuard, so you must install it as a plugin. Possibly, this doesn't meet your stability, security, or performance requirements. I'm fine riding the bleeding edge. 😎
 
-Please note that the FreeBSD kernel does not (yet) natively support WireGuard, so you must install it as a plugin. Possibly, this doesn't meet your requirements for maturity, stability, security, or performance. I decided to ride the bleeding edge. 😎
+We'll configure multi-gateway load balancing with two tunnels in case one of them goes down.
 
 Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wireguard`. Refresh the browser and navigate to {{< breadcrumb "VPN" "WireGuard" >}}.
 
 ### Remote Peers
 
-Select WireGuard your preferred servers from [Mullvad's server list](https://mullvad.net/en/servers/) and take note of their name and public key. It's worth spending some time to benchmark server performance before making a choice.
+Select your preferred WireGuard servers from the [Mullvad's server list](https://mullvad.net/en/servers/) and take note of their name and public key. It's worth spending some time to benchmark server performance before making a choice.
 
 ![Screenshot of WireGuard Endpoints configuration](wireguard-remote-peer-configurations.png)
 
-Select the `Endpoints` tab and click `Add`. This is what the `ch5-wireguard` endpoint would look like:
+Select the **Endpoints** tab and click **Add**. Here is the configuration for the remote `ch5-wireguard` Mullvad endpoint:
 
 |                  |                                                |
 | ---------------- | ---------------------------------------------- |
@@ -402,24 +379,24 @@ Select the `Endpoints` tab and click `Add`. This is what the `ch5-wireguard` end
 | Endpoint Port    | `51820`                                        |
 | Keepalive        | `25`                                           |
 
-To mitigate risks against DNS poisoning, resolve the server's hostname and enter its IP as `Endpoint Address`. You can do this by running `nslookup ch5-wireguard.mullvad.net` in a.
+To mitigate risks against DNS poisoning, resolve the server's hostname and enter its IP as **Endpoint Address**. You can do this by running `nslookup ch5-wireguard.mullvad.net` in a shell.
 
 Repeat the steps above to add another server, e.g., `ch6-wireguard`. Note that for all endpoint configurations, the **Endpoint Port** is `51820`.
 
 ### Local Peers
 
-Select the `Local` tab, click `Add`, and enable the `advanced mode`.
+Select the **Local** tab, click `Add`, and enable the `advanced mode`.
 
-|                |                       |
-| -------------- | --------------------- |
-| Name           | e.g., `mullvad0`      |
-| Listen Port    | `51820`               |
-| Tunnel Address | `<empty for now>`     |
-| Peers          | e.g., `ch5-wireguard` |
-| Disable Routes | `checked`             |
-| Gateway        | `<empty for now>`     |
+|                |                 |
+| -------------- | --------------- |
+| Name           | `mullvad0`      |
+| Listen Port    | `51820`         |
+| Tunnel Address | `<LEAVE EMPTY>` |
+| Peers          | `ch5-wireguard` |
+| Disable Routes | `checked`       |
+| Gateway        | `<LEAVE EMPTY>` |
 
-Click `Save`, then `Edit`, and copy the generated `Public Key`. Next, run the following shell command:
+Click `Save` to generate the WireGuard key pair. Click `Edit` and copy the generated **Public Key**. Next, run the following shell command:
 
 ```shell
 curl -sSL https://api.mullvad.net/app/v1/wireguard-keys \
@@ -439,7 +416,7 @@ It returns a JSON response like this:
 }
 ```
 
-Copy the IPv4 IP address to the **Tunnel Address** field. Subtract one from the **Tunnel Address** and enter the result as **Gateway** IP. For the above example that would be `10.105.248.50`. It's just a convention I like, but you can use any unused [private IP](https://datatracker.ietf.org/doc/html/rfc1918).
+Copy the IPv4 IP address to the **Tunnel Address** field. Subtract one from the **Tunnel Address** and enter the result as **Gateway** IP. For the above example that would be `10.105.248.50`. It's just a convention I like, but you can use any arbitrary [private IP](https://datatracker.ietf.org/doc/html/rfc1918) not in use.
 
 ![Screenshot of WireGuard Local Peer configuration](wireguard-local-peer-configuration.png)
 
@@ -449,32 +426,16 @@ Repeat the steps above to create a second local peer named `mullvad1`. Remember 
 
 When you finish, select the `General` tab and check **Enable WireGuard**. You should now see handshakes for the `wg0` and `wg1` tunnels on the `Handshakes` tab.
 
-### Assign WireGuard Interfaces
+### WireGuard Interfaces
 
 Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 
 - Select `wg0`, add the description `WAN_VPN0`, and click `+`
 - Select `wg1`, add the description `WAN_VPN1`, and click `+`
 
-Enable the newly created interfaces and then restart the WireGuard service. This ensures the newly created interfaces get an IP address from WireGuard.
+Enable the newly created interfaces and restart the WireGuard service after. This ensures the newly created interfaces get an IP address from WireGuard.
 
-### Static Routes For VPN Gateways
-
-Traffic originating from services running on OPNsense, like Unbound, use the default gateway. We want that traffic to leave through VPNs by default, so the VPN gateways need to be considered as default gateway candidates. To keep tunnel connections alive, we need to statically route traffic destined for tunnel endpoint IPs through the ISP WAN gateway.
-
-![Screenshot of static routes for WireGuard tunnels](static-routes-wireguard.png)
-
-Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`.
-
-|                 |                                               |
-| --------------- | --------------------------------------------- |
-| Network Address | `193.32.127.66/32`                            |
-| Gateway         | `WAN_DHCP`                                    |
-| Description     | `Keep tunnels to mullvad-ch5-wireguard alive` |
-
-Repeat the same steps for each WireGuard endpoint you defined.
-
-### Create VPN Gateways
+### VPN Gateways
 
 ![Screenshot of gateway configuration overview](gateway-config.png)
 
@@ -490,12 +451,9 @@ Click `Add`.
 | Interface                  | `WAN_VPN0`      |
 | Address Family             | `IPv4`          |
 | IP Address                 | `10.105.248.50` |
-| Upstream Gateway           | `checked`       |
 | Far Gateway                | `checked`       |
 | Disable Gateway Monitoring | `unchecked`     |
 | Monitor IP                 | `100.64.0.1`    |
-
-Gateways with **Upstream Gateway** are prioritized by OPNsense when determining the default gateway candidates.
 
 #### WAN_VPN1
 
@@ -505,25 +463,20 @@ Gateways with **Upstream Gateway** are prioritized by OPNsense when determining 
 | Interface                  | `WAN_VPN1`                            |
 | Address Family             | `IPv4`                                |
 | IP Address                 | `<Gateway IP of mullvad1 local peer>` |
-| Upstream Gateway           | `checked`                             |
 | Far Gateway                | `checked`                             |
 | Disable Gateway Monitoring | `unchecked`                           |
 | Monitor IP                 | `100.64.0.2`                          |
 
 #### Monitoring IPs
 
-Each gateway requires a monitoring IP. Setting a monitoring IP automatically installs a static route, so the IP must be unique. Optimally, the monitoring IP should the least possible amount of hops away from gateway. For Mullvad specifically, the following IPs are **one hop** away from the tunnel exit:
+Each gateway requires a monitoring IP. Setting a monitoring IP automatically installs a static route, so each IP can only be used once. Optimally, the monitoring IP should the least possible amount of hops away from the gateway. For Mullvad specifically, we can "abuse" their infrastructure that is only available through a Mullvad connection. Any of the following IPs are only _one_ hop away from the tunnel exit:
 
-- `100.64.0.1` to `100.64.0.3`
-  [Mullvad's ad-blocking and tracker-blocking DNS service servers](https://mullvad.net/it/blog/2021/5/27/how-set-ad-blocking-our-app/)
-- `10.64.0.1`  
-  Local Mullvad gateway / proxy
+- `100.64.0.1` to `100.64.0.3` are [Mullvad's ad-blocking and tracker-blocking DNS service servers](https://mullvad.net/it/blog/2021/5/27/how-set-ad-blocking-our-app/)
+- `10.64.0.1` is the local Mullvad gateway / proxy
 
 You can easily verify the above by running `traceroute 100.64.0.1` from a host connected to Mullvad.
 
-### Configure Gateway Group
-
-The next step is configuring load balancing.
+### Load Balancing
 
 Navigate to {{< breadcrumb "System" "Gateways" "Group" >}} and click `Add`.
 
@@ -534,15 +487,33 @@ Navigate to {{< breadcrumb "System" "Gateways" "Group" >}} and click `Add`.
 | WAN_VPN1      | `Tier 1`                      |
 | Trigger Level | `Packet Loss or High Latency` |
 
+It's also possible to configure failover with gateway groups.
+
+### Static Routes
+
+Defining static routes for your tunnel connections is optional. This would be necessary, for example, if you want to consider the VPN gateways as default gateway candidates. To ensure tunnel connections to remote peers are kept alive, static routes to the ISP WAN gateway need to be configured.
+
+![Screenshot of static routes for WireGuard tunnels](static-routes-wireguard.png)
+
+Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`.
+
+|                 |                                               |
+| --------------- | --------------------------------------------- |
+| Network Address | `193.32.127.66/32`                            |
+| Gateway         | `WAN_DHCP`                                    |
+| Description     | `Keep tunnels to mullvad-ch5-wireguard alive` |
+
+Repeat the same steps for each WireGuard remote peer you defined.
+
 ## DNS
 
 OPNsense includes both a DNS _resolver_ (Unbound) and a DNS _forwarder_ (Dnsmasq / Unbound in forwarding mode). Simple setups usually use one of either, but we'll use both.
 
-A DNS forwarder simply forwards DNS requests to an external resolver, like an ISP, Cloudflare, or Google DNS. We'll configure the forwarder for the clear and guest networks. In case the primary, secured networks lose connectivity, the clear network can serve as a backup. We'll also use the forwarder for the guest network, because we'll use Unbound for internal DNS resolution, so exposing Unbound to the guest network isn't a good idea.
+A DNS forwarder simply forwards DNS requests to an external DNS resolver of a service provider like an ISP, Cloudflare, or Google. We'll configure the forwarder for the clear and guest networks. In case the primary, secured networks lose connectivity, the clear network can serve as a backup. We'll also use the forwarder for the guest network, because we'll use Unbound for internal DNS resolution. So exposing Unbound to the guest network would be a good idea.
 
 One of the major advantages of self-hosting a DNS resolver is privacy. A resolver iteratively queries a chain of one or more DNS servers to resolve a request, so there isn't a single instance knowing all your DNS requests. It comes at the cost of speed when resolving a hostname for the first time, which diminishes as Unbound's cache grows. We'll configure our primary networks to use Unbound.
 
-We'll also keep DNS traffic from Unbound within the VPN tunnels. In the rare case of a VPN outage, we'll want local DNS services to fail and not leak through the ISP WAN. The reason for this isn't privacy as you might think. In some cases this might even hurt your privacy. Why? Either your ISP or VPN provider wil see the iterative DNS queries Unbound sends. So it becomes a question of who you rather entrust with this data. But if there are no privacy benefits, why do it? Personally, I don't require such a setup. I configured it for educational purposes and my desire to tinker with it. Some more valid reasons, that don't personally affect me, are:
+We'll also keep DNS traffic from Unbound within the VPN tunnels. In the rare case of a VPN outage, we'll want local DNS services to fail and not leak through the ISP WAN. The reason for this isn't privacy as you might think. In some cases this might even hurt your privacy. Why? Either your ISP or your VPN provider wil see the iterative DNS queries Unbound sends. So it becomes a question of who you rather entrust with this data. But if there are no privacy benefits, why do it? Personally, I don't require such a setup. I configured it for educational purposes and my desire to tinker with it. Other reasons, that don't affect me but other users, are:
 
 - ISP selling user data
 - ISP enforcing censorship
@@ -550,22 +521,25 @@ We'll also keep DNS traffic from Unbound within the VPN tunnels. In the rare cas
 
 Let's summarize our goals:
 
-- Prevent DNS leaks to the ISP from management and VPN networks
+- Use DNS resolver for the management VPN networks
 - Resolve private domain hostnames for management and VPN networks
-- Support DNS forwarding for clear and guest networks
-- Support multi-WAN
+- Prevent DNS leaks from Unbound to the ISP WAN gateway
+- Use DNS forwarding for other networks
 
 ### DNS Resolver (Unbound)
 
 Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}}.
 
-|                      |                                    |
-| -------------------- | ---------------------------------- |
-| Network Interfaces   | `LAN` `VLAN10_MANAGE` `VLAN20_VPN` |
-| DNSSEC               | `checked`                          |
-| DHCP registration    | `checked`                          |
-| DHCP static mappings | `checked`                          |
-| Local Zone Type      | `static`                           |
+|                             |                                    |
+| --------------------------- | ---------------------------------- |
+| Network Interfaces          | `LAN` `VLAN10_MANAGE` `VLAN20_VPN` |
+| DNSSEC                      | `checked`                          |
+| DHCP registration           | `checked`                          |
+| DHCP static mappings        | `checked`                          |
+| Local Zone Type             | `static`                           |
+| Outgoing Network Interfaces | `WAN_VPN0` `WAN_VPN1`              |
+
+[Please note that in OPNsense versions >= 21.7 the **Outgoing Network Interfaces** currently doesn't work due to a bug.](https://github.com/opnsense/core/issues/5329#issuecomment-958397043)
 
 Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 
@@ -577,7 +551,7 @@ Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 | Prefetch DNS Key Support | `checked` |
 | Harden DNSSEC data       | `checked` |
 
-As a final step, we need to configure Unbound to not recurse to external name servers for the local `internal.example.com` subdomain. Adding a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone makes Unbound the authoritative name server for that subdomain. We must use [Templates](https://docs.opnsense.org/development/backend/templates.html) for this kind of [advanced Unbound configuration](https://docs.opnsense.org/manual/unbound.html#advanced-configurations).
+The final step is to add a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone making Unbound the authoritative name server for `corp.example.com`. This is required for Unbound to allow private IP addresses for this subdomain. This implicitly prevents Unbound from queriying external name servers for an internal domain and exposing our network structure to the outside. For [advanced Unbound configuration like this](https://docs.opnsense.org/manual/unbound.html#advanced-configurations), we use [Templates](https://docs.opnsense.org/development/backend/templates.html) (OPNsense versions >= 21.7).
 
 Connect to OPNsense via serial console or SSH and add a `+TARGETS` file by running `sudo vi /usr/local/opnsense/service/templates/OPNsense/Unbound/+TARGETS` containing:
 
@@ -589,23 +563,22 @@ Add the template file by running `sudo vi /usr/local/opnsense/service/templates/
 
 ```text
 server:
-  private-domain: internal.example.com
-  local-data: "internal.example.com. 3600 IN SOA opnsense.internal.example.com. root.example.com. 2021110201 86400 7200 3600000 3600"
+  local-data: "corp.example.com. 3600 IN SOA opnsense.corp.example.com. root.example.com. 2021110201 86400 7200 3600000 3600"
 ```
 
 This is a translation of what the SOA record means:
 
-|                     |                                 |
-| ------------------- | ------------------------------- |
-| Name                | `internal.example.com`          |
-| Record Type         | `SOA`                           |
-| Primary Name Server | `opnsense.internal.example.com` |
-| Administrator Email | `root@example.com`              |
-| Serial              | `2021110201` (YYMMDDnn)         |
-| Refresh             | `86400` (24 hours)              |
-| Retry               | `7200` (2 hours)                |
-| Expire              | `3600000` (1000 hours)          |
-| TTL                 | `3600` (1 hour)                 |
+|                     |                             |
+| ------------------- | --------------------------- |
+| Name                | `corp.example.com`          |
+| Record Type         | `SOA`                       |
+| Primary Name Server | `opnsense.corp.example.com` |
+| Administrator Email | `root@example.com`          |
+| Serial              | `2021110201` (YYMMDDnn)     |
+| Refresh             | `86400` (24 hours)          |
+| Retry               | `7200` (2 hours)            |
+| Expire              | `3600000` (1000 hours)      |
+| TTL                 | `3600` (1 hour)             |
 
 Run the following to verify the configuration:
 
@@ -624,52 +597,106 @@ Dnsmasq will forward DNS requests to the configured system DNS servers. These ar
 
 Navigate to {{< breadcrumb "Services" "Dnsmasq DNS" "Settings" >}}.
 
-|             |           |
-| ----------- | --------- |
-| Enable      | `checked` |
-| Listen Port | `5335`    |
+|                                        |           |
+| -------------------------------------- | --------- |
+| Enable                                 | `checked` |
+| Listen Port                            | `5335`    |
+| Do not forward private reverse lookups | `checked` |
 
-To forward reverse DNS lookups of private IP addresses originating from the clear network to Unbound(?TODO), add the following **Domain Override**:
+Forward reverse DNS lookups in the `192.168.0.0/16` range to Unbound by adding the following **Domain Override**:
 
-| Domain                  | IP           | Description                                                |
-| ----------------------- | ------------ | ---------------------------------------------------------- |
-| 20.168.192.in-addr.arpa | 192.168.20.1 | Forward reverse lookups of private IP addresses to Unbound |
+| Domain               | IP          | Description                                                |
+| -------------------- | ----------- | ---------------------------------------------------------- |
+| 168.192.in-addr.arpa | 192.168.1.1 | Forward reverse lookups of private IP addresses to Unbound |
+
+### Verify DNS Functionality
+
+Navigate to {{< breadcrumb "Interfaces" "Diagnostics" "DNS Lookup" >}} and verify that DNS lookups work.
+
+![Screenshot of diagnostic DNS Lookup](dns-verify.png)
+
+Subsequent requests from 127.0.0.1 should result in a 0 ms lookup due to caching.
 
 ## Firewall
 
+Here is an overview of what we want to implement with firewall rules.
+
+- Allow internet access for specific ports through WAN and VPN
+- Allow intranet communications
+- Redirect outbound DNS traffic to either Unbound or Dnsmasq
+- Redirect NTP traffic to OPNsense
+- Deny intranet access for guest network
+
+|              | VLAN10  | VLAN20              | VLAN30  | VLAN40   | LAN      |
+| ------------ | ------- | ------------------- | ------- | -------- | -------- |
+| Internet     | WAN     | VPN + selective WAN | WAN     | WAN      | WAN      |
+| Intranet     | pass    | pass                | pass    | block    | pass     |
+| ICMP         | pass    | pass                | pass    | pass     | pass     |
+| Anti-lockout | yes     | no                  | no      | no       | yes      |
+| DNS          | Unbound | Unbound             | Dnsmasq | Dnsmasq  | Unbound  |
+| NTP          | local   | local               | local   | external | external |
+
 ### Interface Groups
 
-[Interface groups](https://docs.opnsense.org/manual/firewall_groups.html) are used to apply policies to multiple interfaces at once. Do not use them for WAN interfaces, because they don't use the `reply-to` directive.
+[Interface groups](https://docs.opnsense.org/manual/firewall_groups.html) are used to apply policies to multiple interfaces at once. Do not use them for WAN interfaces, because they don't use the `reply-to` directive. Using interface groups will reduce the amount of firewall rules significantly.
+
+![Screenshot of firewall interface groups](firewall-interface-groups.png)
 
 Navigate to {{< breadcrumb "Firewall" "Groups" >}} and add the following interface groups.
 
-#### IFGRP_LOCAL
+#### IG_LOCAL
 
-|             |                                                                  |
-| ----------- | ---------------------------------------------------------------- |
-| Name        | `IFGRP_LOCAL`                                                    |
-| Description | `All local interfaces`                                           |
-| Members     | `LAN` `VLAN10_MANAGE` `VLAN20_VPN` `VLAN30_CLEAR` `VLAN40_GUEST` |
+|             |                                                                             |
+| ----------- | --------------------------------------------------------------------------- |
+| Name        | `IG_LOCAL`                                                                  |
+| Description | `All local interfaces`                                                      |
+| Members     | `Loopback` `LAN` `VLAN10_MANAGE` `VLAN20_VPN` `VLAN30_CLEAR` `VLAN40_GUEST` |
 
-#### IFGRP_LOCAL_DNS
+#### IG_OUT_WAN
 
-|             |                                                                            |
-| ----------- | -------------------------------------------------------------------------- |
-| Name        | `IFGRP_LOCAL_DNS`                                                          |
-| Description | `Local interfaces of which outbound DNS traffic is redirected to OPNsense` |
-| Members     | `VLAN10_MANAGE` `VLAN20_VPN`                                               |
+|             |                                                                             |
+| ----------- | --------------------------------------------------------------------------- |
+| Name        | `IG_OUT_WAN`                                                                |
+| Description | `Interfaces allowing outbound WAN traffic`                                  |
+| Members     | `Loopback` `LAN` `VLAN10_MANAGE` `VLAN20_VPN` `VLAN30_CLEAR` `VLAN40_GUEST` |
 
-#### IFGRP_LOCAL_NTP
+#### IG_OUT_VPN
 
-|             |                                                                            |
-| ----------- | -------------------------------------------------------------------------- |
-| Name        | `IFGRP_LOCAL_NTP`                                                          |
-| Description | `Local interfaces of which outbound NTP traffic is redirected to OPNsense` |
-| Members     | `VLAN10_MANAGE` `VLAN20_VPN` `VLAN30_CLEAR`                                |
+|             |                                                                               |
+| ----------- | ----------------------------------------------------------------------------- |
+| Name        | `IG_OUT_VPN`                                                                  |
+| Description | `Interfaces allowing outbound VPN traffic and selective outbound WAN traffic` |
+| Members     | `VLAN20_VPN`                                                                  |
+
+#### IG_DNS_RESOLVE
+
+|             |                                    |
+| ----------- | ---------------------------------- |
+| Name        | `IG_DNS_RESOLVE`                   |
+| Description | `Interfaces forced to use Unbound` |
+| Members     | `VLAN10_MANAGE` `VLAN20_VPN`       |
+
+#### IG_DNS_FORWARD
+
+|             |                                    |
+| ----------- | ---------------------------------- |
+| Name        | `IG_DNS_FORWARD`                   |
+| Description | `Interfaces forced to use Dnsmasq` |
+| Members     | `VLAN30_CLEAR` `VLAN40_GUEST`      |
+
+#### IG_NTP
+
+|             |                                                   |
+| ----------- | ------------------------------------------------- |
+| Name        | `IG_NTP`                                          |
+| Description | `Interfaces forced to use OPNsense as NTP server` |
+| Members     | `VLAN10_MANAGE` `VLAN20_VPN` `VLAN30_CLEAR`       |
 
 ### Aliases
 
-To simplify the creation and maintenance of firewall rules, we define a few reusable [aliases](https://docs.opnsense.org/manual/aliases.html).
+We define a few reusable [aliases](https://docs.opnsense.org/manual/aliases.html) that also help us writing better firewall rules.
+
+![Screenshot of firewall aliases](firewall-aliases.png)
 
 Navigate to {{< breadcrumb "Firewall" "Aliases" >}} and create the following aliases.
 
@@ -677,30 +704,30 @@ Navigate to {{< breadcrumb "Firewall" "Aliases" >}} and create the following ali
 
 Services like banks might object to traffic originating from known VPN end points, so some traffic from the VPN VLAN must be selectively routed through the default WAN gateway.
 
-|             |                                                                              |
-| ----------- | ---------------------------------------------------------------------------- |
-| Name        | `SELECTIVE_ROUTING`                                                          |
-| Type        | `Host(s)`                                                                    |
-| Description | `Specific external hosts of which traffic is routed through the WAN gateway` |
+|             |                                                                 |
+| ----------- | --------------------------------------------------------------- |
+| Name        | `SELECTIVE_ROUTING`                                             |
+| Type        | `Host(s)`                                                       |
+| Description | `External hosts reachable from IG_OUT_VPN networks through WAN` |
 
 #### Admin / Anti-lockout Ports
 
-|             |                                        |
-| ----------- | -------------------------------------- |
-| Name        | `PORTS_ANTI_LOCKOUT`                   |
-| Type        | `Port(s)`                              |
-| Content     | `443` Web GUI<br>`22` SSH, if desired  |
-| Description | `Ports that must always be accessible` |
+|             |                            |
+| ----------- | -------------------------- |
+| Name        | `PORTS_ANTI_LOCKOUT`       |
+| Type        | `Port(s)`                  |
+| Content     | `443` (Web GUI) `22` (SSH) |
+| Description | `OPNsense admin ports`     |
 
 #### Ports Allowed To Communicate Between VLANs
 
-A list of ports allowing traffic between local VLANs. The following will get you started but require changes depending on your needs. Use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports.
+A list of ports permitted for intranet traffic. The following will get you started but require changes depending on your needs. Use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports and amend the list as required.
 
-|             |                    |
-| ----------- | ------------------ |
-| Name        | `PORTS_OUT_LAN`    |
-| Type        | `Port(s)`          |
-| Description | `Inter-VLAN ports` |
+|             |                              |
+| ----------- | ---------------------------- |
+| Name        | `PORTS_OUT_LAN`              |
+| Type        | `Port(s)`                    |
+| Description | `Ports allowed for intranet` |
 
 Content:
 
@@ -715,7 +742,6 @@ Content:
 - `443` HTTPS
 - `8443` HTTPS alt / UniFi application GUI/API as seen in a web browser
 - `8880` UniFi HTTP portal redirection
-- `8843` UniFi HTTPS portal redirection
 - `10001` UniFi device discovery
 - `5001` iperf
 - `5900` IPMI
@@ -724,13 +750,13 @@ Content:
 
 #### Ports Allowed to Communicate with the Internet
 
-A list of ports allowing egress traffic to the internet. The following will get you started but require changes depending on your needs. Use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports.
+A list of ports allowing egress traffic to the internet. The following will get you started but require changes depending on your needs. Use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports and amend the list as required.
 
-|             |                    |
-| ----------- | ------------------ |
-| Name        | `PORTS_OUT_WAN`    |
-| Type        | `Port(s)`          |
-| Description | `WAN egress ports` |
+|             |                              |
+| ----------- | ---------------------------- |
+| Name        | `PORTS_OUT_WAN`              |
+| Type        | `Port(s)`                    |
+| Description | `Ports allowed for internet` |
 
 Content:
 
@@ -745,234 +771,276 @@ Content:
 - `993`: IMAPS
 - `49152:65535` ephemeral ports
 
+Some of those aliases might become hard to maintain as more ports are added. Nesting aliases is one solution you might want to consider.
+
 ### NAT
 
-NAT is required to translate private to public IP addresses:
+Network Address Translation (NAT) is required to translate private to public IP addresses. We have the following requirements:
 
-- All VLAN IPs are translated to the WAN address range
-- VPN VLAN IPs are translated to VPN_WAN and WAN ranges (selective routing)
+- Translate `IG_OUT_WAN` and `IG_OUT_VPN` network addresses to the `WAN` address range. Translating `IG_OUT_VPN` to `WAN` enables selective routing.
+- Translate `IG_OUT_VPN` network addresses to the `WAN_VPN*` address ranges.
+
+![Screenshot of NAT rule overview](firewall-nat.png)
 
 Navigate to {{< breadcrumb "Firewall" "NAT" "Outbound" >}}.
 
-Select `Manual outbound NAT rule generation`, click `Save`, click `Apply changes`, and add the following rules.
+Select `Manual outbound NAT rule generation` and add the following rules.
 
-#### localhost to WAN
+#### IG_OUT_WAN to WAN
 
-|                |                    |
-| -------------- | ------------------ |
-| Interface      | `WAN`              |
-| Source address | `Loopback net`     |
-| Description    | `localhost to WAN` |
+|                |                     |
+| -------------- | ------------------- |
+| Interface      | `WAN`               |
+| Source address | `IG_OUT_WAN net`    |
+| Description    | `IG_OUT_WAN to WAN` |
 
-#### IFGRP_LOCAL to WAN
+#### IG_OUT_VPN to WAN
 
-|                |                      |
-| -------------- | -------------------- |
-| Interface      | `WAN`                |
-| Source address | `IFGRP_LOCAL net`    |
-| Description    | `IFGRP_LOCAL to WAN` |
+|                |                     |
+| -------------- | ------------------- |
+| Interface      | `WAN`               |
+| Source address | `IG_OUT_VPN net`    |
+| Description    | `IG_OUT_VPN to WAN` |
 
-#### VLAN20_VPN to WAN_VPN0
+#### IG_OUT_VPN to WAN_VPN0
 
 |                |                          |
 | -------------- | ------------------------ |
 | Interface      | `WAN_VPN0`               |
-| Source address | `VLAN20_VPN net`         |
-| Description    | `VLAN20_VPN to WAN_VPN0` |
+| Source address | `IG_OUT_VPN net`         |
+| Description    | `IG_OUT_VPN to WAN_VPN0` |
 
-#### VLAN20_VPN to WAN_VPN1
+#### IG_OUT_VPN to WAN_VPN1
 
 |                |                          |
 | -------------- | ------------------------ |
 | Interface      | `WAN_VPN1`               |
-| Source address | `VLAN20_VPN net`         |
-| Description    | `VLAN20_VPN to WAN_VPN1` |
+| Source address | `IG_OUT_VPN net`         |
+| Description    | `IG_OUT_VPN to WAN_VPN1` |
 
 ### Rules
 
-#### IFGRP_LOCAL Rules
+Navigate to {{< breadcrumb "Firewall" "Rules" >}}.
 
-These rules apply to any local interface.
+#### Anti-Lockout
 
-Navigate to {{< breadcrumb "Firewall" "Rules" "IFGRP_LOCAL" >}} and add the following rules.
+Before adding any rules, we add anti-lockout rules on the `VLAN10_MANAGE` and `LAN` networks, so we can't lock ourselves out. 😅
 
-##### ICMP Debugging Rule
+![Screenshot of anti-lockout rule](firewall-rules-anti-lockout.png)
 
-By default all local interfaces allow ICMP pings from any other local interface.
+Select **VLAN10_MANAGE** and add the following rule.
 
-|                |                          |
-| -------------- | ------------------------ |
-| Action         | `Pass`                   |
-| Interface      | `IFGRP_LOCAL`            |
-| TCP/IP Version | `IPv4`                   |
-| Protocol       | `ICMP`                   |
-| ICMP type      | `Echo Request`           |
-| Source         | `IFGRP_LOCAL net`        |
-| Description    | `Allow inter-VLAN pings` |
+|                        |                         |
+| ---------------------- | ----------------------- |
+| Action                 | `Pass`                  |
+| Interface              | `VLAN10_MANAGE`         |
+| Protocol               | `TCP/UDP`               |
+| Source                 | `VLAN10_MANAGE net`     |
+| Destination            | `VLAN10_MANAGE address` |
+| Destination port range | `PORTS_ANTI_LOCKOUT`    |
+| Description            | `Anti-lockout`          |
 
-##### Default Reject Rule
+Select **LAN** and add the following rule _to the top_.
 
-By default we reject (not block) traffic on local interfaces providing an immediate response to applications.
+|                        |                      |
+| ---------------------- | -------------------- |
+| Action                 | `Pass`               |
+| Interface              | `LAN`                |
+| Protocol               | `TCP/UDP`            |
+| Source                 | `LAN net`            |
+| Destination            | `LAN address`        |
+| Destination port range | `PORTS_ANTI_LOCKOUT` |
+| Description            | `Anti-lockout`       |
 
-|                |                                                |
-| -------------- | ---------------------------------------------- |
-| Action         | `Reject`                                       |
-| Quick          | `unchecked`                                    |
-| Interface      | `IFGRP_LOCAL`                                  |
-| TCP/IP Version | `IPv4+IPv6`                                    |
-| Protocol       | `any`                                          |
-| Source         | `IFGRP_LOCAL net`                              |
-| Log            | `checked`                                      |
-| Description    | `Default reject all rule for local interfaces` |
+#### Allow Intranet Pings
 
-##### Allow Inter-VLAN Traffic On Allowed Ports Rule
+We allow ICMP pings for the entire local network. Pings can be maliciously abused, so you may put stricter rules into place if required.
 
-By default allow inter-VLAN traffic on `ALLOWED_PORTS`. It's crucial to uncheck the **Quick** option to be able to override this rule for `VLAN40_GUEST`.
+![Screenshot of intranet firewall rules](firewall-rules-intranet.png)
+
+Select **IG_LOCAL** and add the following rule.
+
+|                |                        |
+| -------------- | ---------------------- |
+| Action         | `Pass`                 |
+| Interface      | `IG_LOCAL`             |
+| TCP/IP Version | `IPv4`                 |
+| Protocol       | `ICMP`                 |
+| ICMP type      | `Echo Request`         |
+| Source         | `IG_LOCAL net`         |
+| Description    | `Allow intranet pings` |
+
+#### Reject Intranet Traffic By Default
+
+By default we _reject_ traffic on local interfaces instead of _blocking_ it. Blocking silently drops packets, rejecting returns a "friendly" response to the sender. To be able to override this rule, unchecking **Quick** is crucial!
+
+Select **IG_LOCAL** and add the following rule.
+
+|                |                                      |
+| -------------- | ------------------------------------ |
+| Action         | `Reject`                             |
+| **Quick**      | `unchecked`                          |
+| Interface      | `IG_LOCAL`                           |
+| TCP/IP Version | `IPv4+IPv6`                          |
+| Protocol       | `any`                                |
+| Source         | `IG_LOCAL net`                       |
+| Log            | `checked`                            |
+| Description    | `Reject intranet traffic by default` |
+
+#### Allow Intranet Traffic
+
+We only allow intranet traffic on `PORTS_OUT_LAN`. We have to override this rule for the `VLAN40_GUEST` network later, so we must uncheck the **Quick** option.
+
+Select **IG_LOCAL** and add the following rule.
+
+|                        |                          |
+| ---------------------- | ------------------------ |
+| Action                 | `Pass`                   |
+| **Quick**              | `unchecked`              |
+| Interface              | `IG_LOCAL`               |
+| Protocol               | `TCP/UDP`                |
+| Source                 | `IG_LOCAL net`           |
+| Destination            | `IG_LOCAL net`           |
+| Destination port range | `PORTS_OUT_LAN`          |
+| Description            | `Allow intranet traffic` |
+
+#### Allow Internet Traffic
+
+We allow internet traffic on `PORTS_OUT_WAN` for `IG_OUT_WAN` networks.
+
+![Screenshot of IG_OUT_WAN firewall rules](firewall-rules-out-wan.png)
+
+Select **IG_OUT_WAN** and add the following rule.
+
+|                        |                                      |
+| ---------------------- | ------------------------------------ |
+| Action                 | `Pass`                               |
+| Interface              | `IG_OUT_WAN`                         |
+| Protocol               | `TCP/UDP`                            |
+| Source                 | `IG_OUT_WAN net`                     |
+| Destination / Invert   | `checked`                            |
+| Destination            | `IG_OUT_WAN net`                     |
+| Destination port range | `PORTS_OUT_WAN`                      |
+| Description            | `Allow internet traffic through WAN` |
+
+We allow internet traffic on `PORTS_OUT_WAN` for `IG_OUT_WAN` networks.
+
+![Screenshot of IG_OUT_VPN firewall rules](firewall-rules-out-vpn.png)
+
+Select **IG_OUT_VPN** and add the following rules to configure selective routing.
+
+|                        |                                               |
+| ---------------------- | --------------------------------------------- |
+| Action                 | `Pass`                                        |
+| Interface              | `IG_OUT_VPN`                                  |
+| Protocol               | `TCP/UDP`                                     |
+| Source                 | `IG_OUT_VPN net`                              |
+| Destination            | `SELECTIVE_ROUTING`                           |
+| Destination port range | `PORTS_OUT_WAN`                               |
+| Description            | `Allow selected internet traffic through WAN` |
+
+|                        |                                                |
+| ---------------------- | ---------------------------------------------- |
+| Action                 | `Pass`                                         |
+| Protocol               | `TCP/UDP`                                      |
+| Source                 | `IG_OUT_VPN net`                               |
+| Destination / Invert   | `checked`                                      |
+| Destination            | `IG_OUT_VPN net`                               |
+| Destination port range | `PORTS_OUT_WAN`                                |
+| Description            | `Allow internet traffic through WAN_VPN_GROUP` |
+| Gateway                | `WAN_VPN_GROUP`                                |
+
+#### Restrict Guest Network
+
+Select **VLAN40_GUEST** and add the following rules.
+
+![Screenshot of guest network firewall rules](firewall-rules-guest.png)
+
+To deny Web GUI and SSH access from the guest network, we block traffic to any OPNsense interface on `PORTS_ANTI_LOCKOUT` ports. `This Firewall` is a pre-defined alias containing all interface addresses of OPNsense. We'll log
+
+|                        |                      |
+| ---------------------- | -------------------- |
+| Action                 | `Block`              |
+| Interface              | `VLAN40_GUEST`       |
+| Protocol               | `TCP/UDP`            |
+| Source                 | `VLAN40_GUEST net`   |
+| Destination            | `This Firewall`      |
+| Destination port range | `PORTS_ANTI_LOCKOUT` |
+| Description            | `Block admin ports`  |
+
+We also want to deny access to other local networks.
+
+|                        |                      |
+| ---------------------- | -------------------- |
+| Action                 | `Block`              |
+| Interface              | `VLAN40_GUEST`       |
+| Protocol               | `TCP/UDP`            |
+| Source                 | `VLAN40_GUEST net`   |
+| Destination            | `This Firewall`      |
+| Destination port range | `PORTS_ANTI_LOCKOUT` |
+| Description            | `Block admin ports`  |
+
+#### LAN Network For Testing And Debugging
+
+I just keep the pre-defined "LAN to any" rules. I periodically reconfigure this network for testing and debugging and don't use it for anything else.
+
+![Screenshot of LAN rules](firewall-rules-lan.png)
+
+#### Redirect Outbound DNS Traffic
+
+To prevent clients from explicitly querying outbound DNS and leaking information, we redirect any outbound DNS traffic to Unbound or Dnsmasq.
+
+![Screenshot of DNS port forwarding configuration](firewall-port-forward-dns.png)
+
+Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and add the following rules.
+
+|                        |                                       |
+| ---------------------- | ------------------------------------- |
+| Interface              | `IG_DNS_FORWARD`                      |
+| Protocol               | `TCP/UDP`                             |
+| Source                 | `IG_DNS_FORWARD net`                  |
+| Destination            | `any`                                 |
+| Destination port range | `DNS`                                 |
+| Redirect target IP     | `127.0.0.1`                           |
+| Redirect target port   | `5335`                                |
+| Description            | `Redirect any DNS traffic to Dnsmasq` |
+
+|                        |                                            |
+| ---------------------- | ------------------------------------------ |
+| Interface              | `IG_DNS_RESOLVE`                           |
+| Protocol               | `TCP/UDP`                                  |
+| Source                 | `IG_DNS_RESOLVE net`                       |
+| Destination / Invert   | `checked`                                  |
+| Destination            | `IG_DNS_RESOLVE net`                       |
+| Destination port range | `DNS`                                      |
+| Redirect target IP     | `127.0.0.1`                                |
+| Redirect target port   | `DNS`                                      |
+| Description            | `Redirect outbound DNS traffic to Unbound` |
+
+#### Redirect Outbound NTP Traffic
+
+To sync the time of all our devices on the network, we forward all NTP traffic to OPNsense.
+
+![Screenshot of NTP port forwarding configuration](firewall-port-forward-ntp.png)
+
+Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and add the following rule.
 
 |                        |                                             |
 | ---------------------- | ------------------------------------------- |
-| Action                 | `Pass`                                      |
-| Interface              | `IFGRP_LOCAL`                               |
-| Protocol               | `TCP/UDP`                                   |
-| Source                 | `IFGRP_LOCAL net`                           |
-| Destination            | `IFGRP_LOCAL net`                           |
-| Destination port range | `PORTS_OUT_LAN`                             |
-| Description            | `Allow inter-VLAN traffic on allowed ports` |
-
-#### IFGRP_LOCAL_DNS Rules
-
-Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and click `Add`.
-
-|                        |                                             |
-| ---------------------- | ------------------------------------------- |
-| Interface              | `IFGRP_LOCAL_DNS`                           |
-| Protocol               | `TCP/UDP`                                   |
-| Source                 | `IFGRP_LOCAL_DNS net`                       |
-| Destination / Invert   | `checked`                                   |
-| Destination            | `IFGRP_LOCAL_DNS net`                       |
-| Destination port range | `DNS`                                       |
-| Redirect target IP     | `127.0.0.1`                                 |
-| Redirect target port   | `DNS`                                       |
-| Description            | `Redirect outbound DNS traffic to OPNsense` |
-
-#### IFGRP_LOCAL_NTP Rules
-
-Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and click `Add`.
-
-|                        |                                             |
-| ---------------------- | ------------------------------------------- |
-| Interface              | `IFGRP_LOCAL_NTP`                           |
+| Interface              | `IG_NTP`                                    |
 | Protocol               | `UDP`                                       |
-| Source                 | `IFGRP_LOCAL_NTP net`                       |
+| Source                 | `IG_NTP net`                                |
 | Destination / Invert   | `checked`                                   |
-| Destination            | `IFGRP_LOCAL_NTP net`                       |
+| Destination            | `IG_NTP net`                                |
 | Destination port range | `NTP`                                       |
 | Redirect target IP     | `127.0.0.1`                                 |
 | Redirect target port   | `NTP`                                       |
 | Description            | `Redirect outbound NTP traffic to OPNsense` |
 
-#### VLAN10_MANAGE Rules
-
-- allow traffic to local interfaces on approved ports
-- allow internet traffic on approved ports
-- redirect any non-local NTP time lookups to OPNsense
-- allow internal and external DNS resolution
-
-Navigate to {{< breadcrumb "Firewall" "Rules" "VLAN10_MANAGE" >}}.
-
-##### VLAN10_MANAGE Anti-lockout Rule
-
-- Click `+`
-- {{< kv "Action" "Pass" >}}
-- {{< kv "Interface" "VLAN10_MANAGE" >}}
-- {{< kv "Protocol" "TCP/UDP" >}}
-- {{< kv "Source" "VLAN10_MANAGE net" >}}
-- {{< kv "Destination" "VLAN10_MANAGE address" >}}
-- {{< kv "Destination port range" "ADMIN_PORTS" >}}
-- {{< kv "Description" "Anti-lockout to ensure access to OPNsense at all times" >}}
-- Click `Save`
-
-##### VLAN10_MANAGE Allow WAN Egress On PORTS_OUT_WAN Ports
-
-- Click `+`
-- {{< kv "Action" "Pass" >}}
-- {{< kv "Interface" "VLAN10_MANAGE" >}}
-- {{< kv "Protocol" "TCP/UDP" >}}
-- {{< kv "Source" "VLAN10_MANAGE net" >}}
-- {{< kv "Destination / Invert" "checked" >}}
-- {{< kv "Destination" "VLAN10_MANAGE net" >}}
-- {{< kv "Destination port range" "PORTS_OUT_WAN" >}}
-- {{< kv "Description" "Allow WAN egress on allowed ports" >}}
-- Click `Save`
-
-#### VLAN20_VPN Rules
-
-##### VLAN20_VPN Allow WAN Egress On SELECTIVE_ROUTING Ports
-
-|                        |                                               |
-| ---------------------- | --------------------------------------------- |
-| Action                 | `Pass`                                        |
-| Interface              | `VLAN20_VPN`                                  |
-| Protocol               | `TCP/UDP`                                     |
-| Source                 | `VLAN20_VPN net`                              |
-| Destination            | `SELECTIVE_ROUTING`                           |
-| Destination port range | `PORTS_OUT_WAN`                               |
-| Description            | `Allow WAN egress on SELECTIVE_ROUTING ports` |
-
-##### VLAN20_VPN Allow VPN Egress On Allowed Ports
-
-|                        |                                     |
-| ---------------------- | ----------------------------------- |
-| Action                 | `Pass`                              |
-| Quick                  | `VLAN20_VPN`                        |
-| Protocol               | `TCP/UDP`                           |
-| Source                 | `VLAN20_VPN net`                    |
-| Destination / Invert   | `checked`                           |
-| Destination            | `VLAN20_VPN net`                    |
-| Destination port range | `PORTS_OUT_WAN`                     |
-| Description            | `Allow VPN egress on allowed ports` |
-| Gateway                | `VPN_WAN_GROUP`                     |
-
-#### VLAN30_CLEAR Rules
-
-Requirements for the unencrypted, "clearnet" interface:
-
-- allow traffic to local networks on allowed ports
-- allow internet traffic on allowed ports via default gateway
-- redirect non-local NTP time lookups
-- redirect non-local DNS lookups to DNS forwarder
-- reject any other traffic
-
-#### LAN Rules
-
-##### LAN Anti-lockout Rule
-
-- Click `+`
-- {{< kv "Action" "Pass" >}}
-- {{< kv "Interface" "LAN" >}}
-- {{< kv "Protocol" "TCP/UDP" >}}
-- {{< kv "Source" "LAN net" >}}
-- {{< kv "Destination" "LAN address" >}}
-- {{< kv "Destination port range" "ADMIN_PORTS" >}}
-- {{< kv "Description" "Anti-lockout to ensure access to OPNsense at all times" >}}
-- Click `Save`
-- Move the rule to the top
-
-##### Pass LAN To Any Rule
-
-This rule should by default exist. If not, create it.
-
-- Click `+`
-- {{< kv "Action" "Pass" >}}
-- {{< kv "Interface" "LAN" >}}
-- {{< kv "Source" "LAN net" >}}
-- {{< kv "Description" "Default allow LAN to any rule" >}}
-- Click `Save`
-
 ## NTP
 
-Except the guest network, my entire homelab is synchronized to my OPNsense router. We earlier configured NTP servers with the wizard but we want to set a couple of more things:
+Except the guest network, all devices on my network use OPNsense as their NTP server. We earlier configured NTP servers with the wizard but we tweak a few more settings.
 
-|            |                                |
-| ---------- | ------------------------------ |
-| Interfaces | `VLAN10_MANAGE` `VLAN20_VPN` ` |
+|            |          |
+| ---------- | -------- |
+| Interfaces | `IG_NTP` |
