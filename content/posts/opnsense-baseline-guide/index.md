@@ -625,7 +625,7 @@ Here is an overview of what we want to implement with firewall rules.
 - Allow intranet communications
 - Redirect outbound DNS traffic to either Unbound or Dnsmasq
 - Redirect NTP traffic to OPNsense
-- Deny intranet access for guest network
+- Block intranet access for guest network
 
 |              | VLAN10  | VLAN20              | VLAN30  | VLAN40   | LAN      |
 | ------------ | ------- | ------------------- | ------- | -------- | -------- |
@@ -721,7 +721,7 @@ Services like banks might object to traffic originating from known VPN end point
 
 #### Ports Allowed To Communicate Between VLANs
 
-A list of ports permitted for intranet traffic. The following will get you started but require changes depending on your needs. Use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports and amend the list as required.
+A list of ports allowed for intranet traffic. Amend the list depending on your needs.
 
 |             |                              |
 | ----------- | ---------------------------- |
@@ -750,7 +750,7 @@ Content:
 
 #### Ports Allowed to Communicate with the Internet
 
-A list of ports allowing egress traffic to the internet. The following will get you started but require changes depending on your needs. Use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports and amend the list as required.
+A list of ports allowed for egress internet traffic. Amend the list depending on your needs.
 
 |             |                              |
 | ----------- | ---------------------------- |
@@ -828,29 +828,19 @@ Before adding any rules, we add anti-lockout rules on the `VLAN10_MANAGE` and `L
 
 ![Screenshot of anti-lockout rule](firewall-rules-anti-lockout.png)
 
-Select **VLAN10_MANAGE** and add the following rule.
+Select **Floating** and add the following rule.
 
-|                        |                         |
-| ---------------------- | ----------------------- |
-| Action                 | `Pass`                  |
-| Interface              | `VLAN10_MANAGE`         |
-| Protocol               | `TCP/UDP`               |
-| Source                 | `VLAN10_MANAGE net`     |
-| Destination            | `VLAN10_MANAGE address` |
-| Destination port range | `PORTS_ANTI_LOCKOUT`    |
-| Description            | `Anti-lockout`          |
+|                        |                       |
+| ---------------------- | --------------------- |
+| Action                 | `Pass`                |
+| Interface              | `LAN` `VLAN10_MANAGE` |
+| Protocol               | `TCP/UDP`             |
+| Source                 | `any`                 |
+| Destination            | `This Firewall`       |
+| Destination port range | `PORTS_ANTI_LOCKOUT`  |
+| Description            | `Anti-lockout`        |
 
-Select **LAN** and add the following rule _to the top_.
-
-|                        |                      |
-| ---------------------- | -------------------- |
-| Action                 | `Pass`               |
-| Interface              | `LAN`                |
-| Protocol               | `TCP/UDP`            |
-| Source                 | `LAN net`            |
-| Destination            | `LAN address`        |
-| Destination port range | `PORTS_ANTI_LOCKOUT` |
-| Description            | `Anti-lockout`       |
+`This Firewall` is a pre-defined alias including all interface addresses of OPNsense.
 
 #### Allow Intranet Pings
 
@@ -872,7 +862,7 @@ Select **IG_LOCAL** and add the following rule.
 
 #### Reject Intranet Traffic By Default
 
-By default we _reject_ traffic on local interfaces instead of _blocking_ it. Blocking silently drops packets, rejecting returns a "friendly" response to the sender. To be able to override this rule, unchecking **Quick** is crucial!
+By default, we _reject_ traffic on local interfaces instead of _blocking_ it. Blocking silently drops packets, rejecting returns a "friendly" response to the sender. To be able to override this rule, unchecking **Quick** is crucial! We enable logging to be able to use [Firewall Logs](https://docs.opnsense.org/manual/logging_firewall.html) to review blocked ports and amend our port list alias if necessary.
 
 Select **IG_LOCAL** and add the following rule.
 
@@ -915,15 +905,18 @@ Select **IG_OUT_WAN** and add the following rule.
 |                        |                                      |
 | ---------------------- | ------------------------------------ |
 | Action                 | `Pass`                               |
+| **Quick**              | `unchecked`                          |
 | Interface              | `IG_OUT_WAN`                         |
 | Protocol               | `TCP/UDP`                            |
 | Source                 | `IG_OUT_WAN net`                     |
 | Destination / Invert   | `checked`                            |
-| Destination            | `IG_OUT_WAN net`                     |
+| Destination            | `IG_LOCAL net`                       |
 | Destination port range | `PORTS_OUT_WAN`                      |
 | Description            | `Allow internet traffic through WAN` |
 
-We allow internet traffic on `PORTS_OUT_WAN` for `IG_OUT_WAN` networks.
+We later want to enable unrestricted internet access on the guest network, so make sure to uncheck the **Quick** option.
+
+Next, allow internet traffic on `PORTS_OUT_WAN` for `IG_OUT_VPN` networks.
 
 ![Screenshot of IG_OUT_VPN firewall rules](firewall-rules-out-vpn.png)
 
@@ -945,7 +938,7 @@ Select **IG_OUT_VPN** and add the following rules to configure selective routing
 | Protocol               | `TCP/UDP`                                      |
 | Source                 | `IG_OUT_VPN net`                               |
 | Destination / Invert   | `checked`                                      |
-| Destination            | `IG_OUT_VPN net`                               |
+| Destination            | `IG_LOCAL net`                                 |
 | Destination port range | `PORTS_OUT_WAN`                                |
 | Description            | `Allow internet traffic through WAN_VPN_GROUP` |
 | Gateway                | `WAN_VPN_GROUP`                                |
@@ -956,7 +949,7 @@ Select **VLAN40_GUEST** and add the following rules.
 
 ![Screenshot of guest network firewall rules](firewall-rules-guest.png)
 
-To deny Web GUI and SSH access from the guest network, we block traffic to any OPNsense interface on `PORTS_ANTI_LOCKOUT` ports. `This Firewall` is a pre-defined alias containing all interface addresses of OPNsense. We'll log
+To block Web GUI and SSH access from the guest network, we block traffic to any OPNsense interface on the `PORTS_ANTI_LOCKOUT` ports. We enable logging for this rule to be able to see if any guests try to access OPNsense.
 
 |                        |                      |
 | ---------------------- | -------------------- |
@@ -966,19 +959,32 @@ To deny Web GUI and SSH access from the guest network, we block traffic to any O
 | Source                 | `VLAN40_GUEST net`   |
 | Destination            | `This Firewall`      |
 | Destination port range | `PORTS_ANTI_LOCKOUT` |
+| Log                    | `checked`            |
 | Description            | `Block admin ports`  |
 
-We also want to deny access to other local networks.
+We block access to other local networks and also enable logging for the rule.
 
-|                        |                      |
-| ---------------------- | -------------------- |
-| Action                 | `Block`              |
-| Interface              | `VLAN40_GUEST`       |
-| Protocol               | `TCP/UDP`            |
-| Source                 | `VLAN40_GUEST net`   |
-| Destination            | `This Firewall`      |
-| Destination port range | `PORTS_ANTI_LOCKOUT` |
-| Description            | `Block admin ports`  |
+|             |                                   |
+| ----------- | --------------------------------- |
+| Action      | `Block`                           |
+| Interface   | `VLAN40_GUEST`                    |
+| Protocol    | `TCP/UDP`                         |
+| Source      | `VLAN40_GUEST net`                |
+| Destination | `IG_LOCAL net`                    |
+| Log         | `checked`                         |
+| Description | `Block traffic to local networks` |
+
+Finally, we enable unrestricted internet access on guest networks.
+
+|                      |                                |
+| -------------------- | ------------------------------ |
+| Action               | `Pass`                         |
+| Interface            | `VLAN40_GUEST`                 |
+| Protocol             | `TCP/UDP`                      |
+| Source               | `VLAN40_GUEST net`             |
+| Destination / Invert | `checked`                      |
+| Destination          | `IG_LOCAL net`                 |
+| Description          | `Unrestricted internet access` |
 
 #### LAN Network For Testing And Debugging
 
@@ -1036,11 +1042,3 @@ Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and add the follo
 | Redirect target IP     | `127.0.0.1`                                 |
 | Redirect target port   | `NTP`                                       |
 | Description            | `Redirect outbound NTP traffic to OPNsense` |
-
-## NTP
-
-Except the guest network, all devices on my network use OPNsense as their NTP server. We earlier configured NTP servers with the wizard but we tweak a few more settings.
-
-|            |          |
-| ---------- | -------- |
-| Interfaces | `IG_NTP` |
