@@ -743,8 +743,9 @@ Content:
 - `8443` HTTPS alt / UniFi application GUI/API as seen in a web browser
 - `8880` UniFi HTTP portal redirection
 - `10001` UniFi device discovery
-- `5001` iperf
-- `5900` IPMI
+- `5001` iPerf
+- `623` IPMI
+- `5900` VNC
 - `3389` RDP
 - `49152:65535` ephemeral ports
 
