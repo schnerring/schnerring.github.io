@@ -1,0 +1,82 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "basics": {
+    "name": "Michael Schnerring",
+    "label": "Software Engineer",
+    "image": "https://schnerring.net/michael-schnerring.jpg",
+    "url": "https://schnerring.net",
+    "summary": "I'm a lifelong computer geek, passionate about open-source and digital privacy. I like video games and CrossFit. I'm also terrible at blogging.",
+    "location": {
+      "city": "Brugg",
+      "countryCode": "CH",
+      "region": "Switzerland"
+    },
+    "profiles": [
+      {
+        "network": "GitHub",
+        "username": "schnerring",
+        "url": "https://github.com/schnerring"
+      },
+      {
+        "network": "Matrix",
+        "username": "@michael.schnerring.net",
+      },
+      {
+        "network": "LinkedIn",
+        "url": "https://www.linkedin.com/in/schnerring"
+      },
+      {
+        "network": "Twitter",
+        "url": "https://twitter.com/schnerringo"
+      },
+      {
+        "network": "StackOverflow",
+        "url": "https://stackoverflow.com/users/1154965/michael-schnerring"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "Combyte AG",
+      "location": "Brugg, Switzerland",
+      "description": "Intelligent software solutions for the social sector",
+      "position": "Full Stack Developer",
+      "url": "https://combyte.ch",
+      "startDate": "2011-11-01",
+      "summary": "Develops and distributes software solutions for social institutions, counseling centers, homes, schools etc. since 1997.",
+    }
+  ],
+  "education": [],
+  "skills": [
+    {
+      "name": "Windows Desktop Applications",
+      "level": "Master",
+      "keywords": ["C#", ".NET", "WPF", "ASP.NET"]
+    },
+  ],
+  "languages": [
+    {
+      "language": "German",
+      "fluency": "Fluent"
+    },
+    {
+      "language": "English",
+      "fluency": "Proficient"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Hugo Gruvbox Theme",
+      "description": "A retro-looking Hugo theme inspired by gruvbox to build secure, fast, and SEO-ready websites.",
+      "highlights": [
+        "Using modern technologies such as Hugo, NPM, and PostCSS"
+      ],
+      "roles": ["Author"],
+    }
+  ],
+  "meta": {
+    "canonical": "https://raw.githubusercontent.com/jsonresume/resume-schema/master/resume.json",
+    "version": "v1.0.0",
+    "lastModified": "2017-12-24T15:53:00"
+  }
+}
