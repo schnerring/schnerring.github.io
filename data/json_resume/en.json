@@ -19,7 +19,7 @@
       },
       {
         "network": "Matrix",
-        "username": "@michael.schnerring.net",
+        "username": "@michael.schnerring.net"
       },
       {
         "network": "LinkedIn",
@@ -43,7 +43,7 @@
       "position": "Full Stack Developer",
       "url": "https://combyte.ch",
       "startDate": "2011-11-01",
-      "summary": "Develops and distributes software solutions for social institutions, counseling centers, homes, schools etc. since 1997.",
+      "summary": "Develops and distributes software solutions for social institutions, counseling centers, homes, schools etc. since 1997."
     }
   ],
   "education": [],
@@ -52,7 +52,7 @@
       "name": "Windows Desktop Applications",
       "level": "Master",
       "keywords": ["C#", ".NET", "WPF", "ASP.NET"]
-    },
+    }
   ],
   "languages": [
     {
@@ -71,7 +71,7 @@
       "highlights": [
         "Using modern technologies such as Hugo, NPM, and PostCSS"
       ],
-      "roles": ["Author"],
+      "roles": ["Author"]
     }
   ],
   "meta": {
