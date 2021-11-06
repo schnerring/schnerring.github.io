@@ -1,0 +1,48 @@
+# Module debugging
+#replacements = "github.com/schnerring/hugo-mod-json-resume -> ../../hugo-mod-json-resume,github.com/schnerring/hugo-mod-github-readme-stats -> ../../hugo-mod-github-readme-stats"
+[hugoVersion]
+  extended = true
+  min = "0.84.0"
+[[imports]]
+  path = "github.com/schnerring/hugo-theme-gruvbox"
+[[imports]]
+  path = "github.com/schnerring/hugo-mod-github-readme-stats"
+[[imports]]
+  path = "github.com/schnerring/hugo-mod-json-resume"
+  [[imports.mounts]]
+    source = "data"
+    target = "data"
+  [[imports.mounts]]
+    source = "layouts"
+    target = "layouts"
+  [[imports.mounts]]
+    source = "assets/css/json-resume.css"
+    target = "assets/css/critical/44-json-resume.css"
+[[mounts]]
+  # required by hugo-mod-json-resume
+  source = "node_modules/simple-icons/icons"
+  target = "assets/simple-icons"
+[[mounts]]
+  source = "assets"
+  target = "assets"
+[[mounts]]
+  source = "layouts"
+  target = "layouts"
+[[mounts]]
+  source = "static"
+  target = "static"
+[[mounts]]
+  source = "node_modules/prismjs"
+  target = "assets/prismjs"
+[[mounts]]
+  source = "node_modules/prism-themes/themes"
+  target = "assets/prism-themes"
+[[mounts]]
+  source = "node_modules/typeface-fira-code/files"
+  target = "static/fonts"
+[[mounts]]
+  source = "node_modules/typeface-roboto-slab/files"
+  target = "static/fonts"
+[[mounts]]
+  source = "node_modules/@tabler/icons/icons"
+  target = "assets/tabler-icons"

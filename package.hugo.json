@@ -1,0 +1,37 @@
+{
+  "author": {
+    "email": "3743342+schnerring@users.noreply.github.com",
+    "name": "Michael Schnerring",
+    "url": "https://schnerring.net"
+  },
+  "bugs": {
+    "url": "https://github.com/schnerring/schnerring.github.io/issues"
+  },
+  "description": "A retro-looking Hugo theme inspired by gruvbox. The pastel colors are high contrast, easily distinguishable, pleasing to the eye, and feature light and dark color palettes.",
+  "homepage": "https://github.com/schnerring/schnerring.github.io#readme",
+  "keywords": [
+    "hugo",
+    "gruvbox",
+    "theme"
+  ],
+  "license": "MIT",
+  "lint-staged": {
+    "*.css": "stylelint --fix --allow-empty-input",
+    "*.js": "eslint --cache --fix",
+    "*.md": "markdownlint --fix"
+  },
+  "main": "index.js",
+  "name": "schnerring.github.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/schnerring/schnerring.github.io.git"
+  },
+  "scripts": {
+    "lint": "npm run lint:css && npm run lint:js && npm run lint:md",
+    "lint:css": "stylelint --fix **/*.css",
+    "lint:js": "eslint --fix --ext js .",
+    "lint:md": "markdownlint --fix **/*.md",
+    "prepare": "husky install"
+  },
+  "version": "1.0.0"
+}

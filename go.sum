@@ -1,0 +1,6 @@
+github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20211020170905-b0d048864583 h1:ED5p4++N24dvOIeGMHXsE4uyeWCJsJiBrOtbQFFC7X8=
+github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20211020170905-b0d048864583/go.mod h1:UFUlab+9vQRmtTw2vE8tPRitMp3lYLUYUcfD9QwP/oE=
+github.com/schnerring/hugo-mod-json-resume v0.0.0-20211021131217-daf0b579c56e h1:R2RxTrjfVWQRISRnfibp2Js+PspjaKMT85F8QdeniCI=
+github.com/schnerring/hugo-mod-json-resume v0.0.0-20211021131217-daf0b579c56e/go.mod h1:8XG8axdWciaWCd44mdQQLWGvoijmUurVOeyI4sD2hOw=
+github.com/schnerring/hugo-theme-gruvbox v0.0.0-20211106211940-4acc72d88ce3 h1:572TUyEt+F8e2TJwakJcQtoxKUB6HhGsOtpkPsr7cfY=
+github.com/schnerring/hugo-theme-gruvbox v0.0.0-20211106211940-4acc72d88ce3/go.mod h1:/8LWJ34eg2gBVdfomNjKwuYYTVl3uePP80yZPb99Fnc=
