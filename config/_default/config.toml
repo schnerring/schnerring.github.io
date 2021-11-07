@@ -1,0 +1,79 @@
+baseURL = "http://localhost"
+copyright = "<p>Copyright © 2020 Michael Schnerring</p><p xmlns:dct='http://purl.org/dc/terms/' xmlns:cc='http://creativecommons.org/ns#' class='license-text'><a rel='cc:attributionURL' property='dct:title' href='https://github.com/schnerring/schnerring.github.io/tree/main/content'>Content</a> licensed under <a rel='license' href='https://creativecommons.org/licenses/by/4.0'>CC BY 4.0</a></p>"
+title = "Michael Schnerring"
+#paginate = 10
+enableRobotsTXT = true
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      # This settings allows inlining <script> and <style> tags in markdown,
+      # which is useful and required to use Prism plugins, but may be dangerous
+      # if the content isn't trustworthy.
+      unsafe = true
+
+[params]
+  # dark or light, defaults to light
+  #defaultTheme = "dark"
+  # gray red green yellow blue purple aqua orange, defaults to blue
+  themeColor = "yellow"
+  # soft medium hard, defaults to medium
+  themeContrast = "hard"
+  author = "Michael Schnerring"
+  subtitle = "Software Engineer"
+  description = "Michael Schnerring is a coder and computer enthusiast."
+
+  [params.logo]
+    text = "schnerring.net"
+    url = "/"
+
+  [params.prism]
+    languages = [
+      "markup",
+      "css",
+      "clike",
+      "javascript",
+      "bash",
+      "csharp",
+      "hcl",
+      "ignore",
+      "json",
+      "markdown",
+      "toml",
+      "yaml"
+    ]
+    plugins = [
+      "normalize-whitespace",
+      "toolbar",
+      "copy-to-clipboard",
+      "command-line"
+    ]
+
+[menu]
+  [[menu.main]]
+    identifier = "blog"
+    name = "Blog"
+    url = "/posts"
+    weight = 10
+  [[menu.main]]
+    identifier = "cv"
+    name = "CV"
+    url = "/cv"
+    weight = 30
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about"
+    weight = 40
+
+[languages]
+  [languages.en]
+    languageName = "English"
+    weight = 10
+    [languages.en.params.jsonResume]
+      present = "present"
+  [languages.de]
+    languageName = "Deutsch"
+    weight = 20
+    [languages.de.params.jsonResume]
+      present = "heute"
