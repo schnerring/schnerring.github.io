@@ -16,7 +16,7 @@ enableRobotsTXT = true
   # dark or light, defaults to light
   defaultTheme = "dark"
   # gray red green yellow blue purple aqua orange, defaults to blue
-  themeColor = "yellow"
+  themeColor = "aqua"
   # soft medium hard, defaults to medium
   themeContrast = "hard"
   author = "Michael Schnerring"

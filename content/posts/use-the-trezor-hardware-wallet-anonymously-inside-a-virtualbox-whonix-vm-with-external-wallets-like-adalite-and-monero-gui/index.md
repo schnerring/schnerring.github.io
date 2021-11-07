@@ -127,4 +127,4 @@ We can now use Adalite by navigating to [https://adalite.io](https://adalite.io)
 
 For my purposes, this setup provides more than enough anonymity. Depending on your needs, it might be overkill or might not be anonymous or secure enough. It always depends on your threat model.
 
-What I don't understand is why SatoshLabs publishes a new signing key every year. Just one more thing to keep in mind come next year.
+I don't like that SatoshLabs publishes a new signing key every year. Just one more thing to keep in mind come next year.
