@@ -75,8 +75,8 @@ As already mentioned earlier, I bought the [Deciso DEC630](https://www.deciso.co
 
 Navigate to `192.168.1.1` in your browser and login with default credentials:
 
-- {{< kv "Username" "root" >}}
-- {{< kv "Password" "opnsense" >}}
+- **Username**: `root`
+- **Password**: `opnsense`
 
 Click `Next` to leave the welcome screen and get started.
 

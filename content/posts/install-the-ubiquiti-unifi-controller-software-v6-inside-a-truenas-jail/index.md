@@ -23,32 +23,48 @@ I tested the following on TrueNAS version `12.0-U6`.
 
 Connect to a shell via Web GUI or SSH and fetch the latest FreeBSD release available. At the time of this writing, it was `12.2-RELEASE`.
 
-```shell
-iocage fetch
-```
+<!-- markdownlint-disable MD033 -->
+<pre class="command-line language-bash" data-user="root" data-host="truenas">
+  <code>
+    iocage fetch
+  </code>
+</pre>
+<!-- markdownlint-enable MD033 -->
 
 Connect to TrueNAS via shell and create the jail.
 
-```shell
-iocage create --name unifi --release 12.2-RELEASE dhcp=1 boot=1
-```
+<!-- markdownlint-disable MD033 -->
+<pre class="command-line language-bash" data-user="root" data-host="truenas">
+  <code>
+    iocage create --name unifi --release 12.2-RELEASE dhcp=1 boot=1
+  </code>
+</pre>
+<!-- markdownlint-enable MD033 -->
 
 I use DHCP reservations to manage my server IPs. Setting `dhcp=1` also sets `vnet=1` and `bpf=1`. Network configuration is out of scope for this guide. Please consult the `iocage` manual (`man iocage`) or the [TrueNAS jails documentation](https://www.truenas.com/docs/core/applications/jails/) for more info. Setting `boot=1` enables auto-start at boot time.
 
 Connect to the jail.
 
-```shell
-sudo iocage console unifi
-```
+<!-- markdownlint-disable MD033 -->
+<pre class="command-line language-bash" data-user="root" data-host="truenas">
+  <code>
+    sudo iocage console unifi
+  </code>
+</pre>
+<!-- markdownlint-enable MD033 -->
 
 Once connected, run the following commands.
 
-```shell
-pkg update && pkg upgrade -y  # install updates
-pkg install unifi6            # install unifi
-sysrc unifi_enable=YES        # auto-start at boot
-service unifi start           # start unifi
-```
+<!-- markdownlint-disable MD033 -->
+<pre class="command-line language-bash" data-user="root" data-host="unifi">
+  <code>
+    pkg update && pkg upgrade -y  # install updates
+    pkg install unifi6            # install unifi
+    sysrc unifi_enable=YES        # auto-start at boot
+    service unifi start           # start unifi
+  </code>
+</pre>
+<!-- markdownlint-enable MD033 -->
 
 Connect to the UniFi controller at `https://<jail IP>:8443`.
 
@@ -58,16 +74,24 @@ Updating requires very few steps. **Please backup the jail before updating** to 
 
 Connect to the jail.
 
-```shell
-sudo iocage console unifi
-```
+<!-- markdownlint-disable MD033 -->
+<pre class="command-line language-bash" data-user="root" data-host="truenas">
+  <code>
+    sudo iocage console unifi
+  </code>
+</pre>
+<!-- markdownlint-enable MD033 -->
 
 Once connected, run the following commands.
 
-```shell
-service unifi stop            # stop unifi
-pkg update && pkg upgrade -y  # install updates
-service unifi start           # start unifi
-```
+<!-- markdownlint-disable MD033 -->
+<pre class="command-line language-bash" data-user="root" data-host="unifi">
+  <code>
+    service unifi stop            # stop unifi
+    pkg update && pkg upgrade -y  # install updates
+    service unifi start           # start unifi
+  </code>
+</pre>
+<!-- markdownlint-enable MD033 -->
 
 And that's it!
