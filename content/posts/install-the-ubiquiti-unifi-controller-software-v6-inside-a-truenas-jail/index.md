@@ -48,7 +48,7 @@ Connect to the jail.
 <!-- markdownlint-disable MD033 -->
 <pre class="command-line language-bash" data-user="root" data-host="truenas">
   <code>
-    sudo iocage console unifi
+    iocage console unifi
   </code>
 </pre>
 <!-- markdownlint-enable MD033 -->
@@ -72,12 +72,24 @@ Connect to the UniFi controller at `https://<jail IP>:8443`.
 
 Updating requires very few steps. **Please backup the jail before updating** to be able to roll back if something goes wrong.
 
+<!-- markdownlint-disable MD033 -->
+<pre class="command-line language-bash" data-user="root" data-host="truenas">
+  <code>
+    iocage stop unifi
+    iocage snapshot unifi
+    # OR
+    # iocage export unifi
+    iocage start unifi
+  </code>
+</pre>
+<!-- markdownlint-enable MD033 -->
+
 Connect to the jail.
 
 <!-- markdownlint-disable MD033 -->
 <pre class="command-line language-bash" data-user="root" data-host="truenas">
   <code>
-    sudo iocage console unifi
+    iocage console unifi
   </code>
 </pre>
 <!-- markdownlint-enable MD033 -->
