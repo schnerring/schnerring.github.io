@@ -1,22 +1,10 @@
 <div id="remark42"></div>
 
 <script>
-  const defaultTheme = "light"; // same as defaultTheme in config.toml
-  function getHelloFriendTheme() {
-    const theme = localStorage && localStorage.getItem("theme");
-    if (!theme) {
-      return defaultTheme;
-    } else {
-      return theme;
-    }
-  }
-</script>
-
-<script>
   var remark_config = {
     host: "https://remark42.schnerring.net",
     site_id: "schnerring.net",
-    theme: getHelloFriendTheme(),
+    theme: localStorage.getItem("theme"),
     show_email_subscription: false,
   };
 </script>
@@ -45,3 +33,5 @@
     setTimeout(() => window.REMARK42.changeTheme("dark"), 10);
   });
 </script>
+
+{{ partial "cookie-consent.html" . }}

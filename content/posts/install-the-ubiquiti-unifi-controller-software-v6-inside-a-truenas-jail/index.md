@@ -9,7 +9,7 @@ tags:
   - FreeBSD
   - Jails
   - TrueNAS
-  - Ubuquiti
+  - Ubiquiti
   - UniFi
 ---
 
