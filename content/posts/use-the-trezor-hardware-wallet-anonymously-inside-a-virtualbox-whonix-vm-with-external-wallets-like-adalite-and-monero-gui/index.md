@@ -1,21 +1,21 @@
 ---
 title: "Use the Trezor Hardware Wallet Anonymously Inside a VirtualBox Whonix VM With External Wallets Like Adalite and Monero GUI"
 date: 2021-10-22T20:15:36+02:00
-cover: "img/cover.png"
-useRelativeCover: true
+cover:
+  src: "img/cover.png"
 hideReadMore: true
 comments: true
 tags:
-- adalite
-- anonymity
-- cardano
-- cryptocurrency
-- monero
-- privacy
-- qubes os
-- trezor
-- virtualbox
-- whonix
+  - adalite
+  - anonymity
+  - cardano
+  - cryptocurrency
+  - monero
+  - privacy
+  - qubes os
+  - trezor
+  - virtualbox
+  - whonix
 ---
 
 In the past, I used an old laptop running [Qubes OS](https://www.qubes-os.org/) for any cryptocurrency-related stuff, and it worked great. It's where I first learned about [Whonix](https://www.whonix.org), a desktop operating system designed to protect your privacy online. Unfortunately, Qubes OS is a bit picky about the hardware it runs on. My old laptop only has four gigs of RAM, and I could barely run two instances of [MyEtherWallet](https://www.myetherwallet.com) in two separate [qubes](https://www.qubes-os.org/doc/glossary/#qube) without the system running out of memory.
@@ -68,7 +68,7 @@ We verify the authenticity of the key by running:
 gpg --with-fingerprint ./satoshilabs-2021-signing-key.asc
 ```
 
-The value of the fingerprint is `EB48 3B26 B078 A4AA 1B6F  425E E21B 6950 A2EC B65C`. If it's not, something is very wrong — do **NOT** continue! If everything looks good, we import the key:
+The value of the fingerprint is `EB48 3B26 B078 A4AA 1B6F 425E E21B 6950 A2EC B65C`. If it's not, something is very wrong — do **NOT** continue! If everything looks good, we import the key:
 
 ```shell
 gpg --import ./satoshilabs-2021-signing-key.asc
@@ -97,7 +97,7 @@ Next, we make the binary executable:
 
 ```shell
  chmod +x ./Trezor-Suite-XX.XX.X-linux-x86_64.AppImage
- ```
+```
 
 To launch the Trezor suite and connect to our hardware wallet, we run:
 

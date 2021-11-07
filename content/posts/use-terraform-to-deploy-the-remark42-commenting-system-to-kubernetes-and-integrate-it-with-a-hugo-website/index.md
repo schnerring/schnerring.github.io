@@ -1,8 +1,8 @@
 ---
 title: "Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website"
 date: 2021-05-09T09:31:13+02:00
-cover: "img/cover.svg"
-useRelativeCover: true
+cover:
+  src: "img/cover.svg"
 draft: false
 hideReadMore: true
 comments: true

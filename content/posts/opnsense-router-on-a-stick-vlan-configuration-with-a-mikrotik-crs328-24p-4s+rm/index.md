@@ -1,8 +1,6 @@
 ---
 title: "OPNsense Router on a Stick VLAN Configuration With a Mikrotik CRS328-24P-4S+RM"
 date: 2021-10-23T18:14:18+02:00
-cover: "img/cover.svg"
-useRelativeCover: true
 draft: true
 hideReadMore: true
 comments: true

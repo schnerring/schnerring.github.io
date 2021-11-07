@@ -1,8 +1,8 @@
 ---
 title: "Create a Modern CSS-only Fold-Out Burger Menu"
 date: 2021-08-03T03:30:10+02:00
-cover: "img/www.pexels.comphotoham-burger-with-vegetables-1639557.webp"
-useRelativeCover: true
+cover:
+  src: "img/www.pexels.comphotoham-burger-with-vegetables-1639557.webp"
 draft: false
 hideReadMore: true
 comments: true
@@ -165,8 +165,17 @@ When we later animate the lines, this will be important to know.
 ```html
 <div class="menu-burger">
   <input type="checkbox" />
-  <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="icon icon-tabler icon-tabler-menu-2"
+    viewBox="0 0 24 24"
+    stroke-width="2"
+    stroke="currentColor"
+    fill="none"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
     <line x1="4" y1="6" x2="20" y2="6" />
     <line x1="4" y1="12" x2="20" y2="12" />
     <line x1="4" y1="18" x2="20" y2="18" />
@@ -200,8 +209,7 @@ The menu contains the burger and a list of menu items inside `.menu-burger__item
   z-index: 2;
 }
 
-ul.menu-burger__item-list
-{
+ul.menu-burger__item-list {
   background: #ebdbb2;
   bottom: 0;
   color: #3c3836;
@@ -226,13 +234,13 @@ input:checked ~ .menu-burger__item-list {
 
 The most important things going on here are:
 
-* Any direct descendant of `.menu-burger` is positioned `absolute`ly
-* `menu-burger__item-list`, `svg`, and checkbox `input` are stacked on top of each other, ordered by `z-index`
-* The dimensions of the `input` checkbox and `svg` exactly match
-* To initially hide `menu-burger__item-list`, it's `translate`d out of view
-* A `transition` animation with a custom [`cubic-bezier` easing-function](https://www.w3schools.com/CSSref/func_cubic-bezier.asp) is added to the `transform` property, so the fold-out of the menu looks nice. You can play with it on [cubic-bezier.com](https://cubic-bezier.com/#.9,0,.1,1).
-* The "click handler" CSS magic is happening in `input:checked ~ .menu-burger__item-list`. `~` is the [subsequent-sibling combinator](https://www.w3.org/TR/selectors-3/#general-sibling-combinators). In this case it matches `.menu-burger__item-list` siblings of a `:checked` `input` checkbox and undoes the initial hiding `transition`.
-* The same "click handler" logic is used to change the colors of the `line` elements from dark to light
+- Any direct descendant of `.menu-burger` is positioned `absolute`ly
+- `menu-burger__item-list`, `svg`, and checkbox `input` are stacked on top of each other, ordered by `z-index`
+- The dimensions of the `input` checkbox and `svg` exactly match
+- To initially hide `menu-burger__item-list`, it's `translate`d out of view
+- A `transition` animation with a custom [`cubic-bezier` easing-function](https://www.w3schools.com/CSSref/func_cubic-bezier.asp) is added to the `transform` property, so the fold-out of the menu looks nice. You can play with it on [cubic-bezier.com](https://cubic-bezier.com/#.9,0,.1,1).
+- The "click handler" CSS magic is happening in `input:checked ~ .menu-burger__item-list`. `~` is the [subsequent-sibling combinator](https://www.w3.org/TR/selectors-3/#general-sibling-combinators). In this case it matches `.menu-burger__item-list` siblings of a `:checked` `input` checkbox and undoes the initial hiding `transition`.
+- The same "click handler" logic is used to change the colors of the `line` elements from dark to light
 
 The rest is self-explanatory, generic CSS styling. Here is what we have so far:
 
@@ -338,7 +346,7 @@ This styles the first, second and third `line` of `svg` like so:
 
 Let's take a step back and think about what the animation should do:
 
-1. Fade out the middle `line` by [scaling](https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/scale()) it down and changing its `opacity` to 0
+1. Fade out the middle `line` by [scaling](<https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/scale()>) it down and changing its `opacity` to 0
 2. Rotate the top and bottom lines to form an **X**. One way to do this is to vertically center both lines and rotate them by 45 degrees in opposing directions around their center.
 
 Before we get started, we have to understand [how transformation origins work](https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin) in CSS:
@@ -350,18 +358,15 @@ In our case, the default transform-origin is `(0,0)`. So before we apply transfo
 ![transform-origin](./img/transform-origin.svg)
 
 ```css
-.menu-burger svg line:nth-of-type(1)
-{
+.menu-burger svg line:nth-of-type(1) {
   transform-origin: center 6px;
 }
 
-.menu-burger svg line:nth-of-type(2)
-{
+.menu-burger svg line:nth-of-type(2) {
   transform-origin: center 12px;
 }
 
-.menu-burger svg line:nth-of-type(3)
-{
+.menu-burger svg line:nth-of-type(3) {
   transform-origin: center 18px;
 }
 ```
@@ -371,10 +376,7 @@ Next, use the `cubic-bezier` function again and apply it to every `line` propert
 ```css
 .menu-burger svg line {
   transition-duration: 0.5s;
-  transition-property:
-    stroke,
-    opacity,
-    transform;
+  transition-property: stroke, opacity, transform;
   transition-timing-function: cubic-bezier(0.9, 0, 0.1, 1);
 }
 ```
@@ -391,13 +393,11 @@ When clicked, we fade out the middle `line` of the burger:
 Finally, we vertically center and then rotate the top and bottom `line`s:
 
 ```css
-.menu-burger input:checked ~ svg line:nth-of-type(1)
-{
+.menu-burger input:checked ~ svg line:nth-of-type(1) {
   transform: translate(0, 6px) rotate(45deg);
 }
 
-.menu-burger input:checked ~ svg line:nth-of-type(3)
-{
+.menu-burger input:checked ~ svg line:nth-of-type(3) {
   transform: translate(0, -6px) rotate(-45deg);
 }
 ```
@@ -436,8 +436,7 @@ What do you think? Let me know in the comments or at me on Twitter.
   z-index: 2;
 }
 
-ul.menu-burger__item-list
-{
+ul.menu-burger__item-list {
   background: #ebdbb2;
   bottom: 0;
   color: #3c3836;
@@ -459,27 +458,21 @@ input:checked ~ .menu-burger__item-list {
   stroke: #3c3836;
 }
 
-.menu-burger svg line:nth-of-type(1)
-{
+.menu-burger svg line:nth-of-type(1) {
   transform-origin: center 6px;
 }
 
-.menu-burger svg line:nth-of-type(2)
-{
+.menu-burger svg line:nth-of-type(2) {
   transform-origin: center 12px;
 }
 
-.menu-burger svg line:nth-of-type(3)
-{
+.menu-burger svg line:nth-of-type(3) {
   transform-origin: center 18px;
 }
 
 .menu-burger svg line {
   transition-duration: 0.5s;
-  transition-property:
-    stroke,
-    opacity,
-    transform;
+  transition-property: stroke, opacity, transform;
   transition-timing-function: cubic-bezier(0.9, 0, 0.1, 1);
 }
 
@@ -488,13 +481,11 @@ input:checked ~ .menu-burger__item-list {
   transform: scale(0.2);
 }
 
-.menu-burger input:checked ~ svg line:nth-of-type(1)
-{
+.menu-burger input:checked ~ svg line:nth-of-type(1) {
   transform: translate(0, 6px) rotate(45deg);
 }
 
-.menu-burger input:checked ~ svg line:nth-of-type(3)
-{
+.menu-burger input:checked ~ svg line:nth-of-type(3) {
   transform: translate(0, -6px) rotate(-45deg);
 }
 ```

@@ -1,10 +1,11 @@
 ---
 title: "OPNsense Baseline Guide with VPN Multi-WAN, Guest, and VLAN Support"
 date: 2021-10-23T23:37:35+02:00
-cover: "cover.png"
-useRelativeCover: true
+cover:
+  src: "cover.png"
 draft: true
 hideReadMore: true
+toc: true
 comments: true
 tags:
   - dnsmasq
