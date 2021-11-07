@@ -68,6 +68,7 @@
     {
       "name": "Hugo Gruvbox Theme",
       "description": "A retro-looking Hugo theme inspired by gruvbox to build secure, fast, and SEO-ready websites.",
+      "startDate": "2021-06-01",
       "highlights": [
         "Using modern technologies such as Hugo, NPM, and PostCSS"
       ],
