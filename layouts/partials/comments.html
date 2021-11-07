@@ -36,8 +36,12 @@
 </script>
 
 <script>
-  const themeToggle = document.querySelector(".theme-toggle");
-  themeToggle.addEventListener("click", () => {
-    setTimeout(() => window.REMARK42.changeTheme(getHelloFriendTheme()), 10);
+  const themeToggleLight = document.getElementsByClassName("theme__toggle light--hidden").item(0);
+  themeToggleLight.addEventListener("click", () => {
+    setTimeout(() => window.REMARK42.changeTheme("light"), 10);
+  });
+  const themeToggleDark = document.getElementsByClassName("theme__toggle dark--hidden").item(0)
+  themeToggleDark.addEventListener("click", () => {
+    setTimeout(() => window.REMARK42.changeTheme("dark"), 10);
   });
 </script>
