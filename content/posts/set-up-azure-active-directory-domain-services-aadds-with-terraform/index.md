@@ -14,7 +14,7 @@ tags:
   - terraform
 ---
 
-### Update 2021-08-03
+## Update 2021-08-03
 
 With [v2.69.0 of the official Terraform azurerm provider](https://github.com/terraform-providers/terraform-provider-azurerm/releases/tag/v2.69.0) released two weeks ago, the [`active_directory_domain_service`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service) and [`active_directory_domain_service_replica_set`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service_replica_set) resources are now available. If you are newly adding AADDS, there is no point in reading any further — use the official resources.
 
