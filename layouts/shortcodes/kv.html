@@ -1,3 +1,0 @@
-{{ $key := .Get 0 }}
-{{ $value := .Get 1 }}
-<strong>{{ $key }}</strong>:{{ with $value }}{{ range split . "," }} <code>{{ trim . " " }}</code>{{ end }}{{end }}
