@@ -1,0 +1,26 @@
+<script>
+  function cookieConsentClick() {
+    localStorage.setItem("cookie-consent", true);
+    const cookieConsentBanner = document.getElementById("cookie-consent");
+    cookieConsentBanner.classList.add("cookie-consent--hidden");
+  }
+</script>
+
+<div id="cookie-consent" class="cookie-consent--hidden">
+  <div class="cli-prompt">
+    <div class="cli-prompt__chevron">>&nbsp;</div>
+    <div class="cli-prompt__text">
+      <span>When you participate in the comments, a cookie is used to keep you logged in.</span>
+      <span class="cli-prompt__cursor">█</span>
+    </div>
+    <button onclick="cookieConsentClick()">Got it!</button>
+  </div>
+</div>
+
+<script>
+  const cookieConsentAccepted = localStorage && localStorage.getItem("cookie-consent");
+  if (!cookieConsentAccepted) {
+    const cookieConsentBanner = document.getElementById("cookie-consent");
+    cookieConsentBanner.classList.remove("cookie-consent--hidden");
+  }
+</script>

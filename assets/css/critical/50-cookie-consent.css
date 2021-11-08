@@ -1,0 +1,52 @@
+#cookie-consent {
+  animation: 0.75s fadeIn;
+  background: var(--bg);
+  border-radius: 0.2rem;
+  bottom: 1rem;
+  box-shadow: 0 -0.5rem 1rem var(--bg1);
+  font-family: var(--font-monospace);
+  left: 1rem;
+  padding: 1rem;
+  position: fixed;
+  right: 1rem;
+
+  @media (--md) {
+    padding: 2.5rem;
+  }
+
+  & button {
+    background: none;
+    border: none;
+    color: var(--primary-alt);
+    font-size: 1.125rem;
+    margin: 0 1rem;
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--primary);
+      cursor: pointer;
+    }
+  }
+}
+
+.cookie-consent--hidden {
+  display: none;
+}
+
+.cli-prompt {
+  display: flex;
+  justify-content: center;
+}
+
+.cli-prompt__cursor {
+  animation: 1s blink infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
