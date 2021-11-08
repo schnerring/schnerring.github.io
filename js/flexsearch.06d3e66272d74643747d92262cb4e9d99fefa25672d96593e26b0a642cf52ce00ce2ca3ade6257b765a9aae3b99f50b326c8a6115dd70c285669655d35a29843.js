@@ -5,11 +5,11 @@ Install UniFi #  Connect to a shell via Web GUI or SSH and fetch the latest Free
  iocage fetch   Connect to TrueNAS via shell and create the jail.
  iocage create --name unifi --release 12.2-RELEASE dhcp=1 boot=1   I use DHCP reservations to manage my server IPs. Setting dhcp=1 also sets vnet=1 and bpf=1. Network configuration is out of scope for this guide. Please consult the iocage manual (man iocage) or the TrueNAS jails documentation for more info. Setting boot=1 enables auto-start at boot time.
 Connect to the jail.
- sudo iocage console unifi   Once connected, run the following commands.
+ iocage console unifi   Once connected, run the following commands.
  pkg update && pkg upgrade -y # install updates pkg install unifi6 # install unifi sysrc unifi_enable=YES # auto-start at boot service unifi start # start unifi   Connect to the UniFi controller at https://&lt;jail IP&gt;:8443.
 Updating #  Updating requires very few steps. Please backup the jail before updating to be able to roll back if something goes wrong.
-Connect to the jail.
- sudo iocage console unifi   Once connected, run the following commands.
+ iocage stop unifi iocage snapshot unifi # OR # iocage export unifi iocage start unifi   Connect to the jail.
+ iocage console unifi   Once connected, run the following commands.
  service unifi stop # stop unifi pkg update && pkg upgrade -y # install updates service unifi start # start unifi   And that&rsquo;s it!
 `}).add({id:1,href:"/posts/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/",title:"Use Custom DNS Servers With Mullvad And Any WireGuard Client",description:`I&rsquo;ve been using Mullvad VPN for a while now but only ever used it with the official client on my workstation. I use DNS extensively in my home network, so as soon as I activate Mullvad, I can&rsquo;t resolve DNS names locally. Of course, this is by design and expected. I own an OPNsense appliance, so the natural solution is to move the tunnel there.
 TL;DR #  Use the following shell command to request an IP with no DNS hijacking:`,content:`I&rsquo;ve been using Mullvad VPN for a while now but only ever used it with the official client on my workstation. I use DNS extensively in my home network, so as soon as I activate Mullvad, I can&rsquo;t resolve DNS names locally. Of course, this is by design and expected. I own an OPNsense appliance, so the natural solution is to move the tunnel there.
