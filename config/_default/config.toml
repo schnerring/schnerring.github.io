@@ -7,10 +7,14 @@ enableRobotsTXT = true
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
-      # This settings allows inlining <script> and <style> tags in markdown,
+      # This setting allows inlining <script> and <style> tags in markdown,
       # which is useful and required to use Prism plugins, but may be dangerous
       # if the content isn't trustworthy.
       unsafe = true
+
+[imaging]
+  # JPEG and WebP quality
+  quality = 90
 
 [params]
   # dark or light, defaults to light
