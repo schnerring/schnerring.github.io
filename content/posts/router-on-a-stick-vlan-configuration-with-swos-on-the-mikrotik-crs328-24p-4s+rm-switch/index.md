@@ -1,15 +1,16 @@
 ---
-title: "Router on a Stick VLAN Configuration With the Mikrotik CRS328-24P-4S+RM"
+title: "Router on a Stick VLAN Configuration with SwOS on the Mikrotik CRS328-24P-4S+RM Switch"
 date: 2021-11-10T03:30:18+01:00
 hideReadMore: true
 comments: true
 cover:
   src: cover.png
 tags:
-  - homelab
-  - mikrotik
-  - network
-  - vlan
+  - Homelab
+  - Mikrotik
+  - Network
+  - SwOS
+  - VLAN
 ---
 
 My homelab grew quite a bit over the past years. And with that, my networking needs also changed: stricter firewall rules, segregating untrusted IoT devices into separate networks, traffic prioritization, and more. I wanted to document my switch and VLAN configuration. And maybe this is useful for someone else, too.
