@@ -3,13 +3,13 @@ title: "About"
 draft: false
 ---
 
-I'm passionate about almost everything in the computer world. That world is an infinitely deep rabbit hole teaching me new things every day. I love building things and solving problems. On this website, I share my thoughts and notes about things that interest me. Maybe my content was helpful to you. Blogging is also fun and helps to improve my writing!
+I'm passionate about almost everything in the computer world. That world is an infinitely deep rabbit hole teaching me new things every day. I love building things and solving problems. On this website, I share my thoughts and notes about things that interest me. And maybe my content even helps you.
 
 Found an error? Don't hesitate and contact me. Any feedback is greatly appreciated.
 
 ## Gruvbox Theme
 
-I am the author of the [gruvbox](https://github.com/schnerring/hugo-theme-gruvbox)-inspired Hugo theme you see. If you like it, you're free to use it, too. [The code is available on GitHub](https://github.com/schnerring/hugo-theme-gruvbox) and licensed under MIT. [Have a look at the demo site](https://hugo-theme-gruvbox.schnerring.net) to explore its features.
+I am the author of the Hugo theme you see. It uses the [gruvbox](https://github.com/schnerring/hugo-theme-gruvbox) color palette. If you like it, you're free to use it, too. [The code is available on GitHub](https://github.com/schnerring/hugo-theme-gruvbox) and licensed under MIT. [Have a look at the demo site](https://hugo-theme-gruvbox.schnerring.net) to explore its features.
 
 ## Analytics
 
