@@ -2,13 +2,18 @@
 
 My personal website, [schnerring.net](https://schnerring.net).
 
-## Setup
+## Local Development
 
-Initialize the Hugo theme:
+Install npm dependencies:
 
 ```shell
-git submodule init
-git submodule update
+npm ci
+```
+
+Run Hugo:
+
+```shell
+hugo server -D
 ```
 
 ## License
