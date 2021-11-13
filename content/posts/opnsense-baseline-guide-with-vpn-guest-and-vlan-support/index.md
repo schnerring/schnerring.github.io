@@ -22,11 +22,11 @@ tags:
   - wireguard
 ---
 
-This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the superb [pfSense baseline guide with VPN, Guest, and VLAN support](https://nguvu.org/pfsense/pfsense-baseline-setup) that some of you guys might know, and this is an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use [OPNsense](https://opnsense.org/) instead of pfSense. I bit the bullet and bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance. Albeit expensive and possibly overkill for my needs, I'm happy to support the open-source mission of Deciso, the maintainers of OPNsense.
+This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the [pfSense baseline guide with VPN, Guest, and VLAN support](https://nguvu.org/pfsense/pfsense-baseline-setup) that some of you guys might know, and this is an [OPNsense](https://opnsense.org) migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use OPNsense instead of pfSense. I bit the bullet and bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance. Albeit expensive and possibly overkill for my needs, I'm happy to support the open-source mission of Deciso, the maintainers of OPNsense.
 
-To configure OPNsense, I followed the instructions of the pfSense guide, taking notes on the differences. Some options moved to different menus, some were deprecated, and other stuff was outdated. As my notes grew, I decided to publish them as a guide on my website.
+To configure OPNsense, I followed the instructions of the pfSense guide, taking notes on the differences. Some options moved to different menus or changed. As my notes grew, I decided to publish them as a guide on my website.
 
-My goal was to create a beginner-friendly, comprehensive guide that's easy to follow. But I tried to strike a different balance regarding the brevity of the instructions compared to the pfSense guide. It's a matter of personal taste, but I find the instructions in that guide too verbose. I intentionally omit most of the repetitive "click save and apply" instructions and only list configuration changes deviating from defaults, making exceptions for important settings. I consider the OPNsense defaults stable enough for this approach in the hope of keeping the effort required to maintain this guide to a minimum.
+My goal was to create a comprehensive guide that's easy to follow. But I tried to strike a different balance regarding the brevity of the instructions compared to the pfSense guide. It's a matter of personal taste, but I find the instructions in that guide too verbose. I intentionally omit most of the repetitive "click save and apply" instructions and only list configuration changes deviating from defaults, making exceptions for important settings. I consider the OPNsense defaults stable enough for this approach in the hope of keeping the effort required to maintain this guide to a minimum.
 
 I'm a homelab hobbyist, so be warned that this guide likely contains errors. Please, verify the steps yourself and do your research. I hope this guide is as helpful and inspiring to you as the pfSense guide was to me. Your feedback is always welcome and very much appreciated.
 
@@ -43,7 +43,7 @@ We segregate the local network into several areas with different requirements.
 
 #### Management Network (VLAN 10)
 
-The management network connects to management interfaces like WiFi access points, IPMI interfaces, and headless servers.
+The management network connects native management interfaces like WiFi access points and IPMI interfaces.
 
 #### VPN Network (VLAN 20)
 
@@ -51,7 +51,7 @@ The primary LAN network uses a WireGuard VPN tunnel for outbound connections, ma
 
 #### "Clear" Network (VLAN 30)
 
-General-purpose web access where encryption isn't required or possible and outgoing connections routed through the ISP WAN gateway. It serves as a backup network in case the VPN tunnel fails.
+General-purpose web access network that doesn't use VPN tunnels. All outgoing connections leave through the ISP WAN gateway. It serves as a backup network in case the VPN tunnel fails.
 
 #### Guest Network (VLAN 40)
 
@@ -69,7 +69,9 @@ We'll configure a DNS resolver (Unbound), as well as a DNS forwarder (Dnsmasq) o
 
 The original pfSense guide features a [large section of hardware recommendations](https://nguvu.org/pfsense/pfsense-baseline-setup/#Hardware%20selection) and [installation instructions](https://nguvu.org/pfsense/pfsense-baseline-setup/#Install%20pfSense).
 
-As mentioned earlier, I bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance from Deciso, which is why I'm not advising on hardware choices. Have a look at the [official hardware sizing & setup guidelines](https://docs.opnsense.org/manual/hardware.html) for more information. See also [Initial Installation & Configuration](https://docs.opnsense.org/manual/install.html).
+As mentioned earlier, I bought the [Deciso DEC630](https://www.deciso.com/product-catalog/dec630/) appliance, which is why I'm not advising on hardware choices. Have a look at the [official hardware sizing & setup guidelines](https://docs.opnsense.org/manual/hardware.html) for more information. See also [Initial Installation & Configuration](https://docs.opnsense.org/manual/install.html).
+
+I verified this guide with a clean install of OPNsense version `21.7.5`.
 
 ## Initial Wizard Configuration
 
@@ -84,7 +86,7 @@ Click `Next` to leave the welcome screen and get started.
 
 ![Screenshot of the general wizard settings](wizard-general-config.png)
 
-I prefer using the DNS servers of [Quad9](https://quad9.org/) over the ones of my ISP. Only the clear and guest networks use these anyway, as secured networks use Unbound instead. If your ISP awards DNS servers via DHCP and you prefer to use those, you can leave `Override DNS` checked.
+I prefer using the DNS servers of [Quad9](https://quad9.org/) over the ones of my ISP. Only the clear and guest networks use these anyway, as secured networks use Unbound instead.
 
 For the domain, I prefer to use a subdomain of a domain name I own, like `corp.example.com`. I use the subdomain only internally. I consider the `local.lan` pattern a relic of the past. To prevent our local network structure from being leaked, we'll configure Unbound to treat the domain as private.
 
@@ -110,7 +112,7 @@ Choose the NTP servers geographically closest to your location. I live in Switze
 
 ### Wizard: Configure WAN / LAN Interfaces
 
-By default, the WAN interface obtains an IP via DHCP from your ISP. DHCP is also configured for the LAN interface by default and has the IP `192.168.1.1`. It works for most people, so we just keep the defaults.
+By default, the WAN interface obtains an IP address from your ISP via DHCP. DHCP is also configured for the LAN interface by default and has the IP `192.168.1.1`. It works for most people, so we just keep the defaults.
 
 ### Wizard: Set Root Password
 
@@ -146,7 +148,7 @@ Navigate to {{< breadcrumb "System" "Access" "Users" >}} and add a new user.
 | Group Memberships | `admins`                     |
 | Authorized keys   | `<valid SSH public key>`     |
 
-Configuring the SSH client and generating keys is out of scope for this guide, so I'll just refer to a [good DigitalOcean tutorial covering SSH essentials](https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys).
+Configuring the SSH client and generating keys is out of scope for this guide, so I'll just recommend this [DigitalOcean tutorial covering SSH essentials](https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys).
 
 ### Miscellaneous
 
@@ -157,7 +159,7 @@ Navigate to {{< breadcrumb "System" "Settings" "Miscellaneous" >}}.
 | Use PowerD    | `checked`    |
 | Power Mode    | `Hiadaptive` |
 
-Verify **Cryptography settings** and **Thermal Sensors** settings are compatible with your hardware.
+Choose **Cryptography settings** and **Thermal Sensors** settings compatible with your hardware.
 
 ### Firewall Settings
 
@@ -206,7 +208,7 @@ A 802.1Q-capable switch with properly configured VLANs is required. Check my [ro
 
 ### VLAN Definitions
 
-Typically, the `LAN` port also carries the VLAN traffic and functions as [trunk port](https://www.techopedia.com/definition/27008/trunk-port). For the Deciso DEC630, it's the `igb0` port. We choose it as the parent interface for all VLANs in the following steps.
+Typically, the `LAN` port also carries the VLAN traffic and functions as [trunk port](https://www.techopedia.com/definition/27008/trunk-port). For me, the default is the `igb0` port. I chose it as the parent interface for all VLANs in the following steps.
 
 ![Screenshot of VLAN configurations](vlan-configuration.png)
 
@@ -351,7 +353,7 @@ In recent years, [Mullvad](https://mullvad.net/) has been my VPN provider of cho
 
 I decided to go with [WireGuard](https://www.wireguard.com/) because I think WireGuard is the VPN protocol of the future. For more detailed steps, check the official OPNsense documentation on setting up [WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html) and [WireGuard selective routing](https://docs.opnsense.org/manual/how-tos/wireguard-selective-routing.html).
 
-Please note that the FreeBSD kernel does not (yet) natively support WireGuard, so you must install it as a plugin. Possibly, this doesn't meet your stability, security, or performance requirements. I'm fine riding the bleeding edge. 😎 Also, WireGuard does not yet support multi-WAN scenarios.
+Please note that the FreeBSD kernel does not (yet) natively support WireGuard, so you must install it as a plugin. Possibly, this doesn't meet your stability, security, or performance requirements. I'm fine riding the bleeding edge. 😎 Also, WireGuard does not yet support multi-WAN scenarios. However, I chose an extensible naming scheme that allows adding more tunnels as soon as WireGuard natively supports multi-WAN.
 
 Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wireguard`. Refresh the browser and navigate to {{< breadcrumb "VPN" "WireGuard" >}}.
 
@@ -411,15 +413,15 @@ Copy the IPv4 IP address to the **Tunnel Address** field. Subtract one from the 
 
 ![Screenshot of WireGuard Local Peer configuration](wireguard-local-peer.png)
 
-When you finish, select the `General` tab. Check **Enable WireGuard**. You should see a handshake for the `wg0` tunnel on the `Handshakes` tab.
+When you finish, select the `General` tab. Check **Enable WireGuard**. You should see a handshake for the `wg0` tunnel on the **Handshakes** tab.
 
-### WireGuard Interfaces
+### WireGuard Interface
 
 Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 
 Select `wg0`, add the description `WAN_VPN0`, and click `+`
 
-Enable the newly created interfaces and restart the WireGuard service after. It ensures that the newly created interface gets an IP address from WireGuard.
+Enable the newly created interface and restart the WireGuard service after. It ensures the interface gets an IP address from WireGuard.
 
 ### VPN Gateway
 
@@ -439,12 +441,16 @@ Navigate to {{< breadcrumb "System" "Gateways" "Single" >}} and add the VPN gate
 
 #### Monitoring IP
 
-The VPN gateway requires a monitoring IP. Setting a monitoring IP installs a static route, so each IP must be unique. Optimally, the monitoring IP should be the least possible amount of hops away from the gateway. For Mullvad specifically, we can "abuse" their local infrastructure available through a Mullvad connection. Any of the following IPs are only _one_ hop away from the tunnel exit:
+The VPN gateway requires a monitoring IP. Setting a monitoring IP installs a static route, so each IP must be unique. Optimally, the monitoring IP should be the least possible amount of hops away from the gateway. For Mullvad specifically, we can "abuse" the local infrastructure that's available through a Mullvad connection. Any of the following IPs are only _one_ hop away from the tunnel exit:
 
 - `100.64.0.1` to `100.64.0.3` are [Mullvad's ad-blocking and tracker-blocking DNS service servers](https://mullvad.net/it/blog/2021/5/27/how-set-ad-blocking-our-app/)
 - `10.64.0.1` is the local Mullvad gateway
 
 You can easily verify the above by running `traceroute 100.64.0.1` from a host connected to Mullvad.
+
+#### Assign Gateway to the WireGuard Interface
+
+[Please note that in OPNsense versions >= 21.7 the **Outgoing Network Interfaces** currently doesn't work due to a bug.](https://github.com/opnsense/core/issues/5329#issuecomment-958397043)
 
 ### Static Route
 
@@ -494,8 +500,6 @@ Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}}.
 | Local Zone Type             | `static`                           |
 | Outgoing Network Interfaces | `WAN_VPN0`                         |
 
-[Please note that in OPNsense versions >= 21.7 the **Outgoing Network Interfaces** currently doesn't work due to a bug.](https://github.com/opnsense/core/issues/5329#issuecomment-958397043)
-
 Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 
 |                          |           |
@@ -506,7 +510,7 @@ Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 | Prefetch DNS Key Support | `checked` |
 | Harden DNSSEC data       | `checked` |
 
-The final step is to add a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone making Unbound the authoritative name server for `corp.example.com`. We prevent Unbound from querying external name servers for an internal domain and exposing our network structure to the outside. For [advanced Unbound configuration like this](https://docs.opnsense.org/manual/unbound.html#advanced-configurations), we use [Templates](https://docs.opnsense.org/development/backend/templates.html) (OPNsense versions >= 21.7).
+The final step is to add a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone making Unbound the authoritative name server for `corp.example.com`. We prevent Unbound from querying external name servers for an internal domain and exposing our network structure to the outside. For [advanced Unbound configuration like this](https://docs.opnsense.org/manual/unbound.html#advanced-configurations), we use [Templates](https://docs.opnsense.org/development/backend/templates.html).
 
 Connect to OPNsense via serial console or SSH and add a `+TARGETS` file by running `sudo vi /usr/local/opnsense/service/templates/OPNsense/Unbound/+TARGETS` containing:
 
@@ -587,6 +591,8 @@ Here is an overview of what we want to implement with firewall rules.
 
 [Interface groups](https://docs.opnsense.org/manual/firewall_groups.html) are used to apply policies to multiple interfaces at once. Do not use them for WAN interfaces because they don't use the `reply-to` directive. Using interface groups reduces the number of required firewall rules significantly.
 
+I'm honestly not sure if I went overboard with interface groups and over-abstracted things. Currently, I'm happy with the configuration, and I guess only time will tell how maintainable this approach is. I'd like to know what you think and would appreciate your feedback here.
+
 ![Screenshot of firewall interface groups](firewall-interface-groups.png)
 
 Navigate to {{< breadcrumb "Firewall" "Groups" >}} and add the following interface groups.
@@ -601,11 +607,11 @@ Navigate to {{< breadcrumb "Firewall" "Groups" >}} and add the following interfa
 
 #### IG_OUT_WAN
 
-|             |                                                                  |
-| ----------- | ---------------------------------------------------------------- |
-| Name        | `IG_OUT_WAN`                                                     |
-| Description | `Interfaces allowing outbound WAN traffic`                       |
-| Members     | `LAN` `VLAN10_MANAGE` `VLAN20_VPN` `VLAN30_CLEAR` `VLAN40_GUEST` |
+|             |                                                     |
+| ----------- | --------------------------------------------------- |
+| Name        | `IG_OUT_WAN`                                        |
+| Description | `Interfaces allowing outbound WAN traffic`          |
+| Members     | `LAN` `VLAN10_MANAGE` `VLAN30_CLEAR` `VLAN40_GUEST` |
 
 #### IG_OUT_VPN
 
@@ -641,7 +647,7 @@ Navigate to {{< breadcrumb "Firewall" "Groups" >}} and add the following interfa
 
 ### Aliases
 
-We define a few reusable [aliases](https://docs.opnsense.org/manual/aliases.html) that help us condense our firewall rules.
+We define a few reusable [aliases](https://docs.opnsense.org/manual/aliases.html) that help us condense our firewall rules. Some of them might become hard to maintain as they grow, in which case you might want to consider nesting aliases.
 
 ![Screenshot of firewall aliases](firewall-aliases.png)
 
@@ -719,8 +725,6 @@ Content:
 - `993`: IMAPS
 - `49152:65535` ephemeral ports
 
-Some of these aliases might become hard to maintain as they grow. You might want to consider nesting aliases.
-
 ### NAT
 
 Network Address Translation (NAT) is required to translate private to public IP addresses. We have the following requirements:
@@ -784,7 +788,7 @@ Select **Floating** and add the following rule.
 
 #### Allow Intranet Pings
 
-We allow ICMP pings for the entire local network. Pings are maliciously abusable, so you may put stricter rules into place if required.
+We allow ICMP pings for the entire local network. Pings are maliciously abusable, so you may want to put stricter rules into place if required.
 
 ![Screenshot of intranet firewall rules](firewall-rules-intranet.png)
 
@@ -819,7 +823,7 @@ Select **IG_LOCAL** and add the following rule.
 
 #### Allow Intranet Traffic
 
-We only allow intranet traffic on `PORTS_OUT_LAN`. We have to override this rule for the `VLAN40_GUEST` network later, so we must uncheck the **Quick** option. For the management network, you might want to consider putting stricter rules into place, as well.
+We only allow intranet traffic on `PORTS_OUT_LAN`. We have to override this rule for the `VLAN40_GUEST` network later, so we must uncheck the **Quick** option. For the management network, you might want to consider stricter rules, as well.
 
 Select **IG_LOCAL** and add the following rule.
 
@@ -984,6 +988,8 @@ Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and add the follo
 | Description            | `Redirect outbound NTP traffic to OPNsense` |
 
 ## Verify
+
+Now would be a could time to reboot OPNsense to make sure all settings are applied.
 
 ### Verify DNS Functionality
 
