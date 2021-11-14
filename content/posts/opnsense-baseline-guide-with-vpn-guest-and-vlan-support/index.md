@@ -469,13 +469,13 @@ Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`
 
 ## DNS
 
-OPNsense includes a DNS _resolver_ (Unbound) and a DNS _forwarder_ (Dnsmasq / Unbound in forwarding mode). Simple setups usually use one of either, but we'll use both. Because we'll also use Unbound and Dnsmasq for internal DNS resolution, we don't want to use them for the guest network and possibly expose or network structure. That's the reason why we earlier configured it to use Cloudflare DNS servers instead.
+OPNsense includes a DNS _resolver_ (Unbound) and a DNS _forwarder_ (Dnsmasq / Unbound in forwarding mode). Simple setups usually use one of either, but we'll use both. Because we'll also use Unbound and Dnsmasq for internal DNS resolution, we don't want to use them for the guest network, as this would expose our internal network structure. That's the reason why we earlier configured it to use Cloudflare DNS servers instead.
 
-A DNS forwarder forwards DNS requests to an external DNS resolver of an ISP, Quad9, Cloudflare, or similar. We'll configure the forwarder for the clear network. In case the primary, secured networks lose connectivity, the clear network can serve as a backup.
+Like the name suggests, a DNS forwarder forwards DNS requests to an external DNS resolver of an ISP, Quad9, Cloudflare, or similar service provider. We'll configure the forwarder for the clear network. In case the primary, secured networks lose connectivity, the clear network can serve as a backup.
 
 One of the advantages of self-hosting a DNS resolver is improved privacy. A resolver iteratively queries a chain of one or more DNS servers to resolve a request, so there isn't a single instance knowing all your DNS requests. It comes at the cost of speed when resolving a hostname for the first time. As Unbound's cache grows, the cost diminishes. We'll configure our primary networks to use Unbound.
 
-We'll also keep DNS traffic from Unbound within the VPN tunnels. In the rare case of a VPN outage, we'll want local DNS services to fail and not leak through the ISP WAN. The reason for this isn't improved privacy as you might think. In some cases, this might even hurt your privacy. Why? Either your ISP or your VPN provider will see the iterative DNS queries Unbound sends. So it becomes a question of who you rather entrust with this data. But if there are no privacy benefits, why do it? Honestly, I don't require such a setup. I configured it for educational purposes and my desire to tinker with it. Other reasons that don't affect me but other users are:
+We'll also keep DNS traffic from Unbound within the VPN tunnels. In the rare case of a VPN outage, we'll want local DNS services to fail and not leak through the ISP WAN. The reason for this isn't improved privacy as you might think. In some cases, this might even hurt your privacy. Why? Either your ISP or your VPN provider will see the iterative DNS queries Unbound sends. So it becomes a question of who you rather entrust with this data. But if there are no privacy benefits, why do it? Honestly, I don't require such a setup. I configured it for educational purposes and fun. Other reasons that don't affect me but other users are:
 
 - ISP selling user data
 - ISP enforcing censorship
@@ -554,7 +554,7 @@ configctl unbound check
 
 ### DNS Forwarder (Dnsmasq)
 
-Dnsmasq will forward DNS requests to the configured system DNS servers, either explicitly set or received via DHCP. Because Unbound already uses port 53, we'll use port 5335 for Dnsmasq. We'll later create rules to port forward DNS traffic to this port.
+Dnsmasq will forward DNS requests to the configured system DNS servers. Earlier, you either explicitly configured them or decided to receive the DNS servers via DHCP from your ISP. Because Unbound already uses port 53, we'll use port 5335 for Dnsmasq. We'll later create rules to port forward DNS traffic to this port.
 
 Navigate to {{< breadcrumb "Services" "Dnsmasq DNS" "Settings" >}}.
 
@@ -566,9 +566,9 @@ Navigate to {{< breadcrumb "Services" "Dnsmasq DNS" "Settings" >}}.
 
 Forward reverse DNS lookups in the `192.168.0.0/16` range to Unbound by adding the following **Domain Override**:
 
-| Domain               | IP          | Description                                                |
-| -------------------- | ----------- | ---------------------------------------------------------- |
-| 168.192.in-addr.arpa | 192.168.1.1 | Forward reverse lookups of private IP addresses to Unbound |
+| Domain               | IP           | Description                                                |
+| -------------------- | ------------ | ---------------------------------------------------------- |
+| 168.192.in-addr.arpa | 192.168.20.1 | Forward reverse lookups of private IP addresses to Unbound |
 
 ## Firewall
 
@@ -591,9 +591,9 @@ Here is an overview of what we want to implement with firewall rules.
 
 ### Interface Groups
 
-[Interface groups](https://docs.opnsense.org/manual/firewall_groups.html) are used to apply policies to multiple interfaces at once. Do not use them for WAN interfaces because they don't use the `reply-to` directive. Using interface groups reduces the number of required firewall rules significantly.
+We use [interface groups](https://docs.opnsense.org/manual/firewall_groups.html) to apply policies to multiple interfaces at once and reduce the number of required firewall rules significantly. Do not use them for WAN interfaces because they don't use the `reply-to` directive!
 
-I'm honestly not sure if I went overboard with interface groups and over-abstracted things. Currently, I'm happy with the configuration, and I guess only time will tell how maintainable this approach is. I'd like to know what you think and would appreciate your feedback here.
+I'm honestly not sure if I went overboard with interface groups and over-abstracted things. Currently, I'm happy with the configuration, and I guess only time will tell how maintainable this approach is. I'd like to know what you think and would very much appreciate your feedback.
 
 ![Screenshot of firewall interface groups](firewall-interface-groups.png)
 
@@ -665,6 +665,8 @@ Services like banks might object to traffic originating from known VPN endpoints
 | Type        | `Host(s)`                                                       |
 | Description | `External hosts reachable from IG_OUT_VPN networks through WAN` |
 
+If you're having issues with a service not working due to VPN, add the hostname to this alias, e.g., `netflix.com`.
+
 #### Admin / Anti-lockout Ports
 
 |             |                            |
@@ -731,7 +733,7 @@ Content:
 
 Network Address Translation (NAT) is required to translate private to public IP addresses. We have the following requirements:
 
-- Translate `IG_OUT_WAN` and `IG_OUT_VPN` network addresses to the `WAN` address range. Translating `IG_OUT_VPN` to `WAN` enables selective routing.
+- Translate `IG_OUT_WAN` and `IG_OUT_VPN` network addresses to the `WAN` address range. Translating `IG_OUT_VPN` to `WAN` allows selective routing.
 - Translate `IG_OUT_VPN` network addresses to the `WAN_VPN0` address range.
 
 ![Screenshot of NAT rules overview](firewall-nat.png)
@@ -786,7 +788,7 @@ Select **Floating** and add the following rule.
 | Destination port range | `PORTS_ANTI_LOCKOUT`  |
 | Description            | `Anti-lockout`        |
 
-`This Firewall` is a pre-defined alias including all interface addresses of OPNsense.
+`This Firewall` is a pre-defined alias representing all interface addresses of OPNsense.
 
 #### Allow Intranet Pings
 
@@ -825,7 +827,7 @@ Select **IG_LOCAL** and add the following rule.
 
 #### Allow Intranet Traffic
 
-We only allow intranet traffic on `PORTS_OUT_LAN`. We have to override this rule for the `VLAN40_GUEST` network later, so we must uncheck the **Quick** option. For the management network, you might want to consider stricter rules, as well.
+We only allow intranet traffic on the ports defined in the `PORTS_OUT_LAN` alias. We'll override this rule for the `VLAN40_GUEST` network later, so we must uncheck the **Quick** option again. For the management network, you might want to consider stricter rules, as well.
 
 Select **IG_LOCAL** and add the following rule.
 
@@ -860,9 +862,9 @@ Select **IG_OUT_WAN** and add the following rule.
 | Destination port range | `PORTS_OUT_WAN`                      |
 | Description            | `Allow internet traffic through WAN` |
 
-We later want to enable unrestricted internet access on the guest network, so make sure to uncheck the **Quick** option.
+We later want to enable unrestricted internet access on the guest network, so make sure to uncheck the **Quick** option!
 
-Next, we allow internet traffic on `PORTS_OUT_WAN` for `IG_OUT_VPN` networks.
+Next, we allow internet traffic on `PORTS_OUT_WAN` for the `IG_OUT_VPN` networks.
 
 ![Screenshot of IG_OUT_VPN firewall rules](firewall-rules-out-vpn.png)
 
@@ -940,7 +942,7 @@ I just keep the pre-defined "LAN to any" rules. I periodically reconfigure this 
 
 #### Redirect Outbound DNS Traffic
 
-To prevent clients from explicitly querying outbound DNS and leaking information, we redirect any outbound DNS traffic to Unbound or Dnsmasq.
+To prevent clients from explicitly querying outbound DNS and leaking information to the outside, we redirect any outbound DNS traffic to Unbound or Dnsmasq.
 
 ![Screenshot of DNS port forwarding configuration](firewall-port-forward-dns.png)
 
@@ -971,7 +973,7 @@ Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and add the follo
 
 #### Redirect Outbound NTP Traffic
 
-To sync the time of all our devices on the network, we forward all NTP traffic to OPNsense.
+To sync the time of all our devices on the network to OPNsense, we redirect all NTP traffic.
 
 ![Screenshot of NTP port forwarding configuration](firewall-port-forward-ntp.png)
 
