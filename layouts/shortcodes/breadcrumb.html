@@ -1,4 +1,5 @@
-<strong>{{ index .Params 0 }}</strong>
-{{ range after 1 .Params }}
-  → <strong>{{ . }}</strong>
-{{ end }}
+<b>{{ index .Params 0 }}</b>
+{{- range after 1 .Params -}}
+  <span> → </span>
+  <b>{{ . }}</b>
+{{- end -}}
