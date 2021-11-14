@@ -1,6 +1,6 @@
 ---
 title: "OPNsense Baseline Guide with VPN, Guest, and VLAN Support"
-date: 2021-10-23T23:37:35+02:00
+date: 2021-11-14T02:37:35+01:00
 cover:
   src: "cover.png"
 draft: true
@@ -63,7 +63,7 @@ The network that visitors use. It allows unrestricted internet access. Local net
 
 ### DNS Servers
 
-We'll configure a DNS resolver (Unbound), as well as a DNS forwarder (Dnsmasq) on OPNsense. Secure primary networks will use the resolver and secondary networks the forwarder. [We'll dig into the details later](#dns).
+We'll configure a DNS resolver (Unbound), as well as a DNS forwarder (Dnsmasq) in OPNsense. Management and VPN networks will use the resolver, the clear network will use the forwarder, and the guest network will use Cloudflare as an external DNS resolver. [We'll dig into the details later](#dns).
 
 ## Hardware Selection and Installation
 
@@ -86,9 +86,9 @@ Click `Next` to leave the welcome screen and get started.
 
 ![Screenshot of the general wizard settings](wizard-general-config.png)
 
-I prefer using the DNS servers of [Quad9](https://quad9.org/) over the ones of my ISP. Only the clear and guest networks use these anyway, as secured networks use Unbound instead.
+I prefer using the DNS servers of [Quad9](https://quad9.org/) over the ones of my ISP. Only the clear network will use these anyway, as secured networks use Unbound instead. The guest network will use Cloudflare DNS servers.
 
-For the domain, I prefer to use a subdomain of a domain name I own, like `corp.example.com`. I use the subdomain only internally. I consider the `local.lan` pattern a relic of the past. To prevent our local network structure from being leaked, we'll configure Unbound to treat the domain as private.
+For the domain, I prefer to use a subdomain of a domain name I own, like `corp.example.com`. I use the subdomain only internally. I consider the `local.lan` pattern a relic of the past. To prevent our local network structure from leaking to the outside world, we'll later configure Unbound to treat the domain as private.
 
 |                       |                    |
 | --------------------- | ------------------ |
@@ -336,10 +336,11 @@ Click `Save`.
 
 #### DHCP: VLAN40_GUEST
 
-|        |                                           |
-| ------ | ----------------------------------------- |
-| Enable | `checked`                                 |
-| Range  | from `192.168.40.100` to `192.168.40.199` |
+|             |                                           |
+| ----------- | ----------------------------------------- |
+| Enable      | `checked`                                 |
+| Range       | from `192.168.40.100` to `192.168.40.199` |
+| DNS servers | `1.1.1.1` `1.0.0.1`                       |
 
 #### DHCP: LAN
 
@@ -468,9 +469,9 @@ Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`
 
 ## DNS
 
-OPNsense includes a DNS _resolver_ (Unbound) and a DNS _forwarder_ (Dnsmasq / Unbound in forwarding mode). Simple setups usually use one of either, but we'll use both.
+OPNsense includes a DNS _resolver_ (Unbound) and a DNS _forwarder_ (Dnsmasq / Unbound in forwarding mode). Simple setups usually use one of either, but we'll use both. Because we'll also use Unbound and Dnsmasq for internal DNS resolution, we don't want to use them for the guest network and possibly expose or network structure. That's the reason why we earlier configured it to use Cloudflare DNS servers instead.
 
-A DNS forwarder simply forwards DNS requests to an external DNS resolver of a service provider like an ISP, Cloudflare, or Google. We'll configure the forwarder for the clear and guest networks. In case the primary, secured networks lose connectivity, the clear network can serve as a backup. We'll use the forwarder for the guest network because we use Unbound for internal DNS resolution. So exposing Unbound to the guest network wouldn't be a good idea.
+A DNS forwarder forwards DNS requests to an external DNS resolver of an ISP, Quad9, Cloudflare, or similar. We'll configure the forwarder for the clear network. In case the primary, secured networks lose connectivity, the clear network can serve as a backup.
 
 One of the advantages of self-hosting a DNS resolver is improved privacy. A resolver iteratively queries a chain of one or more DNS servers to resolve a request, so there isn't a single instance knowing all your DNS requests. It comes at the cost of speed when resolving a hostname for the first time. As Unbound's cache grows, the cost diminishes. We'll configure our primary networks to use Unbound.
 
@@ -484,8 +485,9 @@ Let's summarize our goals:
 
 - Use a DNS resolver for the management and VPN networks
 - Resolve private domain hostnames for management and VPN networks
-- Prevent DNS leaks from Unbound to the ISP WAN gateway
-- Use DNS forwarding for other networks
+- Prevent DNS leaks from Unbound through the ISP WAN gateway
+- Use DNS forwarding for the clear network
+- Use external DNS resolvers for the guest network
 
 ### DNS Resolver (Unbound)
 
@@ -510,7 +512,7 @@ Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 | Prefetch DNS Key Support | `checked` |
 | Harden DNSSEC data       | `checked` |
 
-The final step is to add a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone making Unbound the authoritative name server for `corp.example.com`. We prevent Unbound from querying external name servers for an internal domain and exposing our network structure to the outside. For [advanced Unbound configuration like this](https://docs.opnsense.org/manual/unbound.html#advanced-configurations), we use [Templates](https://docs.opnsense.org/development/backend/templates.html).
+The final step is to add a custom [SOA record](https://www.cloudflare.com/learning/dns/dns-records/dns-soa-record/) to the local zone making Unbound the authoritative name server for `corp.example.com`. This way, we prevent Unbound from querying external name servers for the internal domain and exposing our network structure to the outside world. For [advanced Unbound configuration like this](https://docs.opnsense.org/manual/unbound.html#advanced-configurations), we use [Templates](https://docs.opnsense.org/development/backend/templates.html).
 
 Connect to OPNsense via serial console or SSH and add a `+TARGETS` file by running `sudo vi /usr/local/opnsense/service/templates/OPNsense/Unbound/+TARGETS` containing:
 
@@ -552,7 +554,7 @@ configctl unbound check
 
 ### DNS Forwarder (Dnsmasq)
 
-Dnsmasq will forward DNS requests to the configured system DNS servers, either explicitly set or retrieved via DHCP from your ISP. Because Unbound already uses port 53, we'll use port 5335 for Dnsmasq. We'll later create rules to port forward DNS traffic to this port.
+Dnsmasq will forward DNS requests to the configured system DNS servers, either explicitly set or received via DHCP. Because Unbound already uses port 53, we'll use port 5335 for Dnsmasq. We'll later create rules to port forward DNS traffic to this port.
 
 Navigate to {{< breadcrumb "Services" "Dnsmasq DNS" "Settings" >}}.
 
@@ -584,7 +586,7 @@ Here is an overview of what we want to implement with firewall rules.
 | Intranet     | pass    | pass                | pass    | block    | pass     |
 | ICMP         | pass    | pass                | pass    | pass     | pass     |
 | Anti-lockout | yes     | no                  | no      | no       | yes      |
-| DNS          | Unbound | Unbound             | Dnsmasq | Dnsmasq  | Unbound  |
+| DNS          | Unbound | Unbound             | Dnsmasq | external | Unbound  |
 | NTP          | local   | local               | local   | external | external |
 
 ### Interface Groups
@@ -635,7 +637,7 @@ Navigate to {{< breadcrumb "Firewall" "Groups" >}} and add the following interfa
 | ----------- | ---------------------------------- |
 | Name        | `IG_DNS_FORWARD`                   |
 | Description | `Interfaces forced to use Dnsmasq` |
-| Members     | `VLAN30_CLEAR` `VLAN40_GUEST`      |
+| Members     | `VLAN30_CLEAR`                     |
 
 #### IG_NTP
 
@@ -991,7 +993,17 @@ Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and add the follo
 
 Now would be a could time to reboot OPNsense to make sure all settings are applied.
 
-### Verify DNS Functionality
+### Verify DHCP
+
+Connect a host to each VLAN and verify it receives an IP inside the specified DHCP range. Here is the output of the `ip -4 addr show eth0` command from a Ubuntu host connected to the VPN VLAN:
+
+```text
+8: eth0: <BROADCAST,MULTICAST,UP> mtu 1500 group default qlen 1
+    inet 192.168.20.106/24 brd 192.168.20.255 scope global dynamic
+       valid_lft 7196sec preferred_lft 7196sec
+```
+
+### Verify DNS
 
 Navigate to {{< breadcrumb "Interfaces" "Diagnostics" "DNS Lookup" >}} and verify that DNS lookups work.
 
