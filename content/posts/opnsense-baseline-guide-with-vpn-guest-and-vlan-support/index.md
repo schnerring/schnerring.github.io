@@ -352,9 +352,9 @@ Click `Save`.
 
 In recent years, [Mullvad](https://mullvad.net/) has been my VPN provider of choice. When _That One Privacy Site_ was still a thing, Mullvad was one of the top recommendations there. After reading the review, I decided to try it out and haven't looked back since. No personally identifiable information is required to register, and paying cash via mail works perfectly.
 
-I decided to go with [WireGuard](https://www.wireguard.com/) because I think WireGuard is the VPN protocol of the future. For more detailed steps, check the official OPNsense documentation on setting up [WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html) and [WireGuard selective routing](https://docs.opnsense.org/manual/how-tos/wireguard-selective-routing.html).
+I decided to go with [WireGuard](https://www.wireguard.com/) because I'm fine riding the bleeding edge. 😎 For more detailed steps, check the official OPNsense documentation on setting up [WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html) and [WireGuard selective routing](https://docs.opnsense.org/manual/how-tos/wireguard-selective-routing.html).
 
-Please note that the FreeBSD kernel does not (yet) natively support WireGuard, so you must install it as a plugin. Possibly, this doesn't meet your stability, security, or performance requirements. I'm fine riding the bleeding edge. 😎 Also, WireGuard does not yet support multi-WAN scenarios. However, I chose an extensible naming scheme that allows adding more tunnels as soon as WireGuard natively supports multi-WAN.
+Please note that the FreeBSD kernel does not (yet) natively support WireGuard, so you must install it as a plugin. Possibly, this doesn't meet your stability, security, or performance requirements. Also, WireGuard does not yet support multi-WAN scenarios. However, I chose an extensible naming scheme that allows adding more tunnels as soon as WireGuard natively supports multi-WAN.
 
 Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wireguard`. Refresh the browser and navigate to {{< breadcrumb "VPN" "WireGuard" >}}.
 
@@ -449,9 +449,17 @@ The VPN gateway requires a monitoring IP. Setting a monitoring IP installs a sta
 
 You can easily verify the above by running `traceroute 100.64.0.1` from a host connected to Mullvad.
 
-#### Assign Gateway to the WireGuard Interface
+#### Add Static IPv4 Configuration to the WireGuard Interface
 
-[Please note that in OPNsense versions >= 21.7 the **Outgoing Network Interfaces** currently doesn't work due to a bug.](https://github.com/opnsense/core/issues/5329#issuecomment-958397043)
+OPNsense versions newer than `21.7.3` require adding static IPv4 configuration to the WireGuard interface. Otherwise, Unbound will use the default route despite setting the **Outgoing Network Interfaces** option. Other solutions exist, but I'm not sure which the "best" or most logical one is. As WireGuard integration matures, this section hopefully becomes obsolete. [You can find more information regarding this issue on GitHub](https://github.com/opnsense/core/issues/5329#issuecomment-958397043).
+
+Navigate to {{< breadcrumb "Interfaces" "WAN_VPN0" >}} and set the following properties.
+
+|                         |                            |
+| ----------------------- | -------------------------- |
+| IPv4 Configuration Type | `Static IPv4`              |
+| IPv4 address            | `10.105.248.51/32`         |
+| IPv4 Upstream Gateway   | `WAN_VPN0 - 10.105.248.50` |
 
 ### Static Route
 
