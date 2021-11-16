@@ -26,6 +26,8 @@ This post documents the steps required to install [qBittorrent](https://www.qbit
 
 <!--more-->
 
+The [FN11.3 iocage jails - Plex, Tautulli, Sonarr, Radarr, Lidarr, Jackett, Transmission, Organizr](https://www.truenas.com/community/resources/fn11-3-iocage-jails-plex-tautulli-sonarr-radarr-lidarr-jackett-transmission-organizr.58/) guide inspired me to write this guide. I'll also briefly cover permissions.
+
 ## Disclaimer
 
 [From Wikipedia on BitTorrent Legislation](https://en.wikipedia.org/wiki/BitTorrent#Legislation):
@@ -34,18 +36,16 @@ This post documents the steps required to install [qBittorrent](https://www.qbit
 
 See also: [Legal issues with BitTorrent (Wikipedia)](https://en.wikipedia.org/wiki/Legal_issues_with_BitTorrent)
 
+I'll only cover options that deviate from the defaults. I use DHCP reservations to manage my server IPs, so I use the `dhcp=1` option to create jails.
+
 ## Goals
 
-These are the goals pictured in the diagram above.
+The diagram above translates to the following requirements:
 
 - Each service lives inside a separate jail
-- Each service runs as a different user
-- Each service user is a member of the built-in `media` group (GID `8675309`)
-- Each jail uses a dataset for configuration data
-- Media datasets shared between jails
-- Members of the `media` group are permitted to write to media datasets
-
-I only mention options that deviate from the defaults. I use DHCP reservations to manage my server IPs, so I use the `dhcp=1` option to create jails.
+- Each service inside the jail runs as a different user
+- Each jail owns a dataset for configuration data
+- Jails share media datasets, but only one user has write permissions. E.g., Radarr can only read (`ro`) from the torrent dataset but write (`rw`) to the movies dataset.
 
 ## Groups
 
@@ -99,7 +99,6 @@ Navigate to {{< breadcrumb "Accounts" "Users" >}} and add the following users.
 | New Primary Group    | `unchecked`   |
 | Primary Group        | `qbittorrent` |
 | Primary Group        | `qbittorrent` |
-| Auxiliary Groups     | `media`       |
 | Disable Password     | `Yes`         |
 | Shell                | `nologin`     |
 | Samba Authentication | `unchecked`   |
@@ -122,7 +121,6 @@ Navigate to {{< breadcrumb "Accounts" "Users" >}} and add the following users.
 | User ID              | `356`       |
 | New Primary Group    | `unchecked` |
 | Primary Group        | `lidarr`    |
-| Auxiliary Groups     | `media`     |
 | Disable Password     | `Yes`       |
 | Shell                | `nologin`   |
 | Samba Authentication | `unchecked` |
@@ -134,7 +132,6 @@ Navigate to {{< breadcrumb "Accounts" "Users" >}} and add the following users.
 | User ID              | `352`       |
 | New Primary Group    | `unchecked` |
 | Primary Group        | `radarr`    |
-| Auxiliary Groups     | `media`     |
 | Disable Password     | `Yes`       |
 | Shell                | `nologin`   |
 | Samba Authentication | `unchecked` |
@@ -146,7 +143,6 @@ Navigate to {{< breadcrumb "Accounts" "Users" >}} and add the following users.
 | User ID              | `351`       |
 | New Primary Group    | `unchecked` |
 | Primary Group        | `sonarr`    |
-| Auxiliary Groups     | `media`     |
 | Disable Password     | `Yes`       |
 | Shell                | `nologin`   |
 | Samba Authentication | `unchecked` |
@@ -158,38 +154,97 @@ Navigate to {{< breadcrumb "Accounts" "Users" >}} and add the following users.
 | User ID              | `972`       |
 | New Primary Group    | `unchecked` |
 | Primary Group        | `plex`      |
-| Auxiliary Groups     | `media`     |
 | Disable Password     | `Yes`       |
 | Shell                | `nologin`   |
 | Samba Authentication | `unchecked` |
 
 ## Datasets
 
-Navigate to {{< breadcrumb "Storage" "Pools" >}} and add the datasets and permissions.
+Navigate to {{< breadcrumb "Storage" "Pools" >}} and add the datasets and permissions. We'll use default `755` permissions for all datasets.
 
 ### Jail Config Datasets
 
-![Screenshot of qBittorrent config dataset permissions](dataset-permissions-qbittorrent.png)
+|             |                                |
+| ----------- | ------------------------------ |
+| Path        | `/mnt/vault0/apps/qbittorrent` |
+| User        | `qbittorrent`                  |
+| Apply User  | `checked`                      |
+| Group       | `qbittorrent`                  |
+| Apply Group | `checked`                      |
 
-![Screenshot of Jackett config dataset permissions](dataset-permissions-jackett.png)
+|             |                            |
+| ----------- | -------------------------- |
+| Path        | `/mnt/vault0/apps/jackett` |
+| User        | `jackett`                  |
+| Apply User  | `checked`                  |
+| Group       | `jackett`                  |
+| Apply Group | `checked`                  |
 
-![Screenshot of Lidarr config dataset permissions](dataset-permissions-lidarr.png)
+|             |                           |
+| ----------- | ------------------------- |
+| Path        | `/mnt/vault0/apps/lidarr` |
+| User        | `lidarr`                  |
+| Apply User  | `checked`                 |
+| Group       | `lidarr`                  |
+| Apply Group | `checked`                 |
 
-![Screenshot of Radarr config dataset permissions](dataset-permissions-radarr.png)
+|             |                           |
+| ----------- | ------------------------- |
+| Path        | `/mnt/vault0/apps/radarr` |
+| User        | `radarr`                  |
+| Apply User  | `checked`                 |
+| Group       | `radarr`                  |
+| Apply Group | `checked`                 |
 
-![Screenshot of Sonarr config dataset permissions](dataset-permissions-sonarr.png)
+|             |                           |
+| ----------- | ------------------------- |
+| Path        | `/mnt/vault0/apps/sonarr` |
+| User        | `sonarr`                  |
+| Apply User  | `checked`                 |
+| Group       | `sonarr`                  |
+| Apply Group | `checked`                 |
 
-![Screenshot of Plex config dataset permissions](dataset-permissions-plex.png)
+|             |                         |
+| ----------- | ----------------------- |
+| Path        | `/mnt/vault0/apps/plex` |
+| User        | `plex`                  |
+| Apply User  | `checked`               |
+| Group       | `plex`                  |
+| Apply Group | `checked`               |
 
 ### Media Datasets
 
-![Screenshot of torrents media dataset permissions](dataset-permissions-torrents.png)
+|             |                              |
+| ----------- | ---------------------------- |
+| Path        | `/mnt/vault0/media/torrents` |
+| User        | `qbittorrent`                |
+| Apply User  | `checked`                    |
+| Group       | `qbittorrent`                |
+| Apply Group | `checked`                    |
 
-![Screenshot of music media dataset permissions](dataset-permissions-music.png)
+|             |                           |
+| ----------- | ------------------------- |
+| Path        | `/mnt/vault0/media/music` |
+| User        | `lidarr`                  |
+| Apply User  | `checked`                 |
+| Group       | `lidarr`                  |
+| Apply Group | `checked`                 |
 
-![Screenshot of movies media dataset permissions](dataset-permissions-movies.png)
+|             |                            |
+| ----------- | -------------------------- |
+| Path        | `/mnt/vault0/media/movies` |
+| User        | `radarr`                   |
+| Apply User  | `checked`                  |
+| Group       | `radarr`                   |
+| Apply Group | `checked`                  |
 
-![Screenshot of series media dataset permissions](dataset-permissions-series.png)
+|             |                            |
+| ----------- | -------------------------- |
+| Path        | `/mnt/vault0/media/series` |
+| User        | `sonarr`                   |
+| Apply User  | `checked`                  |
+| Group       | `sonarr`                   |
+| Apply Group | `checked`                  |
 
 ## Jails
 
@@ -214,15 +269,11 @@ iocage exec qbittorrent pkg install qbittorrent-nox
 iocage exec qbittorrent sysrc qbittorrent_enable=YES
 # Configure config directory
 iocage exec qbittorrent sysrc qbittorrent_conf_dir=/mnt/config
-# Add `media` group
-iocage exec qbittorrent pw groupadd -n media -g 8675309
-# Add user to `media` group
-iocage exec qbittorrent pw groupmod media -m qbittorrent
 # Start the service
 iocage exec qbittorrent service qbittorrent start
 ```
 
-Login at `http://<jail IP>:8080` with the default credentials
+Navigate to `http://<jail IP>:8080` in your browser and login with the default credentials.
 
 | Username | Password     |
 | -------- | ------------ |
@@ -269,7 +320,7 @@ iocage fstab --add lidarr /mnt/vault0/apps/lidarr /mnt/config nullfs rw 0 0
 iocage exec lidarr mkdir /mnt/music
 iocage fstab --add lidarr /mnt/vault0/media/music /mnt/music nullfs rw 0 0
 iocage exec lidarr mkdir /mnt/torrents
-iocage fstab --add lidarr /mnt/vault0/media/torrents /mnt/torrents nullfs rw 0 0
+iocage fstab --add lidarr /mnt/vault0/media/torrents /mnt/torrents nullfs ro 0 0
 # Change pkg repository set from `quarterly` to `latest`
 iocage exec lidarr sed -i '' 's/quarterly/latest/g' /etc/pkg/FreeBSD.conf
 # Update packages
@@ -280,10 +331,6 @@ iocage exec lidarr pkg install lidarr
 iocage exec lidarr sysrc lidarr_enable=YES
 # Configure config directory
 iocage exec lidarr sysrc lidarr_data_dir=/mnt/config
-# Add `media` group
-iocage exec lidarr pw groupadd -n media -g 8675309
-# Add user to `media` group
-iocage exec lidarr pw groupmod media -m lidarr
 # Start the service
 iocage exec lidarr service lidarr start
 ```
@@ -302,7 +349,7 @@ iocage fstab --add radarr /mnt/vault0/apps/radarr /mnt/config nullfs rw 0 0
 iocage exec radarr mkdir /mnt/movies
 iocage fstab --add radarr /mnt/vault0/media/movies /mnt/movies nullfs rw 0 0
 iocage exec radarr mkdir /mnt/torrents
-iocage fstab --add radarr /mnt/vault0/media/torrents /mnt/torrents nullfs rw 0 0
+iocage fstab --add radarr /mnt/vault0/media/torrents /mnt/torrents nullfs ro 0 0
 # Change pkg repository set from `quarterly` to `latest`
 iocage exec radarr sed -i '' 's/quarterly/latest/g' /etc/pkg/FreeBSD.conf
 # Update packages
@@ -313,10 +360,6 @@ iocage exec radarr pkg install radarr
 iocage exec radarr sysrc radarr_enable=YES
 # Configure config directory
 iocage exec radarr sysrc radarr_data_dir=/mnt/config
-# Add `media` group
-iocage exec radarr pw groupadd -n media -g 8675309
-# Add user to `media` group
-iocage exec radarr pw groupmod media -m radarr
 # Start the service
 iocage exec radarr service radarr start
 ```
@@ -335,7 +378,7 @@ iocage fstab --add sonarr /mnt/vault0/apps/sonarr /mnt/config nullfs rw 0 0
 iocage exec sonarr mkdir /mnt/series
 iocage fstab --add sonarr /mnt/vault0/media/series /mnt/series nullfs rw 0 0
 iocage exec sonarr mkdir /mnt/torrents
-iocage fstab --add sonarr /mnt/vault0/media/torrents /mnt/torrents nullfs rw 0 0
+iocage fstab --add sonarr /mnt/vault0/media/torrents /mnt/torrents nullfs ro 0 0
 # Change pkg repository set from `quarterly` to `latest`
 iocage exec sonarr sed -i '' 's/quarterly/latest/g' /etc/pkg/FreeBSD.conf
 # Update packages
@@ -346,10 +389,6 @@ iocage exec sonarr pkg install sonarr
 iocage exec sonarr sysrc sonarr_enable=YES
 # Configure config directory
 iocage exec sonarr sysrc sonarr_data_dir=/mnt/config
-# Add `media` group
-iocage exec sonarr pw groupadd -n media -g 8675309
-# Add user to `media` group
-iocage exec sonarr pw groupmod media -m sonarr
 # Start the service
 iocage exec sonarr service sonarr start
 ```
@@ -365,10 +404,12 @@ iocage create --name plex --release 12.2-RELEASE dhcp=1 boot=1
 iocage exec plex mkdir /mnt/config
 iocage fstab --add plex /mnt/vault0/apps/plex /mnt/config nullfs rw 0 0
 # Mount media datasets
+iocage exec plex mkdir /mnt/music
+iocage fstab --add plex /mnt/vault0/media/music /mnt/music nullfs ro 0 0
 iocage exec plex mkdir /mnt/series
-iocage fstab --add plex /mnt/vault0/media/series /mnt/series nullfs rw 0 0
+iocage fstab --add plex /mnt/vault0/media/series /mnt/series nullfs ro 0 0
 iocage exec plex mkdir /mnt/movies
-iocage fstab --add plex /mnt/vault0/media/movies /mnt/movies nullfs rw 0 0
+iocage fstab --add plex /mnt/vault0/media/movies /mnt/movies nullfs ro 0 0
 # Update packages
 iocage exec plex "pkg update && pkg upgrade"
 # Install
@@ -377,10 +418,6 @@ iocage exec plex pkg install plexmediaserver
 iocage exec plex sysrc plexmediaserver_enable=YES
 # Configure config directory
 iocage exec plex sysrc plexmediaserver_support_path=/mnt/config
-# Add `media` group
-iocage exec plex pw groupadd -n media -g 8675309
-# Add user to `media` group
-iocage exec plex pw groupmod media -m plex
 # Start the service
 iocage exec plex service plexmediaserver start
 ```
