@@ -222,7 +222,7 @@ iocage exec qbittorrent pw groupmod media -m qbittorrent
 iocage exec qbittorrent service qbittorrent start
 ```
 
-Login at `http://<Jail IP>:8080` with the default credentials
+Login at `http://<jail IP>:8080` with the default credentials
 
 | Username | Password     |
 | -------- | ------------ |
@@ -255,7 +255,40 @@ iocage exec jackett sysrc jackett_data_dir=/mnt/config
 iocage exec jackett service jackett start
 ```
 
-Navigate to `http://<Jail IP>:9117` in your browser to use Jackett.
+Navigate to `http://<jail IP>:9117` in your browser to use Jackett.
+
+### Lidarr Jail
+
+```bash
+# Create jail
+iocage create --name lidarr --release 12.2-RELEASE dhcp=1 boot=1
+# Mount jail config dataset
+iocage exec lidarr mkdir /mnt/config
+iocage fstab --add lidarr /mnt/vault0/apps/lidarr /mnt/config nullfs rw 0 0
+# Mount media datasets
+iocage exec lidarr mkdir /mnt/music
+iocage fstab --add lidarr /mnt/vault0/media/music /mnt/music nullfs rw 0 0
+iocage exec lidarr mkdir /mnt/torrents
+iocage fstab --add lidarr /mnt/vault0/media/torrents /mnt/torrents nullfs rw 0 0
+# Change pkg repository set from `quarterly` to `latest`
+iocage exec lidarr sed -i '' 's/quarterly/latest/g' /etc/pkg/FreeBSD.conf
+# Update packages
+iocage exec lidarr "pkg update && pkg upgrade"
+# Install
+iocage exec lidarr pkg install lidarr
+# Enable service
+iocage exec lidarr sysrc lidarr_enable=YES
+# Configure config directory
+iocage exec lidarr sysrc lidarr_data_dir=/mnt/config
+# Add `media` group
+iocage exec lidarr pw groupadd -n media -g 8675309
+# Add user to `media` group
+iocage exec lidarr pw groupmod media -m lidarr
+# Start the service
+iocage exec lidarr service lidarr start
+```
+
+Navigate to `http://<jail IP>:8686` in your browser to use Lidarr.
 
 ### Sonarr Jail
 
@@ -288,4 +321,4 @@ iocage exec sonarr pw groupmod media -m sonarr
 iocage exec sonarr service sonarr start
 ```
 
-Navigate to `http://<Jail IP>:8989` in your browser to use Sonarr.
+Navigate to `http://<jail IP>:8989` in your browser to use Sonarr.
