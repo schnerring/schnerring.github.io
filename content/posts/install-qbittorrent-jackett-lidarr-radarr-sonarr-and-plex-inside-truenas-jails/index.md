@@ -216,7 +216,7 @@ iocage exec qbittorrent sysrc qbittorrent_enable=YES
 iocage exec qbittorrent sysrc qbittorrent_conf_dir=/mnt/config
 # Add `media` group
 iocage exec qbittorrent pw groupadd -n media -g 8675309
-# Add `qbittorrent` user to `media` group
+# Add user to `media` group
 iocage exec qbittorrent pw groupmod media -m qbittorrent
 # Start the service
 iocage exec qbittorrent service qbittorrent start
@@ -245,9 +245,9 @@ iocage fstab --add jackett /mnt/vault0/apps/jackett /mnt/config nullfs rw 0 0
 iocage exec jackett sed -i '' 's/quarterly/latest/g' /etc/pkg/FreeBSD.conf
 # Update packages
 iocage exec jackett "pkg update && pkg upgrade"
-# Install Jackett
+# Install
 iocage exec jackett pkg install jackett
-# Enable Jackett service
+# Enable service
 iocage exec jackett sysrc jackett_enable=YES
 # Configure config directory
 iocage exec jackett sysrc jackett_data_dir=/mnt/config
@@ -256,3 +256,36 @@ iocage exec jackett service jackett start
 ```
 
 Navigate to `http://<Jail IP>:9117` in your browser to use Jackett.
+
+### Sonarr Jail
+
+```bash
+# Create jail
+iocage create --name sonarr --release 12.2-RELEASE dhcp=1 boot=1
+# Mount jail config dataset
+iocage exec sonarr mkdir /mnt/config
+iocage fstab --add sonarr /mnt/vault0/apps/sonarr /mnt/config nullfs rw 0 0
+# Mount media datasets
+iocage exec sonarr mkdir /mnt/series
+iocage fstab --add sonarr /mnt/vault0/media/series /mnt/series nullfs rw 0 0
+iocage exec sonarr mkdir /mnt/torrents
+iocage fstab --add sonarr /mnt/vault0/media/torrents /mnt/torrents nullfs rw 0 0
+# Change pkg repository set from `quarterly` to `latest`
+iocage exec sonarr sed -i '' 's/quarterly/latest/g' /etc/pkg/FreeBSD.conf
+# Update packages
+iocage exec sonarr "pkg update && pkg upgrade"
+# Install
+iocage exec sonarr pkg install sonarr
+# Enable service
+iocage exec sonarr sysrc sonarr_enable=YES
+# Configure config directory
+iocage exec sonarr sysrc sonarr_data_dir=/mnt/config
+# Add `media` group
+iocage exec sonarr pw groupadd -n media -g 8675309
+# Add user to `media` group
+iocage exec sonarr pw groupmod media -m sonarr
+# Start the service
+iocage exec sonarr service sonarr start
+```
+
+Navigate to `http://<Jail IP>:8989` in your browser to use Sonarr.
