@@ -290,6 +290,39 @@ iocage exec lidarr service lidarr start
 
 Navigate to `http://<jail IP>:8686` in your browser to use Lidarr.
 
+### Radarr Jail
+
+```bash
+# Create jail
+iocage create --name radarr --release 12.2-RELEASE dhcp=1 boot=1
+# Mount jail config dataset
+iocage exec radarr mkdir /mnt/config
+iocage fstab --add radarr /mnt/vault0/apps/radarr /mnt/config nullfs rw 0 0
+# Mount media datasets
+iocage exec radarr mkdir /mnt/movies
+iocage fstab --add radarr /mnt/vault0/media/movies /mnt/movies nullfs rw 0 0
+iocage exec radarr mkdir /mnt/torrents
+iocage fstab --add radarr /mnt/vault0/media/torrents /mnt/torrents nullfs rw 0 0
+# Change pkg repository set from `quarterly` to `latest`
+iocage exec radarr sed -i '' 's/quarterly/latest/g' /etc/pkg/FreeBSD.conf
+# Update packages
+iocage exec radarr "pkg update && pkg upgrade"
+# Install
+iocage exec radarr pkg install radarr
+# Enable service
+iocage exec radarr sysrc radarr_enable=YES
+# Configure config directory
+iocage exec radarr sysrc radarr_data_dir=/mnt/config
+# Add `media` group
+iocage exec radarr pw groupadd -n media -g 8675309
+# Add user to `media` group
+iocage exec radarr pw groupmod media -m radarr
+# Start the service
+iocage exec radarr service radarr start
+```
+
+Navigate to `http://<jail IP>:7878` in your browser to use Radarr.
+
 ### Sonarr Jail
 
 ```bash
