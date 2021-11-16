@@ -9,6 +9,7 @@
   padding: 1rem;
   position: fixed;
   right: 1rem;
+  z-index: 2000;
 
   @media (--md) {
     padding: 2.5rem;
