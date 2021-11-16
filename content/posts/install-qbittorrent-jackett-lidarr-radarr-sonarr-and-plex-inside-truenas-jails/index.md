@@ -355,3 +355,34 @@ iocage exec sonarr service sonarr start
 ```
 
 Navigate to `http://<jail IP>:8989` in your browser to use Sonarr.
+
+### Plex Jail
+
+```bash
+# Create jail
+iocage create --name plex --release 12.2-RELEASE dhcp=1 boot=1
+# Mount jail config dataset
+iocage exec plex mkdir /mnt/config
+iocage fstab --add plex /mnt/vault0/apps/plex /mnt/config nullfs rw 0 0
+# Mount media datasets
+iocage exec plex mkdir /mnt/series
+iocage fstab --add plex /mnt/vault0/media/series /mnt/series nullfs rw 0 0
+iocage exec plex mkdir /mnt/movies
+iocage fstab --add plex /mnt/vault0/media/movies /mnt/movies nullfs rw 0 0
+# Update packages
+iocage exec plex "pkg update && pkg upgrade"
+# Install
+iocage exec plex pkg install plexmediaserver
+# Enable service
+iocage exec plex sysrc plexmediaserver_enable=YES
+# Configure config directory
+iocage exec plex sysrc plexmediaserver_support_path=/mnt/config
+# Add `media` group
+iocage exec plex pw groupadd -n media -g 8675309
+# Add user to `media` group
+iocage exec plex pw groupmod media -m plex
+# Start the service
+iocage exec plex service plexmediaserver start
+```
+
+Navigate to `http://<jail IP>:32400/web` in your browser to use Plex.
