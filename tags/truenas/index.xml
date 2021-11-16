@@ -1,4 +1,25 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TrueNAS on Michael Schnerring</title><link>https://schnerring.net/tags/truenas/</link><description>Recent content in TrueNAS on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>&lt;p>Copyright © 2020 Michael Schnerring&lt;/p>&lt;p xmlns:dct='http://purl.org/dc/terms/' xmlns:cc='http://creativecommons.org/ns#' class='license-text'>&lt;a rel='cc:attributionURL' property='dct:title' href='https://github.com/schnerring/schnerring.github.io/tree/main/content'>Content&lt;/a> licensed under &lt;a rel='license' href='https://creativecommons.org/licenses/by/4.0'>CC BY 4.0&lt;/a>&lt;/p></copyright><lastBuildDate>Thu, 04 Nov 2021 23:15:27 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/truenas/index.xml" rel="self" type="application/rss+xml"/><item><title>Install the Ubiquiti Unifi Controller Software v6 Inside a TrueNAS Jail</title><link>https://schnerring.net/posts/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail/</link><pubDate>Thu, 04 Nov 2021 23:15:27 +0100</pubDate><guid>https://schnerring.net/posts/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail/</guid><description>&lt;p>To manage &lt;a
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>TrueNAS on Michael Schnerring</title><link>https://schnerring.net/tags/truenas/</link><description>Recent content in TrueNAS on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>&lt;p>Copyright © 2020 Michael Schnerring&lt;/p>&lt;p xmlns:dct='http://purl.org/dc/terms/' xmlns:cc='http://creativecommons.org/ns#' class='license-text'>&lt;a rel='cc:attributionURL' property='dct:title' href='https://github.com/schnerring/schnerring.github.io/tree/main/content'>Content&lt;/a> licensed under &lt;a rel='license' href='https://creativecommons.org/licenses/by/4.0'>CC BY 4.0&lt;/a>&lt;/p></copyright><lastBuildDate>Sun, 14 Nov 2021 20:41:04 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/truenas/index.xml" rel="self" type="application/rss+xml"/><item><title>Install qBittorrent, Jackett, Lidarr, Radarr, Sonarr, and Plex inside TrueNAS Jails</title><link>https://schnerring.net/posts/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</link><pubDate>Sun, 14 Nov 2021 20:41:04 +0100</pubDate><guid>https://schnerring.net/posts/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</guid><description>&lt;p>This post documents the steps required to install &lt;a
+href="https://www.qbittorrent.org/"
+class="link--external" target="_blank" rel="noreferrer"
+>qBittorrent&lt;/a>, &lt;a
+href="https://github.com/Jackett/Jackett"
+class="link--external" target="_blank" rel="noreferrer"
+>Jackett&lt;/a>, &lt;a
+href="https://lidarr.audio/"
+class="link--external" target="_blank" rel="noreferrer"
+>Lidarr&lt;/a>, &lt;a
+href="https://radarr.video/"
+class="link--external" target="_blank" rel="noreferrer"
+>Radarr&lt;/a>, &lt;a
+href="https://sonarr.tv/"
+class="link--external" target="_blank" rel="noreferrer"
+>Sonarr&lt;/a>, and &lt;a
+href="https://www.plex.tv/"
+class="link--external" target="_blank" rel="noreferrer"
+>Plex&lt;/a> in &lt;a
+href="https://www.truenas.com/docs/core/applications/jails/"
+class="link--external" target="_blank" rel="noreferrer"
+>TrueNAS jails&lt;/a> version &lt;code>12.0-U6&lt;/code>.&lt;/p></description></item><item><title>Install the Ubiquiti Unifi Controller Software v6 Inside a TrueNAS Jail</title><link>https://schnerring.net/posts/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail/</link><pubDate>Thu, 04 Nov 2021 23:15:27 +0100</pubDate><guid>https://schnerring.net/posts/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail/</guid><description>&lt;p>To manage &lt;a
 href="https://www.ui.com/wi-fi"
 class="link--external" target="_blank" rel="noreferrer"
 >Ubiquiti UniFi devices&lt;/a>, a UniFi controller is required. Over a year ago, I initially installed the controller software inside a Ubuntu VirtualBox VM. Now that version 6 of the UniFi controller software is released, it&amp;rsquo;s time to upgrade. I decided to reinstall the controller inside a TrueNAS jail instead of a VirtualBox VM. When searching the interwebs, I only found lots of outdated instructions. It turns out that it&amp;rsquo;s very straightforward, so here are my quick notes on how to do it.&lt;/p></description></item></channel></rss>
