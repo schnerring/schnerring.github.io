@@ -156,7 +156,7 @@ The Cloudflare DNS servers you configured in the DHCP settings of the Guest VLAN
 When I decided to write this guide, I didn&rsquo;t think it would take soooo long. I worked on it intensively for the better part of a month. I spent like a week configuring Unbound to use WireGuard tunnels, only to find out that I couldn&rsquo;t get it working due to a bug. But it was all worth it and a fulfilling journey \u2014 I have learned so much OPNsense and networking. But I&rsquo;m also happy to be able to put this aside for a while. \u{1F389}
 So what&rsquo;s next?
 Let&rsquo;s Encrypt certificates and HAProxy to secure self-hosted services. I imagine configuring it should be pretty straightforward.
-Me and possibly others want to be able to access my home network from the outside via WireGuard. I have a dynamic IP, so I thought I&rsquo;d have to resort to Dynamic DNS. But I think port forwarding with Mullvad is the better solution and doesn&rsquo;t require me to associate my public IP address with a DNS record.
+Me and possibly others want to be able to access my home network from the outside via WireGuard. I have a dynamic IP, so I thought I&rsquo;d have to resort to Dynamic DNS. But I think port forwarding with Mullvad is the better solution and doesn&rsquo;t require me to associate my public IP address with a public DNS record.
 Originally I planned to include a multi-gateway load balancing setup with WireGuard in this guide but couldn&rsquo;t get it to work. I found some posts suggesting that this was a limitation of WireGuard and not (yet?) possible. But I&rsquo;m not sure.
 Traffic shaping and intrusion prevention is something I want to look into, too.
 So yeah, OPNsense and I will be friends for a while. \u{1F46B}
