@@ -399,7 +399,7 @@ curl -sSL https://api.mullvad.net/app/v1/wireguard-keys \
   -d '{"pubkey":"<generated public key>"}'
 ```
 
-It returns a JSON response like this.
+This command returns a JSON response containing IPs without DNS hijacking enabled. I cover the snippet above and Mullvad's DNS hijacking in another post: [Use Custom DNS Servers With Mullvad And Any WireGuard Client](/posts/use-custom-dns-servers-with-mullvad-and-any-wireguard-client).
 
 ```json
 {
