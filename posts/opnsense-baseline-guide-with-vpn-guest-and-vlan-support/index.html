@@ -24,7 +24,7 @@
 <meta itemprop=name content="OPNsense Baseline Guide with VPN, Guest, and VLAN Support">
 <meta itemprop=description content="This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the pfSense baseline guide with VPN, Guest, and VLAN support that some of you guys might know, and this is an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use OPNsense instead of pfSense."><meta itemprop=datePublished content="2021-11-17T03:56:35+01:00">
 <meta itemprop=dateModified content="2021-11-17T03:56:35+01:00">
-<meta itemprop=wordCount content="6173"><meta itemprop=image content="https://schnerring.net/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/cover.png">
+<meta itemprop=wordCount content="6175"><meta itemprop=image content="https://schnerring.net/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/cover.png">
 <meta itemprop=keywords content="dnsmasq,firewall,homelab,letsencrypt,mullvad,networking,opnsense,routing,unbound,vlan,vpn,wireguard,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:100;src:local("Roboto Slab Thin "),local("Roboto Slab-Thin"),url(/fonts/roboto-slab-latin-100.woff2) format("woff2"),url(/fonts/roboto-slab-latin-100.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:200;src:local("Roboto Slab Extra Light "),local("Roboto Slab-Extra Light"),url(/fonts/roboto-slab-latin-200.woff2) format("woff2"),url(/fonts/roboto-slab-latin-200.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:300;src:local("Roboto Slab Light "),local("Roboto Slab-Light"),url(/fonts/roboto-slab-latin-300.woff2) format("woff2"),url(/fonts/roboto-slab-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:400;src:local("Roboto Slab Regular "),local("Roboto Slab-Regular"),url(/fonts/roboto-slab-latin-400.woff2) format("woff2"),url(/fonts/roboto-slab-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:500;src:local("Roboto Slab Medium "),local("Roboto Slab-Medium"),url(/fonts/roboto-slab-latin-500.woff2) format("woff2"),url(/fonts/roboto-slab-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:600;src:local("Roboto Slab SemiBold "),local("Roboto Slab-SemiBold"),url(/fonts/roboto-slab-latin-600.woff2) format("woff2"),url(/fonts/roboto-slab-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:700;src:local("Roboto Slab Bold "),local("Roboto Slab-Bold"),url(/fonts/roboto-slab-latin-700.woff2) format("woff2"),url(/fonts/roboto-slab-latin-700.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:800;src:local("Roboto Slab ExtraBold "),local("Roboto Slab-ExtraBold"),url(/fonts/roboto-slab-latin-800.woff2) format("woff2"),url(/fonts/roboto-slab-latin-800.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:900;src:local("Roboto Slab Black "),local("Roboto Slab-Black"),url(/fonts/roboto-slab-latin-900.woff2) format("woff2"),url(/fonts/roboto-slab-latin-900.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:300;src:local("Fira Code Light "),local("Fira Code-Light"),url(/fonts/fira-code-latin-300.woff2) format("woff2"),url(/fonts/fira-code-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:400;src:local("Fira Code Regular "),local("Fira Code-Regular"),url(/fonts/fira-code-latin-400.woff2) format("woff2"),url(/fonts/fira-code-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:500;src:local("Fira Code Medium "),local("Fira Code-Medium"),url(/fonts/fira-code-latin-500.woff2) format("woff2"),url(/fonts/fira-code-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:600;src:local("Fira Code SemiBold "),local("Fira Code-SemiBold"),url(/fonts/fira-code-latin-600.woff2) format("woff2"),url(/fonts/fira-code-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:700;src:local("Fira Code Bold "),local("Fira Code-Bold"),url(/fonts/fira-code-latin-700.woff2) format("woff2"),url(/fonts/fira-code-latin-700.woff) format("woff")}
@@ -2640,7 +2640,7 @@ opnsense.org.           184     IN      A       178.162.131.118
 ;; SERVER: 8.8.8.8#53(8.8.8.8)
 ;; WHEN: Tue Nov 16 21:51:15 CET 2021
 ;; MSG SIZE  rcvd: 57
-</code></pre></div><p><code>dig</code> can&rsquo;t tell that OPNsense hijacked the request and thus displays an incorrect <code>SERVER</code> value. If you check the firewall logs, you should see iterative root server requests and no requests to <code>8.8.8.8</code>.</p>
+</code></pre></div><p><code>dig</code> can&rsquo;t tell that OPNsense hijacked the request and thus displays an incorrect <code>SERVER</code> value. If you check the firewall logs, you shouldn&rsquo;t see any requests to <code>8.8.8.8</code>. Instead, you should see iterative root server requests.</p>
 <h5 id=vlan20_vpn-reverse-lookups-of-private-ips>
 VLAN20_VPN: Reverse Lookups of Private IPs
 <a href=#vlan20_vpn-reverse-lookups-of-private-ips class=post-heading__anchor aria-hidden=true>#</a>
@@ -2664,7 +2664,7 @@ VLAN20_VPN: Reverse Lookups of Private IPs
 ;; SERVER: 192.168.20.1#53(192.168.20.1)
 ;; WHEN: Tue Nov 16 21:56:14 CET 2021
 ;; MSG SIZE  rcvd: 96
-</code></pre></div><p>If you want, additionally reverse-lookup an IP that doesn&rsquo;t exist. The firewall logs must not contain requests to external DNS servers.</p>
+</code></pre></div><p>If you want, additionally reverse-lookup an IP that doesn&rsquo;t exist. The firewall logs mustn&rsquo;t contain requests to external DNS servers.</p>
 <h5 id=vlan20_vpn-verify-corpexamplecom-is-private>
 VLAN20_VPN: Verify <code>corp.example.com</code> Is Private
 <a href=#vlan20_vpn-verify-corpexamplecom-is-private class=post-heading__anchor aria-hidden=true>#</a>
@@ -2844,7 +2844,7 @@ corp.example.com.    3600    IN      SOA     opnsense.corp.example.com. root.exa
 ;; SERVER: 192.168.30.1#53(192.168.30.1)
 ;; WHEN: Tue Nov 16 20:44:35 CET 2021
 ;; MSG SIZE  rcvd: 112
-</code></pre></div><p>This time, requests will only be forwarded reach Unbound, but not external DNS resolvers.</p>
+</code></pre></div><p>This time, requests will only be forwarded to Unbound, but not external DNS resolvers.</p>
 <p>
 <picture>
 <source srcset="/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dnsmasq-fw-logs-private_hue75ff9094c190cd4dd7eca8f3c96be48_22493_100x0_resize_q90_h2_box_3.webp 100w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dnsmasq-fw-logs-private_hue75ff9094c190cd4dd7eca8f3c96be48_22493_200x0_resize_q90_h2_box_3.webp 200w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dnsmasq-fw-logs-private_hue75ff9094c190cd4dd7eca8f3c96be48_22493_300x0_resize_q90_h2_box_3.webp 300w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dnsmasq-fw-logs-private_hue75ff9094c190cd4dd7eca8f3c96be48_22493_400x0_resize_q90_h2_box_3.webp 400w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dnsmasq-fw-logs-private_hue75ff9094c190cd4dd7eca8f3c96be48_22493_455x0_resize_q90_h2_box_3.webp 455w">
@@ -3034,7 +3034,7 @@ Thanks For Reading ❤️
 </div>
 </footer>
 <script type=text/javascript src=/js/main.07941426570c3f29ce826eb3a40437438c08ed970d117f62cfd361ba175908c57b2c2b7c68c33ca90f1f364a94dd11114c147f94a4967aa1d460f5e24087751e.js integrity="sha512-B5QUJlcMPynOgm6zpAQ3Q4wI7ZcNEX9iz9NhuhdZCMV7LCt8aMM8qQ8fNkqU3RERTBR/lKSWeqHUYPXiQId1Hg=="></script>
-<script type=text/javascript src=/js/flexsearch.00af90c50bbba67e3aeb308c22ec034e225ed97ce857204b8a2b3275c3ac20f22cd2456869b20f9e002d4c8d8a375d62179760b21cfc05cf48a1d965d02f740e.js integrity="sha512-AK+QxQu7pn466zCMIuwDTiJe2XzoVyBLiisydcOsIPIs0kVoabIPngAtTI2KN11iF5dgshz8Bc9Iodll0C90Dg=="></script>
+<script type=text/javascript src=/js/flexsearch.28d7d16dbef218b66dbec5265e13555b53a0ffa1128c35497c58ab40ba2385baaa0e8933a5e93904a17eb78c504b0136da8e1188dae838d2805d561646af1c3d.js integrity="sha512-KNfRbb7yGLZtvsUmXhNVW1Og/6ESjDVJfFirQLojhbqqDokzpek5BKF+t4xQSwE22o4RiNroONKAXVYWRq8cPQ=="></script>
 </div>
 </body>
 </html>
