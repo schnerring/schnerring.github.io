@@ -24,7 +24,7 @@
 <meta itemprop=name content="OPNsense Baseline Guide with VPN, Guest, and VLAN Support">
 <meta itemprop=description content="This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the pfSense baseline guide with VPN, Guest, and VLAN support that some of you guys might know, and this is an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use OPNsense instead of pfSense."><meta itemprop=datePublished content="2021-11-17T03:56:35+01:00">
 <meta itemprop=dateModified content="2021-11-17T03:56:35+01:00">
-<meta itemprop=wordCount content="6173"><meta itemprop=image content="https://schnerring.net/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/cover.png">
+<meta itemprop=wordCount content="6176"><meta itemprop=image content="https://schnerring.net/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/cover.png">
 <meta itemprop=keywords content="dnsmasq,firewall,homelab,letsencrypt,mullvad,networking,opnsense,routing,unbound,vlan,vpn,wireguard,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:100;src:local("Roboto Slab Thin "),local("Roboto Slab-Thin"),url(/fonts/roboto-slab-latin-100.woff2) format("woff2"),url(/fonts/roboto-slab-latin-100.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:200;src:local("Roboto Slab Extra Light "),local("Roboto Slab-Extra Light"),url(/fonts/roboto-slab-latin-200.woff2) format("woff2"),url(/fonts/roboto-slab-latin-200.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:300;src:local("Roboto Slab Light "),local("Roboto Slab-Light"),url(/fonts/roboto-slab-latin-300.woff2) format("woff2"),url(/fonts/roboto-slab-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:400;src:local("Roboto Slab Regular "),local("Roboto Slab-Regular"),url(/fonts/roboto-slab-latin-400.woff2) format("woff2"),url(/fonts/roboto-slab-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:500;src:local("Roboto Slab Medium "),local("Roboto Slab-Medium"),url(/fonts/roboto-slab-latin-500.woff2) format("woff2"),url(/fonts/roboto-slab-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:600;src:local("Roboto Slab SemiBold "),local("Roboto Slab-SemiBold"),url(/fonts/roboto-slab-latin-600.woff2) format("woff2"),url(/fonts/roboto-slab-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:700;src:local("Roboto Slab Bold "),local("Roboto Slab-Bold"),url(/fonts/roboto-slab-latin-700.woff2) format("woff2"),url(/fonts/roboto-slab-latin-700.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:800;src:local("Roboto Slab ExtraBold "),local("Roboto Slab-ExtraBold"),url(/fonts/roboto-slab-latin-800.woff2) format("woff2"),url(/fonts/roboto-slab-latin-800.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:900;src:local("Roboto Slab Black "),local("Roboto Slab-Black"),url(/fonts/roboto-slab-latin-900.woff2) format("woff2"),url(/fonts/roboto-slab-latin-900.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:300;src:local("Fira Code Light "),local("Fira Code-Light"),url(/fonts/fira-code-latin-300.woff2) format("woff2"),url(/fonts/fira-code-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:400;src:local("Fira Code Regular "),local("Fira Code-Regular"),url(/fonts/fira-code-latin-400.woff2) format("woff2"),url(/fonts/fira-code-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:500;src:local("Fira Code Medium "),local("Fira Code-Medium"),url(/fonts/fira-code-latin-500.woff2) format("woff2"),url(/fonts/fira-code-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:600;src:local("Fira Code SemiBold "),local("Fira Code-SemiBold"),url(/fonts/fira-code-latin-600.woff2) format("woff2"),url(/fonts/fira-code-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:700;src:local("Fira Code Bold "),local("Fira Code-Bold"),url(/fonts/fira-code-latin-700.woff2) format("woff2"),url(/fonts/fira-code-latin-700.woff) format("woff")}
@@ -1307,7 +1307,7 @@ configctl unbound check
 DNS: Forwarder (Dnsmasq)
 <a href=#dns-forwarder-dnsmasq class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
-<p>Dnsmasq will forward DNS requests to the configured system DNS servers. Earlier, you either explicitly configured them or decided to receive the DNS servers via DHCP from your ISP. Because Unbound already uses port 53, we&rsquo;ll use port 5335 for Dnsmasq. We&rsquo;ll later create rules to port forward DNS traffic to this port.</p>
+<p>Dnsmasq will forward DNS requests to the configured system DNS servers and <code>127.0.0.1</code> (Unbound). Earlier, you either explicitly configured them or decided to receive the DNS servers via DHCP from your ISP. Because Unbound already uses port 53, we&rsquo;ll use port 5335 for Dnsmasq. We&rsquo;ll later create rules to port forward DNS traffic to this port.</p>
 <p>Navigate to <b>Services</b><span> → </span>
 <b>Dnsmasq DNS</b><span> → </span>
 <b>Settings</b>.</p>
@@ -1333,7 +1333,7 @@ DNS: Forwarder (Dnsmasq)
 </tr>
 </tbody>
 </table>
-<p>Forward reverse DNS lookups in the <code>192.168.0.0/16</code> range to Unbound by adding the following <strong>Domain Override</strong>. We additionally make Unbound the authoritative DNS server for <code>corp.example.com</code>.</p>
+<p>Forward reverse DNS lookups in the <code>192.168.0.0/16</code> range to Unbound by adding the following <strong>Domain Override</strong>s. We additionally make Unbound the authoritative DNS server for <code>corp.example.com</code>.</p>
 <table>
 <thead>
 <tr>
@@ -1380,7 +1380,7 @@ Firewall
 </thead>
 <tbody>
 <tr>
-<td>Internet</td>
+<td><strong>Internet</strong></td>
 <td>WAN</td>
 <td>VPN + selective WAN</td>
 <td>WAN</td>
@@ -1388,7 +1388,7 @@ Firewall
 <td>WAN</td>
 </tr>
 <tr>
-<td>Intranet</td>
+<td><strong>Intranet</strong></td>
 <td>pass</td>
 <td>pass</td>
 <td>pass</td>
@@ -1396,7 +1396,7 @@ Firewall
 <td>pass</td>
 </tr>
 <tr>
-<td>ICMP</td>
+<td><strong>ICMP</strong></td>
 <td>pass</td>
 <td>pass</td>
 <td>pass</td>
@@ -1404,7 +1404,7 @@ Firewall
 <td>pass</td>
 </tr>
 <tr>
-<td>Anti-lockout</td>
+<td><strong>Anti-lockout</strong></td>
 <td>yes</td>
 <td>no</td>
 <td>no</td>
@@ -1412,7 +1412,7 @@ Firewall
 <td>yes</td>
 </tr>
 <tr>
-<td>DNS</td>
+<td><strong>DNS</strong></td>
 <td>Unbound</td>
 <td>Unbound</td>
 <td>Dnsmasq</td>
@@ -1420,7 +1420,7 @@ Firewall
 <td>Unbound</td>
 </tr>
 <tr>
-<td>NTP</td>
+<td><strong>NTP</strong></td>
 <td>local</td>
 <td>local</td>
 <td>local</td>
@@ -1606,8 +1606,8 @@ Firewall: Aliases
 <p>We define a few reusable <a href=https://docs.opnsense.org/manual/aliases.html class=link--external target=_blank rel=noreferrer>aliases</a> that help us condense our firewall rules. Some of them might become hard to maintain as they grow, in which case you might want to consider nesting aliases.</p>
 <p>
 <picture>
-<source srcset="/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_100x0_resize_q90_h2_box_3.webp 100w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_200x0_resize_q90_h2_box_3.webp 200w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_300x0_resize_q90_h2_box_3.webp 300w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_400x0_resize_q90_h2_box_3.webp 400w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_500x0_resize_q90_h2_box_3.webp 500w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_600x0_resize_q90_h2_box_3.webp 600w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_700x0_resize_q90_h2_box_3.webp 700w">
-<img src=/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases.png srcset="/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_100x0_resize_box_3.png 100w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_200x0_resize_box_3.png 200w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_300x0_resize_box_3.png 300w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_400x0_resize_box_3.png 400w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_500x0_resize_box_3.png 500w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_600x0_resize_box_3.png 600w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hud1b739204bf5581ec19a183e4963156f_8441_700x0_resize_box_3.png 700w" alt="Screenshot of firewall aliases" loading=lazy width=1001 height=163>
+<source srcset="/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_100x0_resize_q90_h2_box_3.webp 100w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_200x0_resize_q90_h2_box_3.webp 200w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_300x0_resize_q90_h2_box_3.webp 300w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_400x0_resize_q90_h2_box_3.webp 400w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_500x0_resize_q90_h2_box_3.webp 500w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_600x0_resize_q90_h2_box_3.webp 600w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_700x0_resize_q90_h2_box_3.webp 700w">
+<img src=/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases.png srcset="/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_100x0_resize_box_3.png 100w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_200x0_resize_box_3.png 200w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_300x0_resize_box_3.png 300w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_400x0_resize_box_3.png 400w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_500x0_resize_box_3.png 500w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_600x0_resize_box_3.png 600w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/firewall-aliases_hudf816a4eb07591b73b52b42c34e57428_8330_700x0_resize_box_3.png 700w" alt="Screenshot of firewall aliases" loading=lazy width=814 height=163>
 </picture>
 </p>
 <p>Navigate to <b>Firewall</b><span> → </span>
@@ -2509,22 +2509,22 @@ Redirect Outbound NTP Traffic
 </tr>
 </tbody>
 </table>
-<h2 id=verify>
-Verify
-<a href=#verify class=post-heading__anchor aria-hidden=true>#</a>
+<h2 id=test>
+Test
+<a href=#test class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
 <p>Now would be a could time to reboot OPNsense to make sure all settings are applied.</p>
-<h3 id=verify-dhcp>
-Verify: DHCP
-<a href=#verify-dhcp class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=test-dhcp>
+Test: DHCP
+<a href=#test-dhcp class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Connect a host to each VLAN and verify it receives an IP inside the specified DHCP range. Here is the output of the <code>ip -4 addr show eth0</code> command from a Ubuntu host connected to the VPN VLAN.</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>8: eth0: &lt;BROADCAST,MULTICAST,UP&gt; mtu 1500 group default qlen 1
     inet 192.168.20.106/24 brd 192.168.20.255 scope global dynamic
        valid_lft 7196sec preferred_lft 7196sec
-</code></pre></div><h3 id=verify-dns>
-Verify: DNS
-<a href=#verify-dns class=post-heading__anchor aria-hidden=true>#</a>
+</code></pre></div><h3 id=test-dns>
+Test: DNS
+<a href=#test-dns class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>We have to verify the following functionality of our DNS architecture:</p>
 <ul>
@@ -2557,9 +2557,9 @@ Verify: DNS
 <b>Log Files</b><span> → </span>
 <b>Live View</b> for testing.</p>
 <p>I&rsquo;ll also skip the Management network because it requires the same testing as the VPN network.</p>
-<h4 id=vlan20_vpn-verify-dns>
-VLAN20_VPN: Verify DNS
-<a href=#vlan20_vpn-verify-dns class=post-heading__anchor aria-hidden=true>#</a>
+<h4 id=vlan20_vpn-test-dns>
+VLAN20_VPN: Test DNS
+<a href=#vlan20_vpn-test-dns class=post-heading__anchor aria-hidden=true>#</a>
 </h4>
 <p>Connect to <code>VLAN20_VPN</code>.</p>
 <h5 id=vlan20_vpn-remote-hostname-lookups>
@@ -2700,9 +2700,9 @@ VLAN20_VPN: DNS Leak Test
 <img src=/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-vpn.png srcset="/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-vpn_hu36aa34e63e3f4bee3e22901300b831b2_31135_100x0_resize_box_3.png 100w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-vpn_hu36aa34e63e3f4bee3e22901300b831b2_31135_200x0_resize_box_3.png 200w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-vpn_hu36aa34e63e3f4bee3e22901300b831b2_31135_300x0_resize_box_3.png 300w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-vpn_hu36aa34e63e3f4bee3e22901300b831b2_31135_400x0_resize_box_3.png 400w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-vpn_hu36aa34e63e3f4bee3e22901300b831b2_31135_409x0_resize_box_3.png 409w" alt="Screenshot of Mullvad DNS leak test for VPN network" loading=lazy width=409 height=479>
 </picture>
 </p>
-<h4 id=vlan30_clear-verify-dns>
-VLAN30_CLEAR: Verify DNS
-<a href=#vlan30_clear-verify-dns class=post-heading__anchor aria-hidden=true>#</a>
+<h4 id=vlan30_clear-test-dns>
+VLAN30_CLEAR: Test DNS
+<a href=#vlan30_clear-test-dns class=post-heading__anchor aria-hidden=true>#</a>
 </h4>
 <p>Connect to <code>VLAN30_CLEAR</code>.</p>
 <h5 id=vlan30_clear-remote-hostname-lookups>
@@ -2862,9 +2862,9 @@ VLAN30_CLEAR: DNS Leak Test
 <img src=/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-clear.png srcset="/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-clear_hu6b34ba39532d3e564903894f58b1e0d3_11748_100x0_resize_box_3.png 100w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-clear_hu6b34ba39532d3e564903894f58b1e0d3_11748_200x0_resize_box_3.png 200w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-clear_hu6b34ba39532d3e564903894f58b1e0d3_11748_300x0_resize_box_3.png 300w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-clear_hu6b34ba39532d3e564903894f58b1e0d3_11748_400x0_resize_box_3.png 400w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/verify-dns-leak-test-clear_hu6b34ba39532d3e564903894f58b1e0d3_11748_492x0_resize_box_3.png 492w" alt="Screenshot of Mullvad DNS leak test for Clear network" loading=lazy width=492 height=244>
 </picture>
 </p>
-<h4 id=vlan40_guest-verify-dns>
-VLAN40_GUEST: Verify DNS
-<a href=#vlan40_guest-verify-dns class=post-heading__anchor aria-hidden=true>#</a>
+<h4 id=vlan40_guest-test-dns>
+VLAN40_GUEST: Test DNS
+<a href=#vlan40_guest-test-dns class=post-heading__anchor aria-hidden=true>#</a>
 </h4>
 <p>Connect to <code>VLAN40_GUEST</code>.</p>
 <p>Verify that <code>dig opnsense.org @192.168.40.1</code> times out.</p>
@@ -2968,10 +2968,10 @@ Thanks For Reading ❤️
 <li><a href=#firewall-rules>Firewall: Rules</a></li>
 </ul>
 </li>
-<li><a href=#verify>Verify</a>
+<li><a href=#test>Test</a>
 <ul>
-<li><a href=#verify-dhcp>Verify: DHCP</a></li>
-<li><a href=#verify-dns>Verify: DNS</a></li>
+<li><a href=#test-dhcp>Test: DHCP</a></li>
+<li><a href=#test-dns>Test: DNS</a></li>
 </ul>
 </li>
 <li><a href=#thanks-for-reading->Thanks For Reading ❤️</a></li>
@@ -3034,7 +3034,7 @@ Thanks For Reading ❤️
 </div>
 </footer>
 <script type=text/javascript src=/js/main.07941426570c3f29ce826eb3a40437438c08ed970d117f62cfd361ba175908c57b2c2b7c68c33ca90f1f364a94dd11114c147f94a4967aa1d460f5e24087751e.js integrity="sha512-B5QUJlcMPynOgm6zpAQ3Q4wI7ZcNEX9iz9NhuhdZCMV7LCt8aMM8qQ8fNkqU3RERTBR/lKSWeqHUYPXiQId1Hg=="></script>
-<script type=text/javascript src=/js/flexsearch.8a6851b70913ecf59f9336d6d6597c0a1a92c38c43307074371ca0cd1545cf4d9885fc298ad30229baef5eccb2d54e0c89de2ec30d1922185e686736b5c2b08b.js integrity="sha512-imhRtwkT7PWfkzbW1ll8ChqSw4xDMHB0NxygzRVFz02YhfwpitMCKbrvXsyy1U4Mid4uww0ZIhheaGc2tcKwiw=="></script>
+<script type=text/javascript src=/js/flexsearch.c0e8580c529a242f624eccbbe30422dc9652b959f9d6265c6c89316c33d82d0e6068bd25012becc9139db66e0ff3292ddfb8bfbdafd4757ed575850758594f10.js integrity="sha512-wOhYDFKaJC9iTsy74wQi3JZSuVn51iZcbIkxbDPYLQ5gaL0lASvsyROdtm4P8ykt37i/va/UdX7VdYUHWFlPEA=="></script>
 </div>
 </body>
 </html>
