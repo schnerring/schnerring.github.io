@@ -43,7 +43,7 @@ We segregate the local network into several areas with different requirements.
 
 #### Management Network (VLAN 10)
 
-The management network connects native management interfaces like WiFi access points and IPMI interfaces.
+The Management network connects native management interfaces like WiFi access points and IPMI interfaces.
 
 #### VPN Network (VLAN 20)
 
@@ -63,7 +63,7 @@ The network that visitors use. It allows unrestricted internet access. Local net
 
 ### DNS Servers
 
-We'll configure a DNS resolver (Unbound), as well as a DNS forwarder (Dnsmasq) in OPNsense. Management and VPN networks will use the resolver, the clear network will use the forwarder, and the guest network will use Cloudflare as an external DNS resolver. [We'll dig into the details later](#dns).
+We'll configure a DNS resolver (Unbound), as well as a DNS forwarder (Dnsmasq) in OPNsense. Management and VPN networks will use the resolver, the Clear network will use the forwarder, and the Guest network will use Cloudflare as an external DNS resolver. [We'll dig into the details later](#dns).
 
 ## Hardware Selection and Installation
 
@@ -86,7 +86,7 @@ Click `Next` to leave the welcome screen and get started.
 
 ![Screenshot of the general wizard settings](wizard-general-config.png)
 
-I prefer using the DNS servers of [Quad9](https://quad9.org/) over the ones of my ISP. Only the clear network will use these anyway, as secured networks use Unbound instead. The guest network will use Cloudflare DNS servers.
+I prefer using the DNS servers of [Quad9](https://quad9.org/) over the ones of my ISP. Only the Clear network will use these anyway, as secured networks use Unbound instead. The Guest network will use Cloudflare DNS servers.
 
 For the domain, I prefer to use a subdomain of a domain name I own, like `corp.example.com`. I use the subdomain only internally. I consider the `local.lan` pattern a relic of the past. To prevent our local network structure from leaking to the outside world, we'll later configure Unbound to treat the domain as private.
 
@@ -165,7 +165,7 @@ Choose **Cryptography settings** and **Thermal Sensors** settings compatible wit
 
 Navigate to {{< breadcrumb "Firewall" "Settings" "Advanced" >}}.
 
-Although IPv6 is something I want to use, it's out of scope for this guide, so we uncheck the following:
+Although IPv6 is something I want to use, it's out of scope for this guide, so we uncheck the following.
 
 |            |             |
 | ---------- | ----------- |
@@ -364,7 +364,7 @@ Select your preferred WireGuard server from the [Mullvad's server list](https://
 
 ![Screenshot of WireGuard Endpoint configuration](wireguard-remote-peer.png)
 
-Select the **Endpoints** tab and click **Add**. Here is the configuration for the remote `ch5-wireguard` Mullvad endpoint:
+Select the **Endpoints** tab and click **Add**. Here is the configuration for the remote `ch5-wireguard` Mullvad endpoint.
 
 |                  |                                                |
 | ---------------- | ---------------------------------------------- |
@@ -390,7 +390,7 @@ Select the **Local** tab, click `Add`, and enable the `advanced mode`.
 | Disable Routes | `checked`       |
 | Gateway        | `<LEAVE EMPTY>` |
 
-Click `Save` to generate the WireGuard key pair. Click `Edit` and copy the generated **Public Key**. Next, run the following shell command:
+Click `Save` to generate the WireGuard key pair. Click `Edit` and copy the generated **Public Key**. Next, run the following shell command.
 
 ```shell
 curl -sSL https://api.mullvad.net/app/v1/wireguard-keys \
@@ -399,7 +399,7 @@ curl -sSL https://api.mullvad.net/app/v1/wireguard-keys \
   -d '{"pubkey":"<generated public key>"}'
 ```
 
-It returns a JSON response like this:
+It returns a JSON response like this.
 
 ```json
 {
@@ -442,7 +442,7 @@ Navigate to {{< breadcrumb "System" "Gateways" "Single" >}} and add the VPN gate
 
 #### Monitoring IP
 
-The VPN gateway requires a monitoring IP. Setting a monitoring IP installs a static route, so each IP must be unique. Optimally, the monitoring IP should be the least possible amount of hops away from the gateway. For Mullvad specifically, we can "abuse" the local infrastructure that's available through a Mullvad connection. Any of the following IPs are only _one_ hop away from the tunnel exit:
+The VPN gateway requires a monitoring IP. Setting a monitoring IP installs a static route, so each IP must be unique. Optimally, the monitoring IP should be the least possible amount of hops away from the gateway. For Mullvad specifically, we can "abuse" the local infrastructure that's available through a Mullvad connection. Any of the following IPs are only _one_ hop away from the tunnel exit.
 
 - `100.64.0.1` to `100.64.0.3` are [Mullvad's ad-blocking and tracker-blocking DNS service servers](https://mullvad.net/it/blog/2021/5/27/how-set-ad-blocking-our-app/)
 - `10.64.0.1` is the local Mullvad gateway
@@ -477,25 +477,25 @@ Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`
 
 ## DNS
 
-OPNsense includes a DNS _resolver_ (Unbound) and a DNS _forwarder_ (Dnsmasq / Unbound in forwarding mode). Simple setups usually use one of either, but we'll use both. Because we'll also use Unbound and Dnsmasq for internal DNS resolution, we don't want to use them for the guest network, as this would expose our internal network structure. That's the reason why we earlier configured it to use Cloudflare DNS servers instead.
+OPNsense includes a DNS _resolver_ (Unbound) and a DNS _forwarder_ (Dnsmasq / Unbound in forwarding mode). Simple setups usually use one of either, but we'll use both. Because we'll also use Unbound and Dnsmasq for internal DNS resolution, we don't want to use them for the Guest network, as this would expose our internal network structure. That's the reason why we earlier configured it to use Cloudflare DNS servers instead.
 
-Like the name suggests, a DNS forwarder forwards DNS requests to an external DNS resolver of an ISP, Quad9, Cloudflare, or similar service provider. We'll configure the forwarder for the clear network. In case the primary, secured networks lose connectivity, the clear network can serve as a backup.
+Like the name suggests, a DNS forwarder forwards DNS requests to an external DNS resolver of an ISP, Quad9, Cloudflare, or similar service provider. We'll configure the forwarder for the Clear network. In case the primary, secured networks lose connectivity, the Clear network can serve as a backup.
 
 One of the advantages of self-hosting a DNS resolver is improved privacy. A resolver iteratively queries a chain of one or more DNS servers to resolve a request, so there isn't a single instance knowing all your DNS requests. It comes at the cost of speed when resolving a hostname for the first time. As Unbound's cache grows, the cost diminishes. We'll configure our primary networks to use Unbound.
 
-We'll also keep DNS traffic from Unbound within the VPN tunnels. In the rare case of a VPN outage, we'll want local DNS services to fail and not leak through the ISP WAN. The reason for this isn't improved privacy as you might think. In some cases, this might even hurt your privacy. Why? Either your ISP or your VPN provider will see the iterative DNS queries Unbound sends. So it becomes a question of who you rather entrust with this data. But if there are no privacy benefits, why do it? Honestly, I don't require such a setup. I configured it for educational purposes and fun. Other reasons that don't affect me but other users are:
+We'll also keep DNS traffic from Unbound within the VPN tunnels. In the rare case of a VPN outage, we'll want local DNS services to fail and not leak through the ISP WAN. The reason for this isn't improved privacy as you might think. In some cases, this might even hurt your privacy. Why? Either your ISP or your VPN provider will see the iterative DNS requests Unbound sends. So it becomes a question of who you rather entrust with this data. But if there are no privacy benefits, why do it? Honestly, I don't require such a setup. I configured it for educational purposes and fun. Other reasons that don't affect me but other users are.
 
 - ISP selling user data
 - ISP enforcing censorship
 - ISP hijacking DNS traffic to redirect it to their DNS resolver; this makes self-hosting a DNS resolver impossible
 
-Let's summarize our goals:
+Let's summarize our goals.
 
 - Use a DNS resolver for the management and VPN networks
 - Resolve private domain hostnames for management and VPN networks
 - Prevent DNS leaks from Unbound through the ISP WAN gateway
-- Use DNS forwarding for the clear network
-- Use external DNS resolvers for the guest network
+- Use DNS forwarding for the Clear network
+- Use external DNS resolvers for the Guest network
 
 ### DNS Resolver (Unbound)
 
@@ -535,7 +535,7 @@ server:
   local-data: "corp.example.com. 3600 IN SOA opnsense.corp.example.com. root.example.com. 2021110201 86400 7200 3600000 3600"
 ```
 
-Here is a translation of what the SOA record means:
+Here is a translation of what the SOA record means.
 
 |                     |                             |
 | ------------------- | --------------------------- |
@@ -549,7 +549,7 @@ Here is a translation of what the SOA record means:
 | Expire              | `3600000` (1000 hours)      |
 | TTL                 | `3600` (1 hour)             |
 
-Run the following to verify the configuration:
+Run the following to verify the configuration.
 
 ```shell
 # generate template
@@ -572,11 +572,12 @@ Navigate to {{< breadcrumb "Services" "Dnsmasq DNS" "Settings" >}}.
 | Listen Port                            | `5335`    |
 | Do not forward private reverse lookups | `checked` |
 
-Forward reverse DNS lookups in the `192.168.0.0/16` range to Unbound by adding the following **Domain Override**:
+Forward reverse DNS lookups in the `192.168.0.0/16` range to Unbound by adding the following **Domain Override**. We additionally make Unbound the authoritative DNS server for `corp.example.com`.
 
-| Domain               | IP           | Description                                                |
-| -------------------- | ------------ | ---------------------------------------------------------- |
-| 168.192.in-addr.arpa | 192.168.20.1 | Forward reverse lookups of private IP addresses to Unbound |
+| Domain                 | IP             | Description                                                  |
+| ---------------------- | -------------- | ------------------------------------------------------------ |
+| `168.192.in-addr.arpa` | `192.168.20.1` | Forward reverse lookups of private IP addresses to Unbound   |
+| `corp.example.com`     | `192.168.20.1` | Make Unbound the authoritative DNS server for private domain |
 
 ## Firewall
 
@@ -586,7 +587,7 @@ Here is an overview of what we want to implement with firewall rules.
 - Allow intranet communications
 - Redirect outbound DNS traffic to either Unbound or Dnsmasq
 - Redirect NTP traffic to OPNsense
-- Block intranet access for the guest network
+- Block intranet access for the Guest network
 
 |              | VLAN10  | VLAN20              | VLAN30  | VLAN40   | LAN      |
 | ------------ | ------- | ------------------- | ------- | -------- | -------- |
@@ -739,7 +740,7 @@ Content:
 
 ### NAT
 
-Network Address Translation (NAT) is required to translate private to public IP addresses. We have the following requirements:
+Network Address Translation (NAT) is required to translate private to public IP addresses. We have the following requirements.
 
 - Translate `IG_OUT_WAN` and `IG_OUT_VPN` network addresses to the `WAN` address range. Translating `IG_OUT_VPN` to `WAN` allows selective routing.
 - Translate `IG_OUT_VPN` network addresses to the `WAN_VPN0` address range.
@@ -835,7 +836,7 @@ Select **IG_LOCAL** and add the following rule.
 
 #### Allow Intranet Traffic
 
-We only allow intranet traffic on the ports defined in the `PORTS_OUT_LAN` alias. We'll override this rule for the `VLAN40_GUEST` network later, so we must uncheck the **Quick** option again. For the management network, you might want to consider stricter rules, as well.
+We only allow intranet traffic on the ports defined in the `PORTS_OUT_LAN` alias. We'll override this rule for the `VLAN40_GUEST` network later, so we must uncheck the **Quick** option again. For the Management network, you might want to consider stricter rules, as well.
 
 Select **IG_LOCAL** and add the following rule.
 
@@ -870,7 +871,7 @@ Select **IG_OUT_WAN** and add the following rule.
 | Destination port range | `PORTS_OUT_WAN`                      |
 | Description            | `Allow internet traffic through WAN` |
 
-We later want to enable unrestricted internet access on the guest network, so make sure to uncheck the **Quick** option!
+We later want to enable unrestricted internet access on the Guest network, so make sure to uncheck the **Quick** option!
 
 Next, we allow internet traffic on `PORTS_OUT_WAN` for the `IG_OUT_VPN` networks.
 
@@ -903,9 +904,9 @@ Select **IG_OUT_VPN** and add the following rules to configure selective routing
 
 Select **VLAN40_GUEST** and add the following rules.
 
-![Screenshot of guest network firewall rules](firewall-rules-guest.png)
+![Screenshot of Guest network firewall rules](firewall-rules-guest.png)
 
-To block Web GUI and SSH access from the guest network, we block traffic to any OPNsense interface on the `PORTS_ANTI_LOCKOUT` ports. We enable logging for this rule to be able to see if any guests try to access OPNsense.
+To block Web GUI and SSH access from the Guest network, we block traffic to any OPNsense interface on the `PORTS_ANTI_LOCKOUT` ports. We enable logging for this rule to be able to see if any guests try to access OPNsense.
 
 |                        |                      |
 | ---------------------- | -------------------- |
@@ -930,7 +931,7 @@ We block access to other local networks and also enable logging for the rule.
 | Log         | `checked`                         |
 | Description | `Block traffic to local networks` |
 
-Finally, we enable unrestricted internet access on guest networks.
+Finally, we enable unrestricted internet access on Guest networks.
 
 |                      |                                |
 | -------------------- | ------------------------------ |
@@ -1005,7 +1006,7 @@ Now would be a could time to reboot OPNsense to make sure all settings are appli
 
 ### Verify DHCP
 
-Connect a host to each VLAN and verify it receives an IP inside the specified DHCP range. Here is the output of the `ip -4 addr show eth0` command from a Ubuntu host connected to the VPN VLAN:
+Connect a host to each VLAN and verify it receives an IP inside the specified DHCP range. Here is the output of the `ip -4 addr show eth0` command from a Ubuntu host connected to the VPN VLAN.
 
 ```text
 8: eth0: <BROADCAST,MULTICAST,UP> mtu 1500 group default qlen 1
@@ -1015,8 +1016,352 @@ Connect a host to each VLAN and verify it receives an IP inside the specified DH
 
 ### Verify DNS
 
-Navigate to {{< breadcrumb "Interfaces" "Diagnostics" "DNS Lookup" >}} and verify that DNS lookups work.
+We have to verify the following functionality of our DNS architecture:
 
-![Screenshot of diagnostic DNS Lookup](dns-verify.png)
+- Management `VL20_VPN`
+  - Unbound _resolves_ remote and local hostname lookups
+  - Redirect outbound DNS traffic to Unbound
+  - Reverse lookups of private IPs
+  - Don't leak lookups for the private `corp.example.com` domain
+- Clear `VL30_CLEAR`
+  - Dnsmasq _forwards_ remote hostname lookups to the system DNS servers like Quad9 _and_ Unbound
+  - Forward local hostname lookups to Unbound
+  - Redirect outbound DNS traffic to Dnsmasq
+  - Forward local reverse lookups of private IPs to Unbound
+  - Don't leak lookups for the private `corp.example.com` domain and forward them to Unbound
+- Guest `VL40_GUEST`
+  - Use external DNS resolvers
+  - Allow for clients to override DNS
+  - OPNsense lookups are blocked
 
-Subsequent requests from 127.0.0.1 should result in a 0 ms lookup due to caching.
+We'll use the `dig` tool and the firewall logs under {{< breadcrumb "Firewall" "Log Files" "Live View" >}} for testing.
+
+I'll also skip the Management network because it requires the same testing as the VPN network.
+
+#### VLAN20_VPN: Verify DNS
+
+Connect to `VLAN20_VPN`.
+
+##### VLAN20_VPN: Remote Hostname Lookups
+
+Run `dig california.gov`:
+
+```text
+; <<>> DiG 9.16.1-Ubuntu <<>> california.gov
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 41004
+;; flags: qr rd ra ad; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;california.gov.                        IN      A
+
+;; ANSWER SECTION:
+california.gov.         300     IN      A       63.196.102.29
+
+;; Query time: 36 msec
+;; SERVER: 192.168.20.1#53(192.168.20.1)
+;; WHEN: Tue Nov 16 22:37:34 CET 2021
+;; MSG SIZE  rcvd: 59
+```
+
+Here are the firewall logs showing the iterative DNS requests Unbound sends.
+
+![Screenshot of firewall logs showing Unbound requests for remote hostnames](verify-unbound-fw-logs-remote.png)
+
+##### VLAN20_VPN: Local Hostname Lookups
+
+Run `dig opnsense.corp.example.com`:
+
+```text
+; <<>> DiG 9.16.1-Ubuntu <<>> opnsense.corp.example.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 22291
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 3, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;opnsense.corp.example.com.  IN      A
+
+;; ANSWER SECTION:
+opnsense.corp.example.com. 3600 IN   A       192.168.1.1
+opnsense.corp.example.com. 3600 IN   A       192.168.10.1
+opnsense.corp.example.com. 3600 IN   A       192.168.20.1
+
+;; Query time: 0 msec
+;; SERVER: 192.168.20.1#53(192.168.20.1)
+;; WHEN: Tue Nov 16 21:48:19 CET 2021
+;; MSG SIZE  rcvd: 105
+```
+
+##### VLAN20_VPN: Redirect Outbound DNS Traffic
+
+Run `dig opnsense.org @8.8.8.8`:
+
+```text
+; <<>> DiG 9.16.1-Ubuntu <<>> opnsense.org @8.8.8.8
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 17970
+;; flags: qr rd ra ad; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;opnsense.org.                  IN      A
+
+;; ANSWER SECTION:
+opnsense.org.           184     IN      A       178.162.131.118
+
+;; Query time: 0 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8)
+;; WHEN: Tue Nov 16 21:51:15 CET 2021
+;; MSG SIZE  rcvd: 57
+```
+
+`dig` can't tell that OPNsense hijacked the request and thus displays an incorrect `SERVER` value. If you check the firewall logs, you should see iterative root server requests and no requests to `8.8.8.8`.
+
+##### VLAN20_VPN: Reverse Lookups of Private IPs
+
+Run `dig -x 192.168.20.1`:
+
+```text
+; <<>> DiG 9.16.1-Ubuntu <<>> -x 192.168.20.1
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 9264
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;1.20.168.192.in-addr.arpa.     IN      PTR
+
+;; ANSWER SECTION:
+1.20.168.192.in-addr.arpa. 3600 IN      PTR     OPNsense.corp.example.com.
+
+;; Query time: 0 msec
+;; SERVER: 192.168.20.1#53(192.168.20.1)
+;; WHEN: Tue Nov 16 21:56:14 CET 2021
+;; MSG SIZE  rcvd: 96
+```
+
+If you want, additionally reverse-lookup an IP that doesn't exist. The firewall logs must not contain requests to external DNS servers.
+
+##### VLAN20_VPN: Verify `corp.example.com` Is Private
+
+To test whether OPNsense is the authoritative server for `corp.example.com`, we lookup a non-existent hostname in that domain. `dig` should return an authoritative `NXDOMAIN` response with the SOA record we earlier defined earlier in the `AUTHORITY SECTION`.
+
+Run `dig nowhere.corp.example.com`:
+
+```text
+; <<>> DiG 9.16.1-Ubuntu <<>> nowhere.corp.example.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 44590
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;nowhere.corp.example.com.   IN      A
+
+;; AUTHORITY SECTION:
+corp.example.com.    3600    IN      SOA     opnsense.corp.example.com. root.example.com. 2021110201 86400 7200 3600000 3600
+
+;; Query time: 0 msec
+;; SERVER: 192.168.20.1#53(192.168.20.1)
+;; WHEN: Tue Nov 16 21:59:58 CET 2021
+;; MSG SIZE  rcvd: 110
+```
+
+##### VLAN20_VPN: DNS Leak Test
+
+In your browser, navigate to [dnsleaktest.com](https://dnsleaktest.com/) or [mullvad.net/check](https://mullvad.net/en/check/). We expect the "leaked" DNS server to match our Mullvad public Mullvad IP:
+
+![Screenshot of Mullvad DNS leak test for VPN network](verify-dns-leak-test-vpn.png)
+
+#### VLAN30_CLEAR: Verify DNS
+
+Connect to `VLAN30_CLEAR`.
+
+##### VLAN30_CLEAR: Remote Hostname Lookups
+
+Run `dig opnsense.org`:
+
+```text
+; <<>> DiG 9.16.1-Ubuntu <<>> opnsense.org
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 65053
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;opnsense.org.                  IN      A
+
+;; ANSWER SECTION:
+opnsense.org.           596     IN      A       178.162.131.118
+
+;; Query time: 5 msec
+;; SERVER: 192.168.30.1#53(192.168.30.1)
+;; WHEN: Tue Nov 16 16:45:08 CET 2021
+;; MSG SIZE  rcvd: 57
+```
+
+Check the firewall logs. Enable logging for the port forward rule if you want it to show up.
+
+![Screenshot of firewall logs showing Dnsmasq redirect for remote hostname requests](verify-dnsmasq-fw-logs-remote.png)
+
+You can see that Dnsmasq forwards to the DNS servers defined under {{< breadcrumb "System" "Settings" General >}} _and_ Unbound.
+
+##### VLAN30_CLEAR: Local Hostname Lookups
+
+Run `dig opnsense.corp.example.com`:
+
+```text
+; <<>> DiG 9.16.1-Ubuntu <<>> opnsense.corp.example.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 61385
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;opnsense.corp.example.com.  IN      A
+
+;; ANSWER SECTION:
+opnsense.corp.example.com. 1 IN      A       192.168.1.1
+
+;; Query time: 0 msec
+;; SERVER: 192.168.30.1#53(192.168.30.1)
+;; WHEN: Wed Nov 17 00:45:49 CET 2021
+;; MSG SIZE  rcvd: 73
+```
+
+##### VLAN30_CLEAR: Redirect Outbound DNS Traffic
+
+Run `dig opnsense.org @8.8.8.8`:
+
+```text
+; <<>> DiG 9.16.1-Ubuntu <<>> opnsense.org @8.8.8.8
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 34638
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;opnsense.org.                  IN      A
+
+;; ANSWER SECTION:
+opnsense.org.           430     IN      A       178.162.131.118
+
+;; Query time: 3 msec
+;; SERVER: 8.8.8.8#53(8.8.8.8)
+;; WHEN: Tue Nov 16 00:12:15 CET 2021
+;; MSG SIZE  rcvd: 57
+```
+
+We confirm it works by looking at the firewall logs again:
+
+![Screenshot of firewall logs showing Dnsmasq redirect for outbound DNS requests](verify-dnsmasq-fw-logs-redirect.png)
+
+##### VLAN30_CLEAR: Forward Reverse Lookups of Private IPs to Unbound
+
+Run `dig -x 192.168.20.1`:
+
+```text
+; <<>> DiG 9.16.1-Ubuntu <<>> -x 192.168.20.1
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 20607
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;1.20.168.192.in-addr.arpa.     IN      PTR
+
+;; ANSWER SECTION:
+1.20.168.192.in-addr.arpa. 3600 IN      PTR     OPNsense.home.schnerring.net.
+
+;; Query time: 1 msec
+;; SERVER: 192.168.30.1#53(192.168.30.1)
+;; WHEN: Wed Nov 17 00:09:05 CET 2021
+;; MSG SIZE  rcvd: 96
+```
+
+The firewall logs confirm it works.
+
+![Screenshot of firewall logs showing Dnsmasq redirect for reverse lookups](verify-dnsmasq-fw-logs-reverse.png)
+
+##### VLAN30_CLEAR: Verify `corp.example.com` Is Private
+
+Run `dig nowhere.corp.example.com`:
+
+```text
+; <<>> DiG 9.16.1-Ubuntu <<>> nowhere.corp.example.com
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NXDOMAIN, id: 7481
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 0, AUTHORITY: 1, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;nowhere.corp.example.com. IN      A
+
+;; AUTHORITY SECTION:
+corp.example.com.    3600    IN      SOA     opnsense.corp.example.com. root.example.com. 2021110201 86400 7200 3600000 3600
+
+;; Query time: 0 msec
+;; SERVER: 192.168.30.1#53(192.168.30.1)
+;; WHEN: Tue Nov 16 20:44:35 CET 2021
+;; MSG SIZE  rcvd: 112
+```
+
+This time, requests will only be forwarded reach Unbound, but not external DNS resolvers.
+
+![Screenshot of firewall logs showing Dnsmasq redirecting private domain requests to Unbound](verify-dnsmasq-fw-logs-private.png)
+
+##### VLAN30_CLEAR: DNS Leak Test
+
+As we saw earlier, we expect the Quad9 _and_ the Mullvad public IP to leak. Here is the result of an extended test from [dnsleaktest.com](https://dnsleaktest.com/):
+
+![Screenshot of Mullvad DNS leak test for Clear network](verify-dns-leak-test-clear.png)
+
+#### VLAN40_GUEST: Verify DNS
+
+Connect to `VLAN40_GUEST`.
+
+Verify that `dig opnsense.org @192.168.40.1` times out.
+
+The Cloudflare DNS servers you configured in the DHCP settings of the Guest VLAN should show up when running the leak test:
+
+![Screenshot of Mullvad DNS leak test for Guest network](verify-dns-leak-test-guest.png)
+
+## Thanks For Reading ❤️
+
+If you're here, I thank you for reading all this! Any feedback is highly appreciated.
+
+When I decided to write this guide, I didn't think it would take soooo long. I worked on it intensively for the better part of a month. I spent like a week configuring Unbound to use WireGuard tunnels, only to find out that [I couldn't get it working due to a bug](https://github.com/opnsense/core/issues/5329). But it was all worth it and a fulfilling journey — I have learned so much OPNsense and networking. But I'm also happy to be able to put this aside for a while. 🎉
+
+So what's next?
+
+Let's Encrypt certificates and [HAProxy](https://docs.opnsense.org/manual/how-tos/haproxy.html) to secure self-hosted services. I imagine configuring it should be pretty straightforward.
+
+Me and possibly others want to be able to access my home network from the outside via WireGuard. I have a dynamic IP, so I thought I'd have to resort to [Dynamic DNS](https://docs.opnsense.org/manual/dynamic_dns.html). But I think [port forwarding with Mullvad](https://mullvad.net/en/help/port-forwarding-and-mullvad/) is the better solution and doesn't require me to associate my public IP address with a DNS record.
+
+Originally I planned to include a multi-gateway load balancing setup with WireGuard in this guide but couldn't get it to work. I found some posts suggesting that this was a limitation of WireGuard and not (yet?) possible. But I'm not sure.
+
+[Traffic shaping](https://docs.opnsense.org/manual/shaping.html) and [intrusion prevention](https://docs.opnsense.org/manual/ips.html) is something I want to look into, too.
+
+So yeah, OPNsense and I will be friends for a while. 👫
