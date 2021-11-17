@@ -477,6 +477,8 @@ Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`
 
 ## DNS
 
+![Diagram of DNS architecture](dns-architecture.png)
+
 OPNsense includes a DNS _resolver_ (Unbound) and a DNS _forwarder_ (Dnsmasq / Unbound in forwarding mode). Simple setups usually use one of either, but we'll use both. Because we'll also use Unbound and Dnsmasq for internal DNS resolution, we don't want to use them for the Guest network, as this would expose our internal network structure. That's the reason why we earlier configured it to use Cloudflare DNS servers instead.
 
 Like the name suggests, a DNS forwarder forwards DNS requests to an external DNS resolver of an ISP, Quad9, Cloudflare, or similar service provider. We'll configure the forwarder for the Clear network. In case the primary, secured networks lose connectivity, the Clear network can serve as a backup.
