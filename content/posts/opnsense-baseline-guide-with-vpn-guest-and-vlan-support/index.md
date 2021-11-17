@@ -1,5 +1,5 @@
 ---
-title: "OPNsense Baseline Guide with VPN, Guest, and VLAN Support"
+title: "OPNsense Baseline Guide with Mullvad VPN, Guest, and VLAN Support"
 date: 2021-11-17T03:56:35+01:00
 cover:
   src: "cover.png"
