@@ -30,14 +30,14 @@ My goal was to create a comprehensive guide that's easy to follow. But I tried t
 
 I'm a homelab hobbyist, so be warned that this guide likely contains errors. Please, verify the steps yourself and do your research. I hope this guide is as helpful and inspiring to you as the pfSense guide was to me. Your feedback is always welcome and very much appreciated.
 
-## Network Topology
+## Overview
 
-### WAN
+### Overview: WAN
 
 - DHCP WAN from a single Internet Service Provider (ISP)
 - [Mullvad VPN](https://mullvad.net) gateway
 
-### LAN
+### Overview: LAN
 
 We segregate the local network into several areas with different requirements.
 
@@ -61,7 +61,7 @@ The network that visitors use. It allows unrestricted internet access. Local net
 
 "Native" VLAN, used to debug and test new configurations.
 
-### DNS Servers
+### Overview: DNS Servers
 
 We'll configure a DNS resolver (Unbound), as well as a DNS forwarder (Dnsmasq) in OPNsense. Management and VPN networks will use the resolver, the Clear network will use the forwarder, and the Guest network will use Cloudflare as an external DNS resolver. [We'll dig into the details later](#dns).
 
@@ -73,14 +73,14 @@ As mentioned earlier, I bought the [Deciso DEC630](https://www.deciso.com/produc
 
 I verified this guide with a clean install of OPNsense version `21.7.5`.
 
-## Initial Wizard Configuration
+## Wizard
 
 Navigate to `192.168.1.1` in your browser and login with default credentials:
 
 - **Username**: `root`
 - **Password**: `opnsense`
 
-Click `Next` to leave the welcome screen and get started.
+Click `Next` to leave the welcome screen and get started with the initial wizard configuration.
 
 ### Wizard: General Information
 
@@ -110,7 +110,7 @@ Choose the NTP servers geographically closest to your location. I live in Switze
 | Time server hostname | `0.ch.pool.ntp.org 1.ch.pool.ntp.org 2.ch.pool.ntp.org 3.ch.pool.ntp.org` |
 | Timezone             | `Europe/Zurich`                                                           |
 
-### Wizard: Configure WAN / LAN Interfaces
+### Wizard: Configure Interfaces
 
 By default, the WAN interface obtains an IP address from your ISP via DHCP. DHCP is also configured for the LAN interface by default and has the IP `192.168.1.1`. It works for most people, so we just keep the defaults.
 
@@ -120,7 +120,7 @@ Choose a strong root password and complete the wizard.
 
 ## General Settings
 
-### Access
+### General: Access
 
 Navigate to {{< breadcrumb "System" "Settings" "Administration" >}}.
 
@@ -150,7 +150,7 @@ Navigate to {{< breadcrumb "System" "Access" "Users" >}} and add a new user.
 
 Configuring the SSH client and generating keys is out of scope for this guide, so I'll just recommend this [DigitalOcean tutorial covering SSH essentials](https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys).
 
-### Miscellaneous
+### General: Miscellaneous
 
 Navigate to {{< breadcrumb "System" "Settings" "Miscellaneous" >}}.
 
@@ -161,7 +161,7 @@ Navigate to {{< breadcrumb "System" "Settings" "Miscellaneous" >}}.
 
 Choose **Cryptography settings** and **Thermal Sensors** settings compatible with your hardware.
 
-### Firewall Settings
+### General: Firewall Settings
 
 Navigate to {{< breadcrumb "Firewall" "Settings" "Advanced" >}}.
 
@@ -190,7 +190,7 @@ We disable the auto-generated anti-lockout rule because we'll define it manually
 | -------------------- | --------- |
 | Disable anti-lockout | `checked` |
 
-### Checksum Offloading
+### General: Checksum Offloading
 
 For some hardware, checksum offloading doesn't work, particularly some Realtek cards. Rarely, drivers may have problems with checksum offloading and some specific NICs. If your hardware is incompatible with checksum offloading, disable it.
 
@@ -200,9 +200,9 @@ Navigate to {{< breadcrumb "Interfaces" "Settings" >}}.
 | ------------ | ----------- | --------------------------------- |
 | Hardware CRC | `unchecked` | Disable hardware checksum offload |
 
-## Interface Creation And Configuration
+## VLANs
 
-### About VLANs and Switch Choice
+### VLAN Switch Choice
 
 A 802.1Q-capable switch with properly configured VLANs is required. Check my [router on a stick VLAN configuration guide](/posts/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch) to see an example setup with a [Mikrotik](https://mikrotik.com/) switch.
 
@@ -348,7 +348,7 @@ Click `Save`.
 | ----- | --------------------------------------- |
 | Range | from `192.168.1.100` to `192.168.1.199` |
 
-## WireGuard VPN Configuration with Mullvad
+## WireGuard VPN with Mullvad
 
 In recent years, [Mullvad](https://mullvad.net/) has been my VPN provider of choice. When _That One Privacy Site_ was still a thing, Mullvad was one of the top recommendations there. After reading the review, I decided to try it out and haven't looked back since. No personally identifiable information is required to register, and paying cash via mail works perfectly.
 
@@ -358,7 +358,7 @@ Please note that the FreeBSD kernel does not (yet) natively support WireGuard, s
 
 Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wireguard`. Refresh the browser and navigate to {{< breadcrumb "VPN" "WireGuard" >}}.
 
-### Remote Peer
+### WireGuard: Remote Peer
 
 Select your preferred WireGuard server from the [Mullvad's server list](https://mullvad.net/en/servers/) and take note of its name and public key. It's worth spending some time to benchmark server performance before making a choice.
 
@@ -377,7 +377,7 @@ Select the **Endpoints** tab and click **Add**. Here is the configuration for th
 
 To mitigate risks against DNS poisoning, resolve the server's hostname and enter its IP as **Endpoint Address**. You can do this by running `nslookup ch5-wireguard.mullvad.net` in a shell.
 
-### Local Peer
+### WireGuard: Local Peer
 
 Select the **Local** tab, click `Add`, and enable the `advanced mode`.
 
@@ -416,7 +416,7 @@ Copy the IPv4 IP address to the **Tunnel Address** field. Subtract one from the 
 
 When you finish, select the `General` tab. Check **Enable WireGuard**. You should see a handshake for the `wg0` tunnel on the **Handshakes** tab.
 
-### WireGuard Interface
+### WireGuard: Interface
 
 Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 
@@ -424,7 +424,7 @@ Select `wg0`, add the description `WAN_VPN0`, and click `+`
 
 Enable the newly created interface and restart the WireGuard service after. It ensures the interface gets an IP address from WireGuard.
 
-### VPN Gateway
+### WireGuard: VPN Gateway
 
 ![Screenshot of gateway configuration overview](gateway-config.png)
 
@@ -461,7 +461,7 @@ Navigate to {{< breadcrumb "Interfaces" "WAN_VPN0" >}} and set the following pro
 | IPv4 address            | `10.105.248.51/32`         |
 | IPv4 Upstream Gateway   | `WAN_VPN0 - 10.105.248.50` |
 
-### Static Route
+### WireGuard: Static Route
 
 Defining a static route for the tunnel connection is optional. It would be necessary, for example, if we want to consider the VPN gateway as the default gateway candidate. It requires a static route to the ISP WAN gateway to keep the tunnel connection alive.
 
@@ -499,7 +499,7 @@ Let's summarize our goals.
 - Use DNS forwarding for the Clear network
 - Use external DNS resolvers for the Guest network
 
-### DNS Resolver (Unbound)
+### DNS: Resolver (Unbound)
 
 Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}}.
 
@@ -562,7 +562,7 @@ cat /usr/local/etc/unbound.opnsense.d/private_domains.conf
 configctl unbound check
 ```
 
-### DNS Forwarder (Dnsmasq)
+### DNS: Forwarder (Dnsmasq)
 
 Dnsmasq will forward DNS requests to the configured system DNS servers. Earlier, you either explicitly configured them or decided to receive the DNS servers via DHCP from your ISP. Because Unbound already uses port 53, we'll use port 5335 for Dnsmasq. We'll later create rules to port forward DNS traffic to this port.
 
@@ -600,7 +600,7 @@ Here is an overview of what we want to implement with firewall rules.
 | DNS          | Unbound | Unbound             | Dnsmasq | external | Unbound  |
 | NTP          | local   | local               | local   | external | external |
 
-### Interface Groups
+### Firewall: Interface Groups
 
 We use [interface groups](https://docs.opnsense.org/manual/firewall_groups.html) to apply policies to multiple interfaces at once and reduce the number of required firewall rules significantly. Do not use them for WAN interfaces because they don't use the `reply-to` directive!
 
@@ -658,7 +658,7 @@ Navigate to {{< breadcrumb "Firewall" "Groups" >}} and add the following interfa
 | Description | `Interfaces forced to use OPNsense as NTP server` |
 | Members     | `VLAN10_MANAGE` `VLAN20_VPN` `VLAN30_CLEAR`       |
 
-### Aliases
+### Firewall: Aliases
 
 We define a few reusable [aliases](https://docs.opnsense.org/manual/aliases.html) that help us condense our firewall rules. Some of them might become hard to maintain as they grow, in which case you might want to consider nesting aliases.
 
@@ -740,7 +740,7 @@ Content:
 - `993`: IMAPS
 - `49152:65535` ephemeral ports
 
-### NAT
+### Firewall: NAT
 
 Network Address Translation (NAT) is required to translate private to public IP addresses. We have the following requirements.
 
@@ -777,7 +777,7 @@ Select `Manual outbound NAT rule generation` and add the following rules.
 | Source address | `IG_OUT_VPN net`         |
 | Description    | `IG_OUT_VPN to WAN_VPN0` |
 
-### Rules
+### Firewall: Rules
 
 Navigate to {{< breadcrumb "Firewall" "Rules" >}}.
 
@@ -1006,7 +1006,7 @@ Navigate to {{< breadcrumb "Firewall" "NAT" "Port Forward" >}} and add the follo
 
 Now would be a could time to reboot OPNsense to make sure all settings are applied.
 
-### Verify DHCP
+### Verify: DHCP
 
 Connect a host to each VLAN and verify it receives an IP inside the specified DHCP range. Here is the output of the `ip -4 addr show eth0` command from a Ubuntu host connected to the VPN VLAN.
 
@@ -1016,7 +1016,7 @@ Connect a host to each VLAN and verify it receives an IP inside the specified DH
        valid_lft 7196sec preferred_lft 7196sec
 ```
 
-### Verify DNS
+### Verify: DNS
 
 We have to verify the following functionality of our DNS architecture:
 
