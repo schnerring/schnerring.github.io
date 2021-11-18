@@ -27,6 +27,9 @@ enableRobotsTXT = true
   subtitle = "Software Engineer"
   description = "Michael Schnerring is a coder and computer enthusiast."
 
+  # Plausible auth secret to enable public dashboard
+  plausibleAuth = "hDl_ZT_txy4BS608-H3Y0"
+
   [params.logo]
     text = "schnerring.net"
     url = "/"
@@ -69,6 +72,11 @@ enableRobotsTXT = true
     name = "About"
     url = "/about"
     weight = 40
+  [[menu.main]]
+    identifier = "stats"
+    name = "Stats"
+    url = "/stats"
+    weight = 50
 
 [languages]
   [languages.en]

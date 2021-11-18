@@ -13,9 +13,9 @@ I am the author of the Hugo theme you see. It uses the [gruvbox](https://github.
 
 ## Analytics
 
-I self-host [Plausible Analytics](https://plausible.io/), an open-source, privacy-respecting, and lightweight website analytics tool. I don't collect any personal data.
+I self-host [Plausible Analytics](https://plausible.io/), an open-source, privacy-respecting, and lightweight website analytics tool.
 
-I use [Terraform](https://www.terraform.io/) and [Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/) to host Plausible. Check my [Terraform configuration for Plausible](https://github.com/schnerring/infrastructure/blob/main/plausible.tf) if you want to learn how.
+I don't collect any personal data. [All analytics data is publicly accessible on the stats page](/analytics).
 
 ## Legal
 

@@ -1,0 +1,33 @@
+<iframe
+  id="plausible"
+  plausible-embed
+  src="https://plausible.schnerring.net/share/schnerring.net?auth={{ $.Site.Params.plausibleAuth }}&theme={{ $.Site.Params.defaultTheme }}&background=transparent&embed=true"
+  scrolling="no"
+  frameborder="0"
+  loading="lazy"
+  style="width: 1px; min-width: 100%; height: 1600px;">
+</iframe>
+
+<script async src="https://plausible.schnerring.net/js/embed.host.js"></script>
+
+<script>
+  function setPlausibleTheme(theme) {
+    const dashboard = document.getElementById("plausible");
+    var dashboardUrl = new URL(dashboard.src);
+    dashboardUrl.searchParams.set("theme", theme);
+    dashboard.src = dashboardUrl.toString();
+  }
+
+  const themeToggleLight = document.getElementsByClassName("theme__toggle light--hidden").item(0);
+  themeToggleLight.addEventListener("click", () => {
+    setTimeout(() => setPlausibleTheme("light"), 10);
+  });
+
+  const themeToggleDark = document.getElementsByClassName("theme__toggle dark--hidden").item(0);
+  themeToggleDark.addEventListener("click", () => {
+    setTimeout(() => setPlausibleTheme("dark"), 10);
+  });
+
+  const theme = localStorage.getItem("theme");
+  setPlausibleTheme(theme);
+</script>
