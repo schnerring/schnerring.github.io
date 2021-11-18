@@ -4,7 +4,6 @@ date: 2021-05-22T16:23:36+02:00
 cover:
   src: "img/cover.svg"
   alt: "Test"
-hideReadMore: true
 comments: true
 tags:
   - aadds

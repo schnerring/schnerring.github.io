@@ -4,7 +4,6 @@ date: 2021-05-09T09:31:13+02:00
 cover:
   src: "img/cover.svg"
 draft: false
-hideReadMore: true
 comments: true
 tags:
   - hugo

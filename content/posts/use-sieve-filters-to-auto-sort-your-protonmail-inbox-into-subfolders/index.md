@@ -3,7 +3,6 @@ title: "Use Sieve Filters to Auto-Sort Your ProtonMail Inbox into Subfolders"
 date: 2021-06-16T20:32:21+02:00
 cover:
   src: "img/cover.svg"
-hideReadMore: true
 comments: true
 tags:
   - protonmail

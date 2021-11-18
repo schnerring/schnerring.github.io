@@ -4,7 +4,6 @@ date: 2021-11-17T03:56:35+01:00
 cover:
   src: "cover.png"
 draft: false
-hideReadMore: true
 toc: true
 comments: true
 tags:

@@ -3,7 +3,6 @@ title: "Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraf
 date: 2021-05-14T01:13:33+02:00
 cover:
   src: "img/cover.svg"
-hideReadMore: true
 comments: true
 tags:
   - aks

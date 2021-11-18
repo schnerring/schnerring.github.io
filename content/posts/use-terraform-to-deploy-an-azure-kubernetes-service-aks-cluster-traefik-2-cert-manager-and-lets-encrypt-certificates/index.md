@@ -4,7 +4,6 @@ date: 2021-04-25T01:00:27+02:00
 cover:
   src: "img/cover.png"
 draft: false
-hideReadMore: true
 comments: true
 tags:
   - aks

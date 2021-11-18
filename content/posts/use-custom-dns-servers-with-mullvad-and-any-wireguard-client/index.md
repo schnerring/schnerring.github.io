@@ -3,7 +3,6 @@ title: "Use Custom DNS Servers With Mullvad And Any WireGuard Client"
 date: 2021-10-31T08:19:52+01:00
 cover:
   src: "img/cover.svg"
-hideReadMore: true
 comments: true
 tags:
   - dns
