@@ -1243,7 +1243,7 @@ corp.example.com.    3600    IN      SOA     opnsense.corp.example.com. root.exa
 
 ##### VLAN20_VPN: DNS Leak Test
 
-In your browser, navigate to [dnsleaktest.com](https://dnsleaktest.com/) or [mullvad.net/check](https://mullvad.net/en/check/). We expect the "leaked" DNS server to match our Mullvad public Mullvad IP:
+In your browser, navigate to [dnsleaktest.com](https://dnsleaktest.com/) or [mullvad.net/check](https://mullvad.net/en/check/). We expect the "leaked" DNS server to match our Mullvad public Mullvad IP. The second leak is from the **Outgoing Interface** we configured for Unbound:
 
 ![Screenshot of Mullvad DNS leak test for VPN network](verify-dns-leak-test-vpn.png)
 
@@ -1396,9 +1396,9 @@ This time, requests will only be forwarded to Unbound, but not external DNS reso
 
 ##### VLAN30_CLEAR: DNS Leak Test
 
-As we saw earlier, we expect the Quad9 _and_ the Mullvad public IP to leak. Here is the result of an extended test from [dnsleaktest.com](https://dnsleaktest.com/):
+As we saw earlier, we expect the Quad9 _and_ the Mullvad public IPs to leak. Here is the result of an extended test from [dnsleaktest.com](https://dnsleaktest.com/):
 
-![Screenshot of Mullvad DNS leak test for Clear network](verify-dns-leak-test-clear.png)
+![Screenshot of DNS leak test for Clear network](verify-dns-leak-test-clear.png)
 
 #### VLAN40_GUEST: Test DNS
 
