@@ -1,5 +1,5 @@
 ---
-title: "OPNsense Baseline Guide with Mullvad VPN, Guest, and VLAN Support"
+title: "OPNsense Baseline Guide with Mullvad VPN Multi-WAN, Guest, and VLAN Support"
 date: 2021-11-17T03:56:35+01:00
 cover:
   src: "cover.png"
@@ -36,7 +36,7 @@ I'm a homelab hobbyist, so be warned that this guide likely contains errors. Ple
 ### Overview: WAN
 
 - DHCP WAN from a single Internet Service Provider (ISP)
-- [Mullvad VPN](https://mullvad.net) gateway
+- [Mullvad VPN](https://mullvad.net) multi-WAN with gateway groups
 
 ### Overview: LAN
 
@@ -48,11 +48,11 @@ The Management network connects native management interfaces like WiFi access po
 
 #### VPN Network (VLAN 20)
 
-The primary LAN network uses a WireGuard VPN tunnel for outbound connections, maximizing privacy and security. If the VPN tunnel fails, outbound connections won't be possible. Exceptions to selectively route traffic through the ISP WAN gateway are possible.
+The primary LAN network uses the WireGuard VPN tunnels for outbound connections, maximizing privacy and security. If the VPN tunnels fail, outbound connections won't be possible. Exceptions to selectively route traffic through the ISP WAN gateway are possible.
 
 #### "Clear" Network (VLAN 30)
 
-General-purpose web access network that doesn't use VPN tunnels. All outgoing connections leave through the ISP WAN gateway. It serves as a backup network in case the VPN tunnel fails.
+General-purpose web access network that doesn't use VPN tunnels. All outgoing connections leave through the ISP WAN gateway. It serves as a backup network in case the VPN tunnels fail.
 
 #### Guest Network (VLAN 40)
 
@@ -355,15 +355,17 @@ In recent years, [Mullvad](https://mullvad.net/) has been my VPN provider of cho
 
 I decided to go with [WireGuard](https://www.wireguard.com/) because I'm fine riding the bleeding edge. 😎 For more detailed steps, check the official OPNsense documentation on setting up [WireGuard with Mullvad](https://docs.opnsense.org/manual/how-tos/wireguard-client-mullvad.html) and [WireGuard selective routing](https://docs.opnsense.org/manual/how-tos/wireguard-selective-routing.html).
 
-Please note that the FreeBSD kernel does not (yet) natively support WireGuard, so you must install it as a plugin. Possibly, this doesn't meet your stability, security, or performance requirements. Also, WireGuard does not yet support multi-WAN scenarios. However, I chose an extensible naming scheme that allows adding more tunnels as soon as WireGuard natively supports multi-WAN.
+Please note that the FreeBSD kernel does not (yet) natively support WireGuard, so you must install it as a plugin. Possibly, this doesn't meet your stability, security, or performance requirements.
 
-Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wireguard`. Refresh the browser and navigate to {{< breadcrumb "VPN" "WireGuard" >}}.
+By default, the OPNsense plugin uses the Go implementation of WireGuard. But I couldn't get multi-WAN working with it. However, with the experimental WireGuard kernel module `wireguard-kmod`, it works. I only managed to get failover working, though. Load balancing doesn't seem to be supported yet.
 
-### WireGuard: Remote Peer
+Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wireguard`. Refresh the browser and navigate to {{< breadcrumb "VPN" "WireGuard" >}}. Then SSH into OPNsense, run `pkg install wireguard-kmod`, and reboot.
 
-Select your preferred WireGuard server from the [Mullvad's server list](https://mullvad.net/en/servers/) and take note of its name and public key. It's worth spending some time to benchmark server performance before making a choice.
+### WireGuard: Remote Peers
 
-![Screenshot of WireGuard Endpoint configuration](wireguard-remote-peer.png)
+Select your preferred WireGuard servers from the [Mullvad's server list](https://mullvad.net/en/servers/) and take note of their names and public keys. It's worth spending some time to benchmark server performance before making a choice.
+
+![Screenshot of WireGuard Endpoint configurations](wireguard-remote-peers.png)
 
 Select the **Endpoints** tab and click **Add**. Here is the configuration for the remote `ch5-wireguard` Mullvad endpoint.
 
@@ -378,7 +380,9 @@ Select the **Endpoints** tab and click **Add**. Here is the configuration for th
 
 To mitigate risks against DNS poisoning, resolve the server's hostname and enter its IP as **Endpoint Address**. You can do this by running `nslookup ch5-wireguard.mullvad.net` in a shell.
 
-### WireGuard: Local Peer
+Repeat the steps above to add another server, e.g., `ch6-wireguard`. Note that for all endpoint configurations, the **Endpoint Port** is `51820`.
+
+### WireGuard: Local Peers
 
 Select the **Local** tab, click `Add`, and enable the `advanced mode`.
 
@@ -415,7 +419,11 @@ Copy the IPv4 IP address to the **Tunnel Address** field. Subtract one from the 
 
 ![Screenshot of WireGuard Local Peer configuration](wireguard-local-peer.png)
 
-When you finish, select the `General` tab. Check **Enable WireGuard**. You should see a handshake for the `wg0` tunnel on the **Handshakes** tab.
+Repeat the steps above to create a second local peer named `mullvad1`. Remember to use a _different_ **Listen Port** (e.g., `51821`).
+
+![Screenshot of WireGuard Local Peer configurations](wireguard-local-peers.png)
+
+When you finish, select the `General` tab. Check **Enable WireGuard**. You should see a handshake for the `wg0` and `wg1` tunnels on the **Handshakes** tab.
 
 ### WireGuard: Interface
 
@@ -425,11 +433,13 @@ Select `wg0`, add the description `WAN_VPN0`, and click `+`
 
 Enable the newly created interface and restart the WireGuard service after. It ensures the interface gets an IP address from WireGuard.
 
-### WireGuard: VPN Gateway
+### WireGuard: VPN Gateways
 
 ![Screenshot of gateway configuration overview](gateway-config.png)
 
-Navigate to {{< breadcrumb "System" "Gateways" "Single" >}} and add the VPN gateway.
+Navigate to {{< breadcrumb "System" "Gateways" "Single" >}} and add the VPN gateways.
+
+#### WAN_VPN0
 
 |                            |                 |
 | -------------------------- | --------------- |
@@ -441,20 +451,34 @@ Navigate to {{< breadcrumb "System" "Gateways" "Single" >}} and add the VPN gate
 | Disable Gateway Monitoring | `unchecked`     |
 | Monitor IP                 | `100.64.0.1`    |
 
-#### Monitoring IP
+#### WAN_VPN1
 
-The VPN gateway requires a monitoring IP. Setting a monitoring IP installs a static route, so each IP must be unique. Optimally, the monitoring IP should be the least possible amount of hops away from the gateway. For Mullvad specifically, we can "abuse" the local infrastructure that's available through a Mullvad connection. Any of the following IPs are only _one_ hop away from the tunnel exit.
+|                            |                 |
+| -------------------------- | --------------- |
+| Name                       | `WAN_VPN0`      |
+| Interface                  | `WAN_VPN1`      |
+| Address Family             | `IPv4`          |
+| IP Address                 | `10.109.231.89` |
+| Far Gateway                | `checked`       |
+| Disable Gateway Monitoring | `unchecked`     |
+| Monitor IP                 | `100.64.0.2`    |
+
+#### Monitoring IPs
+
+Each VPN gateway requires a unique monitoring IP because setting a monitoring IP installs a static route. Optimally, the monitoring IP should be the least possible amount of hops away from the gateway. For Mullvad specifically, we can "abuse" the local infrastructure that's available through a Mullvad connection. Any of the following IPs are only _one_ hop away from the tunnel exit.
 
 - `100.64.0.1` to `100.64.0.3` are [Mullvad's ad-blocking and tracker-blocking DNS service servers](https://mullvad.net/it/blog/2021/5/27/how-set-ad-blocking-our-app/)
 - `10.64.0.1` is the local Mullvad gateway
 
 You can easily verify the above by running `traceroute 100.64.0.1` from a host connected to Mullvad.
 
-#### Add Static IPv4 Configuration to the WireGuard Interface
+#### Add Static IPv4 Configuration to the WireGuard Interfaces
 
 OPNsense versions newer than `21.7.3` require adding static IPv4 configuration to the WireGuard interface. Otherwise, Unbound will use the default route despite setting the **Outgoing Network Interfaces** option. Other solutions exist, but I'm not sure which the "best" or most logical one is. As WireGuard integration matures, this section hopefully becomes obsolete. [You can find more information regarding this issue on GitHub](https://github.com/opnsense/core/issues/5329#issuecomment-958397043).
 
-Navigate to {{< breadcrumb "Interfaces" "WAN_VPN0" >}} and set the following properties.
+Navigate to **Interfaces** and edit the WireGuard interfaces.
+
+##### IP Configuration: WAN_VPN0
 
 |                         |                            |
 | ----------------------- | -------------------------- |
@@ -462,11 +486,32 @@ Navigate to {{< breadcrumb "Interfaces" "WAN_VPN0" >}} and set the following pro
 | IPv4 address            | `10.105.248.51/32`         |
 | IPv4 Upstream Gateway   | `WAN_VPN0 - 10.105.248.50` |
 
-### WireGuard: Static Route
+##### IP Configuration: WAN_VPN1
 
-Defining a static route for the tunnel connection is optional. It would be necessary, for example, if we want to consider the VPN gateway as the default gateway candidate. It requires a static route to the ISP WAN gateway to keep the tunnel connection alive.
+|                         |                            |
+| ----------------------- | -------------------------- |
+| IPv4 Configuration Type | `Static IPv4`              |
+| IPv4 address            | `10.105.248.51/32`         |
+| IPv4 Upstream Gateway   | `WAN_VPN1 - 10.105.248.50` |
 
-![Screenshot of the static route for WireGuard tunnel](static-route-wireguard.png)
+#### Gateway Groups
+
+Navigate to {{< breadcrumb "System" "Gateways" "Group" >}} and click `Add`.
+
+|               |                               |
+| ------------- | ----------------------------- |
+| Group Name    | `WAN_VPN_GROUP`               |
+| WAN_VPN0      | `Tier 1`                      |
+| WAN_VPN1      | `Tier 2` (failover)           |
+| Trigger Level | `Packet Loss or High Latency` |
+
+It's also possible to configure failover or both.
+
+### WireGuard: Static Routes (Optional)
+
+Defining static routes for the tunnel gateways is optional. It would be necessary, for example, if we want to consider the VPN gateways as default gateway candidates. It requires static routes to the ISP WAN gateway to keep the tunnel connections alive.
+
+![Screenshot of the static routes for WireGuard tunnel](static-routes-wireguard.png)
 
 Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`.
 
@@ -475,6 +520,12 @@ Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`
 | Network Address | `193.32.127.66/32`                            |
 | Gateway         | `WAN_DHCP`                                    |
 | Description     | `Keep tunnels to mullvad-ch5-wireguard alive` |
+
+|                 |                                               |
+| --------------- | --------------------------------------------- |
+| Network Address | `193.32.127.67/32`                            |
+| Gateway         | `WAN_DHCP`                                    |
+| Description     | `Keep tunnels to mullvad-ch6-wireguard alive` |
 
 ## DNS
 
@@ -511,7 +562,7 @@ Navigate to {{< breadcrumb "Services" "Unbound DNS" "General" >}}.
 | DHCP registration           | `checked`                          |
 | DHCP static mappings        | `checked`                          |
 | Local Zone Type             | `static`                           |
-| Outgoing Network Interfaces | `WAN_VPN0`                         |
+| Outgoing Network Interfaces | `WAN_VPN0` `WAN_VPN1`              |
 
 Navigate to {{< breadcrumb "Services" "Unbound DNS" "Advanced" >}}.
 
@@ -720,7 +771,7 @@ Content:
 
 #### Ports Allowed to Communicate with the Internet
 
-Allow ports for egress internet traffic. Amend the list depending on your needs.
+Allow ports for _egress_ internet traffic. Amend the list depending on your needs.
 
 |             |                              |
 | ----------- | ---------------------------- |
@@ -777,6 +828,14 @@ Select `Manual outbound NAT rule generation` and add the following rules.
 | Interface      | `WAN_VPN0`               |
 | Source address | `IG_OUT_VPN net`         |
 | Description    | `IG_OUT_VPN to WAN_VPN0` |
+
+#### IG_OUT_VPN to WAN_VPN1
+
+|                |                          |
+| -------------- | ------------------------ |
+| Interface      | `WAN_VPN1`               |
+| Source address | `IG_OUT_VPN net`         |
+| Description    | `IG_OUT_VPN to WAN_VPN1` |
 
 ### Firewall: Rules
 
@@ -901,7 +960,7 @@ Select **IG_OUT_VPN** and add the following rules to configure selective routing
 | Destination            | `IG_LOCAL net`                            |
 | Destination port range | `PORTS_OUT_WAN`                           |
 | Description            | `Allow internet traffic through WAN_VPN0` |
-| Gateway                | `WAN_VPN0`                                |
+| Gateway                | `WAN_VPN_GROUP`                           |
 
 #### Restrict Guest Network
 
@@ -1362,8 +1421,6 @@ So what's next?
 Let's Encrypt certificates and [HAProxy](https://docs.opnsense.org/manual/how-tos/haproxy.html) to secure self-hosted services. I imagine configuring it should be pretty straightforward.
 
 Me and possibly others want to be able to access my home network from the outside via WireGuard. I have a dynamic IP, so I thought I'd have to resort to [Dynamic DNS](https://docs.opnsense.org/manual/dynamic_dns.html). But I think [port forwarding with Mullvad](https://mullvad.net/en/help/port-forwarding-and-mullvad/) is the better solution and doesn't require me to associate my public IP address with a public DNS record.
-
-Originally I planned to include a multi-gateway load balancing setup with WireGuard in this guide but couldn't get it to work. I found some posts suggesting that this was a limitation of WireGuard and not (yet?) possible. But I'm not sure.
 
 [Traffic shaping](https://docs.opnsense.org/manual/shaping.html) and [intrusion prevention](https://docs.opnsense.org/manual/ips.html) is something I want to look into, too.
 
