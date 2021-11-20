@@ -24,7 +24,7 @@
 <meta itemprop=name content="OPNsense Baseline Guide with Mullvad VPN Multi-WAN, Guest, and VLAN Support">
 <meta itemprop=description content="This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the pfSense baseline guide with VPN, Guest, and VLAN support that some of you guys might know, and this is an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use OPNsense instead of pfSense."><meta itemprop=datePublished content="2021-11-17T03:56:35+01:00">
 <meta itemprop=dateModified content="2021-11-17T03:56:35+01:00">
-<meta itemprop=wordCount content="6371"><meta itemprop=image content="https://schnerring.net/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/cover.png">
+<meta itemprop=wordCount content="6361"><meta itemprop=image content="https://schnerring.net/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/cover.png">
 <meta itemprop=keywords content="dnsmasq,firewall,homelab,letsencrypt,mullvad,networking,opnsense,routing,unbound,vlan,vpn,wireguard,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:100;src:local("Roboto Slab Thin "),local("Roboto Slab-Thin"),url(/fonts/roboto-slab-latin-100.woff2) format("woff2"),url(/fonts/roboto-slab-latin-100.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:200;src:local("Roboto Slab Extra Light "),local("Roboto Slab-Extra Light"),url(/fonts/roboto-slab-latin-200.woff2) format("woff2"),url(/fonts/roboto-slab-latin-200.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:300;src:local("Roboto Slab Light "),local("Roboto Slab-Light"),url(/fonts/roboto-slab-latin-300.woff2) format("woff2"),url(/fonts/roboto-slab-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:400;src:local("Roboto Slab Regular "),local("Roboto Slab-Regular"),url(/fonts/roboto-slab-latin-400.woff2) format("woff2"),url(/fonts/roboto-slab-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:500;src:local("Roboto Slab Medium "),local("Roboto Slab-Medium"),url(/fonts/roboto-slab-latin-500.woff2) format("woff2"),url(/fonts/roboto-slab-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:600;src:local("Roboto Slab SemiBold "),local("Roboto Slab-SemiBold"),url(/fonts/roboto-slab-latin-600.woff2) format("woff2"),url(/fonts/roboto-slab-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:700;src:local("Roboto Slab Bold "),local("Roboto Slab-Bold"),url(/fonts/roboto-slab-latin-700.woff2) format("woff2"),url(/fonts/roboto-slab-latin-700.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:800;src:local("Roboto Slab ExtraBold "),local("Roboto Slab-ExtraBold"),url(/fonts/roboto-slab-latin-800.woff2) format("woff2"),url(/fonts/roboto-slab-latin-800.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:900;src:local("Roboto Slab Black "),local("Roboto Slab-Black"),url(/fonts/roboto-slab-latin-900.woff2) format("woff2"),url(/fonts/roboto-slab-latin-900.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:300;src:local("Fira Code Light "),local("Fira Code-Light"),url(/fonts/fira-code-latin-300.woff2) format("woff2"),url(/fonts/fira-code-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:400;src:local("Fira Code Regular "),local("Fira Code-Regular"),url(/fonts/fira-code-latin-400.woff2) format("woff2"),url(/fonts/fira-code-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:500;src:local("Fira Code Medium "),local("Fira Code-Medium"),url(/fonts/fira-code-latin-500.woff2) format("woff2"),url(/fonts/fira-code-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:600;src:local("Fira Code SemiBold "),local("Fira Code-SemiBold"),url(/fonts/fira-code-latin-600.woff2) format("woff2"),url(/fonts/fira-code-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:700;src:local("Fira Code Bold "),local("Fira Code-Bold"),url(/fonts/fira-code-latin-700.woff2) format("woff2"),url(/fonts/fira-code-latin-700.woff) format("woff")}
@@ -135,17 +135,17 @@
 Overview
 <a href=#overview class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
-<h3 id=overview-wan>
-Overview: WAN
-<a href=#overview-wan class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=wan>
+WAN
+<a href=#wan class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <ul>
 <li>DHCP WAN from a single Internet Service Provider (ISP)</li>
 <li><a href=https://mullvad.net class=link--external target=_blank rel=noreferrer>Mullvad VPN</a> multi-WAN with gateway groups</li>
 </ul>
-<h3 id=overview-lan>
-Overview: LAN
-<a href=#overview-lan class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=lan>
+LAN
+<a href=#lan class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>We segregate the local network into several areas with different requirements.</p>
 <h4 id=management-network-vlan-10>
@@ -173,9 +173,9 @@ LAN Network
 <a href=#lan-network class=post-heading__anchor aria-hidden=true>#</a>
 </h4>
 <p>&ldquo;Native&rdquo; VLAN, used to debug and test new configurations.</p>
-<h3 id=overview-dns-servers>
-Overview: DNS Servers
-<a href=#overview-dns-servers class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=dns-services>
+DNS Services
+<a href=#dns-services class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>We&rsquo;ll configure a DNS resolver (Unbound), as well as a DNS forwarder (Dnsmasq) in OPNsense. Management and VPN networks will use the resolver, the Clear network will use the forwarder, and the Guest network will use Cloudflare as an external DNS resolver. <a href=#dns>We&rsquo;ll dig into the details later</a>.</p>
 <h2 id=hardware-selection-and-installation>
@@ -195,9 +195,9 @@ Wizard
 <li><strong>Password</strong>: <code>opnsense</code></li>
 </ul>
 <p>Click <code>Next</code> to leave the welcome screen and get started with the initial wizard configuration.</p>
-<h3 id=wizard-general-information>
-Wizard: General Information
-<a href=#wizard-general-information class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=general-information>
+General Information
+<a href=#general-information class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>
 <picture>
@@ -242,9 +242,9 @@ Wizard: General Information
 </tbody>
 </table>
 <p>If you prefer using your ISP&rsquo;s DNS servers, leave the <strong>Override DNS</strong> option checked.</p>
-<h3 id=wizard-time-server-information>
-Wizard: Time Server Information
-<a href=#wizard-time-server-information class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=time-server-information>
+Time Server Information
+<a href=#time-server-information class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Choose the NTP servers geographically closest to your location. I live in Switzerland, which makes the <a href=https://www.pool.ntp.org/zone/ch class=link--external target=_blank rel=noreferrer>servers from the <code>ch.pool.ntp.org</code> pool</a> the natural choice.</p>
 <table>
@@ -265,23 +265,23 @@ Wizard: Time Server Information
 </tr>
 </tbody>
 </table>
-<h3 id=wizard-configure-interfaces>
-Wizard: Configure Interfaces
-<a href=#wizard-configure-interfaces class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=configure-interfaces>
+Configure Interfaces
+<a href=#configure-interfaces class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>By default, the WAN interface obtains an IP address from your ISP via DHCP. DHCP is also configured for the LAN interface by default and has the IP <code>192.168.1.1</code>. It works for most people, so we just keep the defaults.</p>
-<h3 id=wizard-set-root-password>
-Wizard: Set Root Password
-<a href=#wizard-set-root-password class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=set-root-password>
+Set Root Password
+<a href=#set-root-password class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Choose a strong root password and complete the wizard.</p>
 <h2 id=general-settings>
 General Settings
 <a href=#general-settings class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
-<h3 id=general-access>
-General: Access
-<a href=#general-access class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=access>
+Access
+<a href=#access class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Navigate to <strong>System</strong><span> → </span>
 <strong>Settings</strong><span> → </span>
@@ -367,9 +367,9 @@ General: Access
 </tbody>
 </table>
 <p>Configuring the SSH client and generating keys is out of scope for this guide, so I&rsquo;ll just recommend this <a href=https://www.digitalocean.com/community/tutorials/ssh-essentials-working-with-ssh-servers-clients-and-keys class=link--external target=_blank rel=noreferrer>DigitalOcean tutorial covering SSH essentials</a>.</p>
-<h3 id=general-miscellaneous>
-General: Miscellaneous
-<a href=#general-miscellaneous class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=miscellaneous>
+Miscellaneous
+<a href=#miscellaneous class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Navigate to <strong>System</strong><span> → </span>
 <strong>Settings</strong><span> → </span>
@@ -393,9 +393,9 @@ General: Miscellaneous
 </tbody>
 </table>
 <p>Choose <strong>Cryptography settings</strong> and <strong>Thermal Sensors</strong> settings compatible with your hardware.</p>
-<h3 id=general-firewall-settings>
-General: Firewall Settings
-<a href=#general-firewall-settings class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=firewall-settings>
+Firewall Settings
+<a href=#firewall-settings class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Navigate to <strong>Firewall</strong><span> → </span>
 <strong>Settings</strong><span> → </span>
@@ -467,9 +467,9 @@ General: Firewall Settings
 </tr>
 </tbody>
 </table>
-<h3 id=general-checksum-offloading>
-General: Checksum Offloading
-<a href=#general-checksum-offloading class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=checksum-offloading>
+Checksum Offloading
+<a href=#checksum-offloading class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>For some hardware, checksum offloading doesn&rsquo;t work, particularly some Realtek cards. Rarely, drivers may have problems with checksum offloading and some specific NICs. If your hardware is incompatible with checksum offloading, disable it.</p>
 <p>Navigate to <strong>Interfaces</strong><span> → </span>
@@ -494,9 +494,9 @@ General: Checksum Offloading
 VLANs
 <a href=#vlans class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
-<h3 id=vlan-switch-choice>
-VLAN Switch Choice
-<a href=#vlan-switch-choice class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=switch-choice>
+Switch Choice
+<a href=#switch-choice class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>A 802.1Q-capable switch with properly configured VLANs is required. Check my <a href=/posts/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch>router on a stick VLAN configuration guide</a> to see an example setup with a <a href=https://mikrotik.com/ class=link--external target=_blank rel=noreferrer>Mikrotik</a> switch.</p>
 <h3 id=vlan-definitions>
@@ -890,9 +890,9 @@ WireGuard VPN with Mullvad
 <strong>Firmware</strong><span> → </span>
 <strong>Plugins</strong> and install <code>os-wireguard</code>. Refresh the browser and navigate to <strong>VPN</strong><span> → </span>
 <strong>WireGuard</strong>. Then SSH into OPNsense, run <code>pkg install wireguard-kmod</code>, and reboot.</p>
-<h3 id=wireguard-remote-peers>
-WireGuard: Remote Peers
-<a href=#wireguard-remote-peers class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=remote-peers>
+Remote Peers
+<a href=#remote-peers class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Select your preferred WireGuard servers from the <a href=https://mullvad.net/en/servers/ class=link--external target=_blank rel=noreferrer>Mullvad&rsquo;s server list</a> and take note of their names and public keys. It&rsquo;s worth spending some time to benchmark server performance before making a choice.</p>
 <p>
@@ -938,9 +938,9 @@ WireGuard: Remote Peers
 </table>
 <p>To mitigate risks against DNS poisoning, resolve the server&rsquo;s hostname and enter its IP as <strong>Endpoint Address</strong>. You can do this by running <code>nslookup ch5-wireguard.mullvad.net</code> in a shell.</p>
 <p>Repeat the steps above to add another server, e.g., <code>ch6-wireguard</code>. Note that for all endpoint configurations, the <strong>Endpoint Port</strong> is <code>51820</code>.</p>
-<h3 id=wireguard-local-peers>
-WireGuard: Local Peers
-<a href=#wireguard-local-peers class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=local-peers>
+Local Peers
+<a href=#local-peers class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Select the <strong>Local</strong> tab, click <code>Add</code>, and enable the <code>advanced mode</code>.</p>
 <table>
@@ -1004,17 +1004,20 @@ WireGuard: Local Peers
 </picture>
 </p>
 <p>When you finish, select the <code>General</code> tab. Check <strong>Enable WireGuard</strong>. You should see a handshake for the <code>wg0</code> and <code>wg1</code> tunnels on the <strong>Handshakes</strong> tab.</p>
-<h3 id=wireguard-interface>
-WireGuard: Interface
-<a href=#wireguard-interface class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=wireguard-interfaces>
+WireGuard Interfaces
+<a href=#wireguard-interfaces class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Navigate to <strong>Interfaces</strong><span> → </span>
 <strong>Assignments</strong>.</p>
-<p>Select <code>wg0</code>, add the description <code>WAN_VPN0</code>, and click <code>+</code></p>
-<p>Enable the newly created interface and restart the WireGuard service after. It ensures the interface gets an IP address from WireGuard.</p>
-<h3 id=wireguard-vpn-gateways>
-WireGuard: VPN Gateways
-<a href=#wireguard-vpn-gateways class=post-heading__anchor aria-hidden=true>#</a>
+<ul>
+<li>Select <code>wg0</code>, add the description <code>WAN_VPN0</code>, and click <code>+</code></li>
+<li>Select <code>wg1</code>, add the description <code>WAN_VPN1</code>, and click <code>+</code></li>
+</ul>
+<p>Enable the newly created interfaces and restart the WireGuard service after. It ensures the interfaces get an IP address from the WireGuard service.</p>
+<h3 id=vpn-gateways>
+VPN Gateways
+<a href=#vpn-gateways class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>
 <picture>
@@ -1211,9 +1214,9 @@ Gateway Groups
 </tbody>
 </table>
 <p>It&rsquo;s also possible to configure failover or both.</p>
-<h3 id=wireguard-static-routes-optional>
-WireGuard: Static Routes (Optional)
-<a href=#wireguard-static-routes-optional class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=static-routes-optional>
+Static Routes (Optional)
+<a href=#static-routes-optional class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Defining static routes for the tunnel gateways is optional. It would be necessary, for example, if we want to consider the VPN gateways as default gateway candidates. It requires static routes to the ISP WAN gateway to keep the tunnel connections alive.</p>
 <p>
@@ -1296,9 +1299,9 @@ DNS
 <li>Use DNS forwarding for the Clear network</li>
 <li>Use external DNS resolvers for the Guest network</li>
 </ul>
-<h3 id=dns-resolver-unbound>
-DNS: Resolver (Unbound)
-<a href=#dns-resolver-unbound class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=resolver-unbound>
+Resolver (Unbound)
+<a href=#resolver-unbound class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Navigate to <strong>Services</strong><span> → </span>
 <strong>Unbound DNS</strong><span> → </span>
@@ -1430,9 +1433,9 @@ configctl template reload OPNsense/Unbound
 cat /usr/local/etc/unbound.opnsense.d/private_domains.conf
 <span style=color:#75715e># check if configuration is valid</span>
 configctl unbound check
-</code></pre></div><h3 id=dns-forwarder-dnsmasq>
-DNS: Forwarder (Dnsmasq)
-<a href=#dns-forwarder-dnsmasq class=post-heading__anchor aria-hidden=true>#</a>
+</code></pre></div><h3 id=forwarder-dnsmasq>
+Forwarder (Dnsmasq)
+<a href=#forwarder-dnsmasq class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Dnsmasq will forward DNS requests to the configured system DNS servers and <code>127.0.0.1</code> (Unbound). Earlier, you either explicitly configured them or decided to receive the DNS servers via DHCP from your ISP. Because Unbound already uses port 53, we&rsquo;ll use port 5335 for Dnsmasq. We&rsquo;ll later create rules to port forward DNS traffic to this port.</p>
 <p>Navigate to <strong>Services</strong><span> → </span>
@@ -1556,9 +1559,9 @@ Firewall
 </tr>
 </tbody>
 </table>
-<h3 id=firewall-interface-groups>
-Firewall: Interface Groups
-<a href=#firewall-interface-groups class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=interface-groups>
+Interface Groups
+<a href=#interface-groups class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>We use <a href=https://docs.opnsense.org/manual/firewall_groups.html class=link--external target=_blank rel=noreferrer>interface groups</a> to apply policies to multiple interfaces at once and reduce the number of required firewall rules significantly. Do not use them for WAN interfaces because they don&rsquo;t use the <code>reply-to</code> directive!</p>
 <p>I&rsquo;m honestly not sure if I went overboard with interface groups and over-abstracted things. Currently, I&rsquo;m happy with the configuration, and I guess only time will tell how maintainable this approach is. I&rsquo;d like to know what you think and would very much appreciate your feedback.</p>
@@ -1726,9 +1729,9 @@ IG_NTP
 </tr>
 </tbody>
 </table>
-<h3 id=firewall-aliases>
-Firewall: Aliases
-<a href=#firewall-aliases class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=aliases>
+Aliases
+<a href=#aliases class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>We define a few reusable <a href=https://docs.opnsense.org/manual/aliases.html class=link--external target=_blank rel=noreferrer>aliases</a> that help us condense our firewall rules. Some of them might become hard to maintain as they grow, in which case you might want to consider nesting aliases.</p>
 <p>
@@ -1884,9 +1887,9 @@ Ports Allowed to Communicate with the Internet
 <li><code>993</code>: IMAPS</li>
 <li><code>49152:65535</code> ephemeral ports</li>
 </ul>
-<h3 id=firewall-nat>
-Firewall: NAT
-<a href=#firewall-nat class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=nat>
+NAT
+<a href=#nat class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Network Address Translation (NAT) is required to translate private to public IP addresses. We have the following requirements.</p>
 <ul>
@@ -2007,9 +2010,9 @@ IG_OUT_VPN to WAN_VPN1
 </tr>
 </tbody>
 </table>
-<h3 id=firewall-rules>
-Firewall: Rules
-<a href=#firewall-rules class=post-heading__anchor aria-hidden=true>#</a>
+<h3 id=rules>
+Rules
+<a href=#rules class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>Navigate to <strong>Firewall</strong><span> → </span>
 <strong>Rules</strong>.</p>
@@ -2668,15 +2671,15 @@ Test
 </h2>
 <p>Now would be a could time to reboot OPNsense to make sure all settings are applied.</p>
 <h3 id=test-dhcp>
-Test: DHCP
+Test DHCP
 <a href=#test-dhcp class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
-<p>Connect a host to each VLAN and verify it receives an IP inside the specified DHCP range. Here is the output of the <code>ip -4 addr show eth0</code> command from a Ubuntu host connected to the VPN VLAN.</p>
+<p>Connect to a host in each VLAN and verify it receives an IP inside the specified DHCP range. Here is the output of the <code>ip -4 addr show eth0</code> command from a Ubuntu host connected to the VPN VLAN.</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>8: eth0: &lt;BROADCAST,MULTICAST,UP&gt; mtu 1500 group default qlen 1
     inet 192.168.20.106/24 brd 192.168.20.255 scope global dynamic
        valid_lft 7196sec preferred_lft 7196sec
 </code></pre></div><h3 id=test-dns>
-Test: DNS
+Test DNS
 <a href=#test-dns class=post-heading__anchor aria-hidden=true>#</a>
 </h3>
 <p>We have to verify the following functionality of our DNS architecture:</p>
@@ -3066,31 +3069,31 @@ Thanks For Reading ❤️
 <ul>
 <li><a href=#overview>Overview</a>
 <ul>
-<li><a href=#overview-wan>Overview: WAN</a></li>
-<li><a href=#overview-lan>Overview: LAN</a></li>
-<li><a href=#overview-dns-servers>Overview: DNS Servers</a></li>
+<li><a href=#wan>WAN</a></li>
+<li><a href=#lan>LAN</a></li>
+<li><a href=#dns-services>DNS Services</a></li>
 </ul>
 </li>
 <li><a href=#hardware-selection-and-installation>Hardware Selection and Installation</a></li>
 <li><a href=#wizard>Wizard</a>
 <ul>
-<li><a href=#wizard-general-information>Wizard: General Information</a></li>
-<li><a href=#wizard-time-server-information>Wizard: Time Server Information</a></li>
-<li><a href=#wizard-configure-interfaces>Wizard: Configure Interfaces</a></li>
-<li><a href=#wizard-set-root-password>Wizard: Set Root Password</a></li>
+<li><a href=#general-information>General Information</a></li>
+<li><a href=#time-server-information>Time Server Information</a></li>
+<li><a href=#configure-interfaces>Configure Interfaces</a></li>
+<li><a href=#set-root-password>Set Root Password</a></li>
 </ul>
 </li>
 <li><a href=#general-settings>General Settings</a>
 <ul>
-<li><a href=#general-access>General: Access</a></li>
-<li><a href=#general-miscellaneous>General: Miscellaneous</a></li>
-<li><a href=#general-firewall-settings>General: Firewall Settings</a></li>
-<li><a href=#general-checksum-offloading>General: Checksum Offloading</a></li>
+<li><a href=#access>Access</a></li>
+<li><a href=#miscellaneous>Miscellaneous</a></li>
+<li><a href=#firewall-settings>Firewall Settings</a></li>
+<li><a href=#checksum-offloading>Checksum Offloading</a></li>
 </ul>
 </li>
 <li><a href=#vlans>VLANs</a>
 <ul>
-<li><a href=#vlan-switch-choice>VLAN Switch Choice</a></li>
+<li><a href=#switch-choice>Switch Choice</a></li>
 <li><a href=#vlan-definitions>VLAN Definitions</a></li>
 <li><a href=#vlan-interfaces>VLAN Interfaces</a></li>
 <li><a href=#vlan-interface-ips>VLAN Interface IPs</a></li>
@@ -3099,31 +3102,31 @@ Thanks For Reading ❤️
 </li>
 <li><a href=#wireguard-vpn-with-mullvad>WireGuard VPN with Mullvad</a>
 <ul>
-<li><a href=#wireguard-remote-peers>WireGuard: Remote Peers</a></li>
-<li><a href=#wireguard-local-peers>WireGuard: Local Peers</a></li>
-<li><a href=#wireguard-interface>WireGuard: Interface</a></li>
-<li><a href=#wireguard-vpn-gateways>WireGuard: VPN Gateways</a></li>
-<li><a href=#wireguard-static-routes-optional>WireGuard: Static Routes (Optional)</a></li>
+<li><a href=#remote-peers>Remote Peers</a></li>
+<li><a href=#local-peers>Local Peers</a></li>
+<li><a href=#wireguard-interfaces>WireGuard Interfaces</a></li>
+<li><a href=#vpn-gateways>VPN Gateways</a></li>
+<li><a href=#static-routes-optional>Static Routes (Optional)</a></li>
 </ul>
 </li>
 <li><a href=#dns>DNS</a>
 <ul>
-<li><a href=#dns-resolver-unbound>DNS: Resolver (Unbound)</a></li>
-<li><a href=#dns-forwarder-dnsmasq>DNS: Forwarder (Dnsmasq)</a></li>
+<li><a href=#resolver-unbound>Resolver (Unbound)</a></li>
+<li><a href=#forwarder-dnsmasq>Forwarder (Dnsmasq)</a></li>
 </ul>
 </li>
 <li><a href=#firewall>Firewall</a>
 <ul>
-<li><a href=#firewall-interface-groups>Firewall: Interface Groups</a></li>
-<li><a href=#firewall-aliases>Firewall: Aliases</a></li>
-<li><a href=#firewall-nat>Firewall: NAT</a></li>
-<li><a href=#firewall-rules>Firewall: Rules</a></li>
+<li><a href=#interface-groups>Interface Groups</a></li>
+<li><a href=#aliases>Aliases</a></li>
+<li><a href=#nat>NAT</a></li>
+<li><a href=#rules>Rules</a></li>
 </ul>
 </li>
 <li><a href=#test>Test</a>
 <ul>
-<li><a href=#test-dhcp>Test: DHCP</a></li>
-<li><a href=#test-dns>Test: DNS</a></li>
+<li><a href=#test-dhcp>Test DHCP</a></li>
+<li><a href=#test-dns>Test DNS</a></li>
 </ul>
 </li>
 <li><a href=#thanks-for-reading->Thanks For Reading ❤️</a></li>
@@ -3186,7 +3189,7 @@ Thanks For Reading ❤️
 </div>
 </footer>
 <script type=text/javascript src=/js/main.07941426570c3f29ce826eb3a40437438c08ed970d117f62cfd361ba175908c57b2c2b7c68c33ca90f1f364a94dd11114c147f94a4967aa1d460f5e24087751e.js integrity="sha512-B5QUJlcMPynOgm6zpAQ3Q4wI7ZcNEX9iz9NhuhdZCMV7LCt8aMM8qQ8fNkqU3RERTBR/lKSWeqHUYPXiQId1Hg=="></script>
-<script type=text/javascript src=/js/flexsearch.d14aedb8b216682fd47489103e4a3b0547650479a0b1f2c482b656c3f8b0b23919848ff14e35ddb4d7630caf1979f1e5e5d005fd759956a4378ccea5ecc4f4f9.js integrity="sha512-0UrtuLIWaC/UdIkQPko7BUdlBHmgsfLEgrZWw/iwsjkZhI/xTjXdtNdjDK8ZefHl5dAF/XWZVqQ3jM6l7MT0+Q=="></script>
+<script type=text/javascript src=/js/flexsearch.9fc83719fc0bad89bc55e2e4a6faffc8762b0af6cefafd1545950a8d6d70e243b62a9ff5661946a3fe0d90457dae7a12fd8b76af6dfb461a6f5b0ff83ee3c2f0.js integrity="sha512-n8g3GfwLrYm8VeLkpvr/yHYrCvbO+v0VRZUKjW1w4kO2Kp/1ZhlGo/4NkEV9rnoS/Yt2r237RhpvWw/4PuPC8A=="></script>
 </div>
 </body>
 </html>
