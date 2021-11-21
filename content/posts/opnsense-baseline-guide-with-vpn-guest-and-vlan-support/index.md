@@ -415,7 +415,7 @@ This command returns a JSON response containing IPs without DNS hijacking enable
 }
 ```
 
-Copy the IPv4 IP address to the **Tunnel Address** field. Subtract one from the **Tunnel Address** and enter the result as **Gateway** IP. E.g., `10.105.248.50` for the example above. It's just a convention I like, but you can use any arbitrary [private RFC1918 IP](https://datatracker.ietf.org/doc/html/rfc1918) not in use.
+Copy the IPv4 IP address to the **Tunnel Address** field of the local peer. Subtract one from the **Tunnel Address** and enter the result as **Gateway** IP. E.g., `10.105.248.50` for the example above. It's just a convention I like, but you can use any arbitrary, unused [private RFC1918 IP](https://datatracker.ietf.org/doc/html/rfc1918).
 
 ![Screenshot of WireGuard Local Peer configuration](wireguard-local-peer.png)
 
@@ -432,7 +432,7 @@ Navigate to {{< breadcrumb "Interfaces" "Assignments" >}}.
 - Select `wg0`, add the description `WAN_VPN0`, and click `+`
 - Select `wg1`, add the description `WAN_VPN1`, and click `+`
 
-Enable the newly created interfaces and restart the WireGuard service after. It ensures the interfaces get an IP address from the WireGuard service.
+Enable the newly created interfaces and restart the WireGuard service after. It ensures the interfaces get an IP address from WireGuard.
 
 ### VPN Gateways
 
@@ -495,7 +495,7 @@ Navigate to **Interfaces** and edit the WireGuard interfaces.
 | IPv4 address            | `10.105.248.51/32`         |
 | IPv4 Upstream Gateway   | `WAN_VPN1 - 10.105.248.50` |
 
-#### Gateway Groups
+#### Gateway Group
 
 Navigate to {{< breadcrumb "System" "Gateways" "Group" >}} and click `Add`.
 
