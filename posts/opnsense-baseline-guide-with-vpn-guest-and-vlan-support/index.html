@@ -989,7 +989,7 @@ Local Peers
   <span style=color:#f92672>&#34;ipv4_address&#34;</span>: <span style=color:#e6db74>&#34;10.105.248.51/32&#34;</span>,
   <span style=color:#f92672>&#34;ipv6_address&#34;</span>: <span style=color:#e6db74>&#34;fc00:bbbb:bbbb:bb01::2a:f832/128&#34;</span>
 }
-</code></pre></div><p>Copy the IPv4 IP address to the <strong>Tunnel Address</strong> field. Subtract one from the <strong>Tunnel Address</strong> and enter the result as <strong>Gateway</strong> IP. E.g., <code>10.105.248.50</code> for the example above. It&rsquo;s just a convention I like, but you can use any arbitrary <a href=https://datatracker.ietf.org/doc/html/rfc1918 class=link--external target=_blank rel=noreferrer>private RFC1918 IP</a> not in use.</p>
+</code></pre></div><p>Copy the IPv4 IP address to the <strong>Tunnel Address</strong> field of the local peer. Subtract one from the <strong>Tunnel Address</strong> and enter the result as <strong>Gateway</strong> IP. E.g., <code>10.105.248.50</code> for the example above. It&rsquo;s just a convention I like, but you can use any arbitrary, unused <a href=https://datatracker.ietf.org/doc/html/rfc1918 class=link--external target=_blank rel=noreferrer>private RFC1918 IP</a>.</p>
 <p>
 <picture>
 <source srcset="/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/wireguard-local-peer_hu001d62081d26dc64de14454693b5606b_11437_300x0_resize_q90_h2_box_3.webp 300w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/wireguard-local-peer_hu001d62081d26dc64de14454693b5606b_11437_400x0_resize_q90_h2_box_3.webp 400w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/wireguard-local-peer_hu001d62081d26dc64de14454693b5606b_11437_500x0_resize_q90_h2_box_3.webp 500w,/posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/wireguard-local-peer_hu001d62081d26dc64de14454693b5606b_11437_550x0_resize_q90_h2_box_3.webp 550w">
@@ -1014,7 +1014,7 @@ WireGuard Interfaces
 <li>Select <code>wg0</code>, add the description <code>WAN_VPN0</code>, and click <code>+</code></li>
 <li>Select <code>wg1</code>, add the description <code>WAN_VPN1</code>, and click <code>+</code></li>
 </ul>
-<p>Enable the newly created interfaces and restart the WireGuard service after. It ensures the interfaces get an IP address from the WireGuard service.</p>
+<p>Enable the newly created interfaces and restart the WireGuard service after. It ensures the interfaces get an IP address from WireGuard.</p>
 <h3 id=vpn-gateways>
 VPN Gateways
 <a href=#vpn-gateways class=post-heading__anchor aria-hidden=true>#</a>
@@ -1180,9 +1180,9 @@ IP Configuration: WAN_VPN1
 </tr>
 </tbody>
 </table>
-<h4 id=gateway-groups>
-Gateway Groups
-<a href=#gateway-groups class=post-heading__anchor aria-hidden=true>#</a>
+<h4 id=gateway-group>
+Gateway Group
+<a href=#gateway-group class=post-heading__anchor aria-hidden=true>#</a>
 </h4>
 <p>Navigate to <strong>System</strong><span> → </span>
 <strong>Gateways</strong><span> → </span>
@@ -3189,7 +3189,7 @@ Thanks For Reading ❤️
 </div>
 </footer>
 <script type=text/javascript src=/js/main.07941426570c3f29ce826eb3a40437438c08ed970d117f62cfd361ba175908c57b2c2b7c68c33ca90f1f364a94dd11114c147f94a4967aa1d460f5e24087751e.js integrity="sha512-B5QUJlcMPynOgm6zpAQ3Q4wI7ZcNEX9iz9NhuhdZCMV7LCt8aMM8qQ8fNkqU3RERTBR/lKSWeqHUYPXiQId1Hg=="></script>
-<script type=text/javascript src=/js/flexsearch.9fc83719fc0bad89bc55e2e4a6faffc8762b0af6cefafd1545950a8d6d70e243b62a9ff5661946a3fe0d90457dae7a12fd8b76af6dfb461a6f5b0ff83ee3c2f0.js integrity="sha512-n8g3GfwLrYm8VeLkpvr/yHYrCvbO+v0VRZUKjW1w4kO2Kp/1ZhlGo/4NkEV9rnoS/Yt2r237RhpvWw/4PuPC8A=="></script>
+<script type=text/javascript src=/js/flexsearch.a6a59be952cf562a3df32651de804886d8b5eb500e11b85b4acfbff6a9c88720fd60f2f8545b34906790a38bbc7acb73d2ad59aae720291980fc137ffb773337.js integrity="sha512-pqWb6VLPVio98yZR3oBIhti161AOEbhbSs+/9qnIhyD9YPL4VFs0kGeQo4u8estz0q1ZqucgKRmA/BN/+3czNw=="></script>
 </div>
 </body>
 </html>
