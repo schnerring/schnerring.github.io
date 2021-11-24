@@ -473,28 +473,6 @@ Each VPN gateway requires a unique monitoring IP because setting a monitoring IP
 
 You can easily verify the above by running `traceroute 100.64.0.1` from a host connected to Mullvad.
 
-#### Add Static IPv4 Configuration to the WireGuard Interfaces
-
-OPNsense versions newer than `21.7.3` require adding static IPv4 configuration to the WireGuard interface. Otherwise, Unbound will use the default route despite setting the **Outgoing Network Interfaces** option. Other solutions exist, but I'm not sure which the "best" or most logical one is. As WireGuard integration matures, this section hopefully becomes obsolete. [You can find more information regarding this issue on GitHub](https://github.com/opnsense/core/issues/5329#issuecomment-958397043).
-
-Navigate to **Interfaces** and edit the WireGuard interfaces.
-
-##### IP Configuration: WAN_VPN0
-
-|                         |                            |
-| ----------------------- | -------------------------- |
-| IPv4 Configuration Type | `Static IPv4`              |
-| IPv4 address            | `10.105.248.51/32`         |
-| IPv4 Upstream Gateway   | `WAN_VPN0 - 10.105.248.50` |
-
-##### IP Configuration: WAN_VPN1
-
-|                         |                            |
-| ----------------------- | -------------------------- |
-| IPv4 Configuration Type | `Static IPv4`              |
-| IPv4 address            | `10.105.248.51/32`         |
-| IPv4 Upstream Gateway   | `WAN_VPN1 - 10.105.248.50` |
-
 #### Gateway Group
 
 Navigate to {{< breadcrumb "System" "Gateways" "Group" >}} and click `Add`.
@@ -527,6 +505,10 @@ Navigate to {{< breadcrumb "System" "Routes" "Configuration" >}} and click `Add`
 | Network Address | `193.32.127.67/32`                            |
 | Gateway         | `WAN_DHCP`                                    |
 | Description     | `Keep tunnels to mullvad-ch6-wireguard alive` |
+
+### Gateway Selection
+
+Because we checked the **Disable Routes** option earlier, we have to define gateway rules for the dynamic WireGuard interfaces ourselves. [We'll take care of this in the firewall rules section of this guide](#wireguard-gateway-selection).
 
 ## DNS
 
@@ -861,6 +843,40 @@ Select **Floating** and add the following rule.
 | Description            | `Anti-lockout`        |
 
 `This Firewall` is a pre-defined alias representing all interface addresses of OPNsense.
+
+#### WireGuard Gateway Selection
+
+[As mentioned earlier](#gateway-selection), we need to create gateway selection rules for our dynamic WireGuard interfaces. If you want to know more, [there was a lengthy discussion about this on GitHub](https://github.com/opnsense/core/issues/5329#issuecomment-958397043).
+
+![Screenshot of WreiGuard gateway selection rules](firewall-rules-wireguard.png)
+
+Create the following **Floating** rules:
+
+|                      |                              |
+| -------------------- | ---------------------------- |
+| Action               | `Pass`                       |
+| Quick                | `unchecked`                  |
+| Interfaces           | don't select any             |
+| Direction            | `out`                        |
+| Source               | `WAN_VPN0 address`           |
+| Destination / Invert | `checked`                    |
+| Destination          | `WAN_VPN0 net`               |
+| Description          | `WAN_VPN0 gateway selection` |
+| Gateway              | `WAN_VPN0`                   |
+| allow options        | `checked`                    |
+
+|                      |                              |
+| -------------------- | ---------------------------- |
+| Action               | `Pass`                       |
+| Quick                | `unchecked`                  |
+| Interfaces           | don't select any             |
+| Direction            | `out`                        |
+| Source               | `WAN_VPN1 address`           |
+| Destination / Invert | `checked`                    |
+| Destination          | `WAN_VPN1 net`               |
+| Description          | `WAN_VPN1 gateway selection` |
+| Gateway              | `WAN_VPN1`                   |
+| allow options        | `checked`                    |
 
 #### Allow Intranet Pings
 
