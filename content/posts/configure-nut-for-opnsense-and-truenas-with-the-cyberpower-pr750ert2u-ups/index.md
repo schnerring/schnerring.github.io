@@ -7,3 +7,5 @@ toc: false
 cover:
   src: "cover.jpg"
 ---
+
+I've been using a UPS for my server rack for a while now. I run a TrueNAS system using the ZFS file system which is especially sensitive to power loss.
