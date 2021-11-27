@@ -20,9 +20,11 @@ For storage in my homelab, I use [TrueNAS](https://www.truenas.com/). Additional
 
 <!--more-->
 
+As always, I'll just mention settings deviating from the defaults.
+
 ## Requirements
 
-My server rack contains the following hardware:
+My server rack contains the following hardware.
 
 1. [OPNsense](https://opnsense.org/) firewall and router
 2. TrueNAS storage and jail apps
@@ -34,7 +36,7 @@ Of the above, only OPNsense and TrueNAS are susceptible to data corruption in ca
 
 ## CyberPower PR750ERT2U
 
-This UPS ticks a lot of boxes for me:
+This UPS ticks a lot of boxes for me.
 
 - HID-compliant USB port to connect OPNsense
 - Fanless operation during utility mode. It isn't apparent from the specifications, but the CyberPower support kindly provided me with this information
@@ -58,7 +60,7 @@ Only a few steps are required to configure NUT for OPNsense.
 5. Set the **Monitor Password** and **Admin Password** for good measure under {{< breadcrumb "Services" "Nut" "Configuration" "Nut Account Settings" >}}
 6. Set a **Name** and **Enable Nut** under {{< breadcrumb "Services" "Nut" "Configuration" "General Settings" "General Nut Settings" >}}
 
-{{< breadcrumb "Services" "Nut" "Diagnostics" >}} should output something like the following:
+{{< breadcrumb "Services" "Nut" "Diagnostics" >}} should output something like the following.
 
 ```text
 battery.charge: 100
@@ -115,7 +117,7 @@ To allow TrueNAS to communicate with the NUT server on OPNsense, we need to add 
 | Redirect target port   | `3493`                             |
 | Description            | `Redirect NUT traffic to OPNsense` |
 
-After this you should be able to SSH into your TrueNAS and run the following to retrieve the UPS status from OPNsense:
+After this you should be able to SSH into your TrueNAS and run the following to retrieve the UPS status from OPNsense.
 
 ```shell
 upsc ups@192.168.1.1
@@ -123,4 +125,36 @@ upsc ups@192.168.1.1
 
 ## TrueNAS
 
-Navigate to {{< breadcrumb "Services" "UPS" "Configure" >}}.
+Set the following options under {{< breadcrumb "Services" "UPS" "Configure" >}}.
+
+| General Options |                                |
+| --------------- | ------------------------------ |
+| Identifier      | `ups`                          |
+| UPS Mode        | `Slave`                        |
+| Remote Host     | `<IP or hostname of OPNsense>` |
+| Remote Port     | `3493`                         |
+| Identifier      | `auto`                         |
+
+| Shutdown         |                           |
+| ---------------- | ------------------------- |
+| Shutdown Mode    | `UPS reaches low battery` |
+| Shutdown Command | `/sbin/poweroff`          |
+
+| Email                     |                  |
+| ------------------------- | ---------------- |
+| Send Email Status Updates | `checked`        |
+| Email                     | `/sbin/poweroff` |
+
+It isn't required, but I set the password to be on the safe side.
+
+| Monitor          |                           |
+| ---------------- | ------------------------- |
+| Monitor Password | `UPS reaches low battery` |
+
+Here is what the result looks like.
+
+![Screenshot of TrueNAS NUT settings](truenas-nut.png)
+
+Clicking **Save** returns us to the **Services** menu where we need to enable the **UPS** service and also check **Start Automatically**.
+
+![Screenshot of TrueNAS Services settings](truenas-services.png)
