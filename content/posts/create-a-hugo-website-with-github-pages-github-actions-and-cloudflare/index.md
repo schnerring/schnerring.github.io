@@ -10,6 +10,8 @@ tags:
   - cloudflare
   - github actions
   - github pages
+aliases:
+  - /posts/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare
 ---
 
 In this beginner guide, you'll create a Hugo website from scratch and publish the website on GitHub Pages. You'll configure Cloudflare's DNS and utilize its caching capabilities to optimize page speeds. Finally, implementing automated deployments with GitHub Pages will enable you to publish new content on your site easily.

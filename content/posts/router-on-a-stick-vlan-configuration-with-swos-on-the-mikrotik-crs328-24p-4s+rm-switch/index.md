@@ -10,6 +10,8 @@ tags:
   - Network
   - SwOS
   - VLAN
+aliases:
+  - /posts/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch
 ---
 
 My homelab grew quite a bit over the past years. And with that, my networking needs also changed: stricter firewall rules, segregating untrusted IoT devices into separate networks, traffic prioritization, and more. I wanted to document my switch and VLAN configuration. And maybe this is useful for someone else, too.

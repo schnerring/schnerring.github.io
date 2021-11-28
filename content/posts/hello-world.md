@@ -7,6 +7,8 @@ comments: true
 tags:
   - "csharp"
   - "hello world"
+aliases:
+  - /posts/hello-world
 ---
 
 I'm a .NET developer by trade, so let's say hello in C#!

@@ -18,7 +18,8 @@ tags:
   - terraform
   - traefik
 aliases:
-  - use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt
+  - /posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt
+  - /posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates
 ---
 
 In this post, we will deploy a simple [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/en-us/services/kubernetes-service/) cluster from scratch. To expose our web services securely, we will install Traefik 2 and configure [cert-manager](https://cert-manager.io/) to manage Let's Encrypt certificates. The best part about it: we will do everything with [Terraform](https://www.terraform.io/).

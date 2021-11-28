@@ -13,6 +13,8 @@ tags:
   - OPNsense
   - TrueNAS
   - UPS
+aliases:
+  - /posts/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups
 ---
 
 For storage in my homelab, I use [TrueNAS](https://www.truenas.com/). Additionally, I run a couple of apps on top of it as [jails](https://docs.freebsd.org/en/books/handbook/jails/). For over a year, I've been using an [uninterruptible power supply (UPS)](https://en.wikipedia.org/wiki/Uninterruptible_power_supply) to protect my TrueNAS from possible data loss in case of a power failure. What I've been missing throughout that time are the monitoring and management tools to shut down everything gracefully when the battery of the UPS runs low. In the event of a power outage lasting longer than 30 minutes, the battery would run out of juice. Everything attached to the UPS would be powered off immediately, and data loss might occur. Luckily I live in an area where power outages rarely happen. I also have backups I could restore if my TrueNAS data gets corrupted. Still, doing this right and configuring [Network UPS Tools (NUT)](https://networkupstools.org/) to orchestrate shutdowns has been on my to-do list for way too long. It's time to tackle the issue!

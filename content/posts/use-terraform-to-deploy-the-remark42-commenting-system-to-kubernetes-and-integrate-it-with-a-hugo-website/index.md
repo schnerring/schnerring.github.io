@@ -11,6 +11,8 @@ tags:
   - kubernetes
   - remark42
   - terraform
+aliases:
+  - /posts/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website
 ---
 
 Building upon our previous work, we will deploy [Remark42](https://remark42.com/) on Kubernetes with [Terraform](https://www.terraform.io/) and integrate it with your existing [Hugo](https://gohugo.io/) website. Make sure to check out my previous posts about [creating a Hugo Website](../create-a-hugo-website-with-github-pages-github-actions-and-cloudflare) and [deploying an Azure Kubernetes Service cluster](../use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt) if you haven't already.

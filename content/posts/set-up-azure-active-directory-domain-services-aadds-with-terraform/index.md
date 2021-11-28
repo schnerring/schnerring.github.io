@@ -11,6 +11,8 @@ tags:
   - azure active directory domain services
   - azure resource manager template
   - terraform
+aliases:
+  - /posts/set-up-azure-active-directory-domain-services-aadds-with-terraform
 ---
 
 ## Update 2021-08-03

@@ -15,6 +15,8 @@ tags:
   - trezor
   - virtualbox
   - whonix
+aliases:
+  - /posts/use-the-trezor-hardware-wallet-anonymously-inside-a-virtualbox-whonix-vm-with-external-wallets-like-adalite-and-monero-gui
 ---
 
 In the past, I used an old laptop running [Qubes OS](https://www.qubes-os.org/) for any cryptocurrency-related stuff, and it worked great. It's where I first learned about [Whonix](https://www.whonix.org), a desktop operating system designed to protect your privacy online. Unfortunately, Qubes OS is a bit picky about the hardware it runs on. My old laptop only has four gigs of RAM, and I could barely run two instances of [MyEtherWallet](https://www.myetherwallet.com) in two separate [qubes](https://www.qubes-os.org/doc/glossary/#qube) without the system running out of memory.

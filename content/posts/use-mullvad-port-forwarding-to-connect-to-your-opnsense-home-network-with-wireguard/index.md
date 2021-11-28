@@ -10,6 +10,8 @@ tags:
   - OPNsense
   - VPN
   - WireGuard
+aliases:
+  - /posts/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard
 ---
 
 In this quick guide, I'll show you how to use [Mullvad](https://mullvad.net/) port forwarding and [OPNsense](https://opnsense.org/) to create a [WireGuard](https://www.wireguard.com/) VPN "tunnel-inside-a-tunnel" configuration, to be able to connect to your home network from the outside. It's pretty nifty because you won't have to expose your public IP address. This time, I'll give you more of a high-level overview and reference the relevant documentation instead of a detailed step-by-step guide.

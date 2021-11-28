@@ -20,6 +20,8 @@ tags:
   - Sonarr
   - Torrent
   - TrueNAS
+aliases:
+  - /posts/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails
 ---
 
 This post documents the steps required to install [qBittorrent](https://www.qbittorrent.org/), [Jackett](https://github.com/Jackett/Jackett), [Lidarr](https://lidarr.audio/), [Radarr](https://radarr.video/), [Sonarr](https://sonarr.tv/), and [Plex](https://www.plex.tv/) in [TrueNAS jails](https://www.truenas.com/docs/core/applications/jails/) version `12.0-U6`.

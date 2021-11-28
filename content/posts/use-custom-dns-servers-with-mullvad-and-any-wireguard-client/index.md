@@ -9,6 +9,8 @@ tags:
   - mullvad
   - vpn
   - wireguard
+aliases:
+  - /posts/use-custom-dns-servers-with-mullvad-and-any-wireguard-client
 ---
 
 I've been using [Mullvad VPN](https://mullvad.net/) for a while now but only ever used it with the official client on my workstation. I use DNS extensively in my home network, so as soon as I activate Mullvad, I can't resolve DNS names locally. Of course, this is by design and expected. I own an [OPNsense](https://opnsense.org/) appliance, so the natural solution is to move the tunnel there.

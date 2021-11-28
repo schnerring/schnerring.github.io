@@ -7,6 +7,8 @@ comments: true
 tags:
   - protonmail
   - sieve
+aliases:
+  - /posts/use-sieve-filters-to-auto-sort-your-protonmail-inbox-into-subfolders
 ---
 
 [Sieve](<https://en.wikipedia.org/wiki/Sieve_(mail_filtering_language)>) is a programming language used for email filtering. Today, I show you how I automatically sort my ProtonMail inbox into folders and subfolders using [custom sieve filters](https://protonmail.com/support/knowledge-base/sieve-advanced-custom-filters/). My setup uses the [catch-all feature](https://protonmail.com/support/knowledge-base/catch-all/) requiring at least a [ProtonMail Professional subscription](https://protonmail.com/pricing) and a [properly configured custom domain](https://protonmail.com/support/categories/custom-domains/).

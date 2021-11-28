@@ -10,6 +10,8 @@ tags:
   - TrueNAS
   - Ubiquiti
   - UniFi
+aliases:
+  - /posts/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail
 ---
 
 To manage [Ubiquiti UniFi devices](https://www.ui.com/wi-fi), a UniFi controller is required. Over a year ago, I initially installed the controller software inside a Ubuntu VirtualBox VM. Now that version 6 of the UniFi controller software is released, it's time to upgrade. I decided to reinstall the controller inside a TrueNAS jail instead of a VirtualBox VM. When searching the interwebs, I only found lots of outdated instructions. It turns out that it's very straightforward, so here are my quick notes on how to do it.

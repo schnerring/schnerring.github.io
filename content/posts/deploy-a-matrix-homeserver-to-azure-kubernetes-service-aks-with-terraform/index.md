@@ -13,6 +13,8 @@ tags:
   - synapse
   - synapse admin ui
   - terraform
+aliases:
+  - /posts/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform
 ---
 
 Did you ever think about running a Matrix homeserver? In this post, we will set one up on the [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/) (AKS). We will use the reference homeserver implementation, which is [Synapse](https://github.com/matrix-org/synapse/) from the folks at [matrix.org](https://matrix.org/). This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like [federation](https://github.com/matrix-org/synapse/blob/master/docs/federate.md), [delegation](https://github.com/matrix-org/synapse/blob/master/docs/delegate.md) and [PostgreSQL](https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database) are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the [Synapse Admin UI](https://github.com/Awesome-Technologies/synapse-admin) deployment with secure access to the [administration endpoints](https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints) to make management of our homeserver easier.
