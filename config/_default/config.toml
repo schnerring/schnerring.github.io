@@ -60,7 +60,7 @@ enableRobotsTXT = true
   [[menu.main]]
     identifier = "blog"
     name = "Blog"
-    url = "/posts"
+    url = "/blog"
     weight = 10
   [[menu.main]]
     identifier = "cv"
