@@ -8,6 +8,7 @@ tags:
   - Homelab
   - Mikrotik
   - Network
+  - Router
   - SwOS
   - VLAN
 aliases:

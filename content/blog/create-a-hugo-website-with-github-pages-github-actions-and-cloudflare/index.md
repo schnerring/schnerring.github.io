@@ -6,10 +6,10 @@ cover:
 draft: false
 comments: true
 tags:
-  - hugo
-  - cloudflare
-  - github actions
-  - github pages
+  - Hugo
+  - Cloudflare
+  - GitHub Actions
+  - GitHub Pages
 aliases:
   - /posts/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare
 ---

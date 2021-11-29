@@ -5,11 +5,13 @@ cover:
   src: "cover.jpg"
 comments: true
 tags:
-  - aadds
-  - arm
-  - azure active directory domain services
-  - azure resource manager template
-  - terraform
+  - AADDS
+  - ARM
+  - Azure
+  - Azure Active Directory Domain Services
+  - Azure Resource Manager Template
+  - Cloud
+  - Terraform
 aliases:
   - /posts/set-up-azure-active-directory-domain-services-aadds-with-terraform
 ---

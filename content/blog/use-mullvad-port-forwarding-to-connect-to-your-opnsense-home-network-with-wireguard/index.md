@@ -6,7 +6,9 @@ toc: false
 cover:
   src: "cover.png"
 tags:
+  - Firewall
   - Mullvad
+  - Network
   - OPNsense
   - VPN
   - WireGuard

@@ -7,18 +7,20 @@ draft: false
 toc: true
 comments: true
 tags:
-  - dnsmasq
-  - firewall
-  - homelab
-  - letsencrypt
-  - mullvad
-  - networking
-  - opnsense
-  - routing
-  - unbound
-  - vlan
-  - vpn
-  - wireguard
+  - DNS
+  - Dnsmasq
+  - Firewall
+  - Homelab
+  - Let's Encrypt
+  - Mullvad
+  - Network
+  - OPNsense
+  - Router
+  - Self-host
+  - Unbound
+  - VLAN
+  - VPN
+  - WireGuard
 aliases:
   - /posts/opnsense-baseline-guide-with-mullvad-vpn-guest-and-vlan-support
   - /posts/opnsense-baseline-guide-with-vpn-guest-and-vlan-support

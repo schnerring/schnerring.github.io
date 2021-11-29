@@ -5,8 +5,8 @@ date: 2021-03-14T15:00:21+01:00
 draft: false
 comments: true
 tags:
-  - "csharp"
-  - "hello world"
+  - CSharp
+  - Hello World
 aliases:
   - /posts/hello-world
 ---

@@ -5,18 +5,18 @@ draft: false
 comments: true
 toc: true
 cover:
-  src: "cover.png"
+  src: cover.png
 tags:
   - FreeBSD
   - Homelab
-  - Iocage
+  - iocage
   - Jackett
   - Jail
   - Lidarr
   - Plex
   - qBittorrent
   - Radarr
-  - Self-hosted
+  - Self-host
   - Sonarr
   - Torrent
   - TrueNAS

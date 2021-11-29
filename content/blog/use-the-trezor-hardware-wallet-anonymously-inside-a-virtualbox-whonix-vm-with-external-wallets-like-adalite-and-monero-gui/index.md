@@ -5,16 +5,16 @@ cover:
   src: "cover.png"
 comments: true
 tags:
-  - adalite
-  - anonymity
-  - cardano
-  - cryptocurrency
-  - monero
-  - privacy
-  - qubes os
-  - trezor
-  - virtualbox
-  - whonix
+  - Adalite
+  - Anonymity
+  - Cardano
+  - Cryptocurrency
+  - Monero
+  - Privacy
+  - Qubes OS
+  - Trezor
+  - VirtualBox
+  - Whonix
 aliases:
   - /posts/use-the-trezor-hardware-wallet-anonymously-inside-a-virtualbox-whonix-vm-with-external-wallets-like-adalite-and-monero-gui
 ---

@@ -6,17 +6,21 @@ cover:
 draft: false
 comments: true
 tags:
-  - aks
-  - azure
-  - azure kubernetes service
+  - AKS
+  - Azure
+  - Azure Kubernetes Service
   - cert-manager
-  - devops
-  - helm
+  - Cloud
+  - DevOps
+  - Helm
   - k8s
-  - kubernetes
-  - letsencrypt
-  - terraform
-  - traefik
+  - Kubernetes
+  - Let's Encrypt
+  - Network
+  - Reverse Proxy
+  - Self-host
+  - Terraform
+  - Traefik
 aliases:
   - /posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt
   - /posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates

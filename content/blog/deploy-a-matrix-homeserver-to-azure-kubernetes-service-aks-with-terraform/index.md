@@ -5,14 +5,16 @@ cover:
   src: "cover.svg"
 comments: true
 tags:
-  - aks
-  - homeserver
+  - AKS
+  - Azure
+  - Azure Kubernetes Service
+  - Cloud
   - k8s
-  - kubernetes
-  - matrix
-  - synapse
-  - synapse admin ui
-  - terraform
+  - Kubernetes
+  - Matrix
+  - Self-host
+  - Synapse
+  - Terraform
 aliases:
   - /posts/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform
 ---

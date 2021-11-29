@@ -6,11 +6,16 @@ cover:
 draft: false
 comments: true
 tags:
-  - hugo
+  - AKS
+  - Azure
+  - Azure Kubernetes Service
+  - Cloud
+  - Hugo
   - k8s
-  - kubernetes
-  - remark42
-  - terraform
+  - Kubernetes
+  - Remark42
+  - Self-host
+  - Terraform
 aliases:
   - /posts/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website
 ---

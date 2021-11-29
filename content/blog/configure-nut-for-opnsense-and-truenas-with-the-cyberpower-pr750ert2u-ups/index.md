@@ -11,6 +11,7 @@ tags:
   - Homelab
   - NUT
   - OPNsense
+  - Self-host
   - TrueNAS
   - UPS
 aliases:

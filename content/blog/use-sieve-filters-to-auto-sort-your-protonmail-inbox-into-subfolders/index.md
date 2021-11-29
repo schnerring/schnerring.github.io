@@ -5,8 +5,9 @@ cover:
   src: "cover.jpg"
 comments: true
 tags:
-  - protonmail
-  - sieve
+  - Privacy
+  - ProtonMail
+  - Sieve
 aliases:
   - /posts/use-sieve-filters-to-auto-sort-your-protonmail-inbox-into-subfolders
 ---

@@ -6,7 +6,9 @@ cover:
 comments: true
 tags:
   - FreeBSD
+  - Homelab
   - Jails
+  - Self-host
   - TrueNAS
   - Ubiquiti
   - UniFi

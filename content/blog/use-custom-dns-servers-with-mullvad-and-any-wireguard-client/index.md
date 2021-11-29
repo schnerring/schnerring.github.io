@@ -5,10 +5,11 @@ cover:
   src: "cover.jpg"
 comments: true
 tags:
-  - dns
-  - mullvad
-  - vpn
-  - wireguard
+  - DNS
+  - Mullvad
+  - Network
+  - VPN
+  - WireGuard
 aliases:
   - /posts/use-custom-dns-servers-with-mullvad-and-any-wireguard-client
 ---
