@@ -2,7 +2,7 @@
 title: "Create a Hugo Website with GitHub Pages, GitHub Actions, and Cloudflare"
 date: 2021-03-19T21:14:22+01:00
 cover:
-  src: "img/cover.svg"
+  src: "cover.svg"
 draft: false
 comments: true
 tags:
@@ -434,13 +434,13 @@ git push
 
 Sign in to the administrator account of your domain registrar and change the nameservers. My Namecheap nameserver configuration for `schnerring.net` looks like this after adding the Cloudflare nameservers:
 
-![Namecheap Nameservers](img/namecheap-nameservers.png)
+![Namecheap Nameservers](namecheap-nameservers.png)
 
 ### Add the CNAME Records
 
 A **CNAME** record is used to map one domain name to another. Go to the DNS management at Cloudflare and add the following records to point your domain to GitHub Pages:
 
-![Cloudflare DNS Records](img/cloudflare-dns-records.png)
+![Cloudflare DNS Records](cloudflare-dns-records.png)
 
 Make sure the “orange cloud” is enabled, so you can define rules and cache static content with Cloudflare.
 
@@ -448,13 +448,13 @@ Make sure the “orange cloud” is enabled, so you can define rules and cache s
 
 Go to your site's **SSL/TLS** settings and set encryption to **Full**:
 
-![Cloudflare Encryption Settings](img/cloudflare-encryption-settings.png)
+![Cloudflare Encryption Settings](cloudflare-encryption-settings.png)
 
 ### Configure the Browser Cache TTL
 
 Go to **Cache** &rarr; **Configuration** and choose **2 months** or higher, depending on how often you think your already published static content _changes_.
 
-![Cloudflare Browser Cache TTL](img/cloudflare-browser-cache-ttl.png)
+![Cloudflare Browser Cache TTL](cloudflare-browser-cache-ttl.png)
 
 ### Add Page Rules
 
@@ -462,21 +462,21 @@ The Free Tier lets you create up to three page rules. Go to your site's **Page R
 
 #### Enforce HTTPS
 
-![Cloudflare Rule - Enforce HTTPS](img/cloudflare-page-rule-enforce-https.png)
+![Cloudflare Rule - Enforce HTTPS](cloudflare-page-rule-enforce-https.png)
 
 #### Add Forward from `www.schnerring.net` Subdomain to `schnerring.net` Root Domain
 
 If you use a subdomain, skip this step.
 
-![Cloudflare Rule - Forward](img/cloudflare-page-rule-forward.png)
+![Cloudflare Rule - Forward](cloudflare-page-rule-forward.png)
 
 #### Cache All Static Content to Speed Up the Website
 
-![Cloudflare Rule - Cache Everything](img/cloudflare-page-rule-cache-everything.png)
+![Cloudflare Rule - Cache Everything](cloudflare-page-rule-cache-everything.png)
 
 ### Page Rules Overview
 
-![Cloudflare Page Rules Overview](img/cloudflare-page-rules-overview.png)
+![Cloudflare Page Rules Overview](cloudflare-page-rules-overview.png)
 
 Note that as of May 2018 GitHub Pages supports HTTPS for custom domains out of the box. They utilize [Let's Encrypt](https://letsencrypt.org/) certificates which are better than the shared certificates you get with Cloudflare. But to issue Let's Encrypt certificates for both `www.schnerring.net` and `schnerring.net`, you'd have to resort [this, in my opinion hacky, solution](https://stackoverflow.com/a/58672792/1154965).
 
@@ -541,7 +541,7 @@ Navigate to your repository on GitHub
 
 It should look like this:
 
-![GitHub Pages Settings](img/github-pages-settings.png)
+![GitHub Pages Settings](github-pages-settings.png)
 
 Shortly after you perform these steps, your website should be available at `schnerring.net`.
 
@@ -635,7 +635,7 @@ Go to your GitHub profile's [**Settings** &rarr; **Developer settings** &rarr; *
 
 You only get one chance to copy the token's value, so add a new environment variable named `GITHUB_TOKEN` to your local system:
 
-![Windows Environment Variables](img/windows-environment-variables.png)
+![Windows Environment Variables](windows-environment-variables.png)
 
 If you lose the token, just delete and then recreate it.
 
@@ -661,7 +661,7 @@ Before you can run the command above, set `CLOUDFLARE_ZONE_ID` and `CLOUDFLARE_A
 
 - Set `CLOUDFLARE_API_TOKEN` to an API Token with _Zone.Cache Purge_ permissions. Create one at **My Profile** &rarr; **API Tokens** &rarr; **Create Token** &rarr; **Create Custom Token** &rarr; **Get started**:
 
-  ![Cloudflare API Token](img/cloudflare-api-token.png)
+  ![Cloudflare API Token](cloudflare-api-token.png)
 
 You should then be able to locally run the `curl` snippet above which should output `"success": true`:
 
@@ -830,7 +830,7 @@ git push
 
 Go check out the **Actions** tab on your GitHub repository. If everything is configured correctly, GitHub Actions should be building your site:
 
-![GitHub Actions Workflow](img/github-actions-workflows.png)
+![GitHub Actions Workflow](github-actions-workflows.png)
 
 After the workflow succeeded, there won't be any changes to the site because we didn't change anything about our site, yet.
 

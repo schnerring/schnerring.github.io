@@ -2,7 +2,7 @@
 title: "Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform"
 date: 2021-05-14T01:13:33+02:00
 cover:
-  src: "img/cover.svg"
+  src: "cover.svg"
 comments: true
 tags:
   - aks
@@ -506,7 +506,7 @@ resource "kubernetes_deployment" "matrix_admin" {
 
 No configuration is required because the Admin UI is a client-side application. After running `terraform apply`, we can browse to `matrix.schnerring.net` to access the app:
 
-![Synapse Admin UI Login](./img/admin-ui-login.png)
+![Synapse Admin UI Login](./admin-ui-login.png)
 
 Synapse Admin UI requires access to the `_synapse/admin` endpoint. But we do not want to expose that endpoint to the public internet, so we have to connect to it by other means. `kubectl port-forward` allows us to securely forward a local port to a port on a Kubernetes service:
 
@@ -516,7 +516,7 @@ kubectl port-forward service/matrix-svc --namespace matrix 8008:8008
 
 We can now enter `http://localhost:8008` as homeserver URL and login to the admin UI with the user we created earlier:
 
-![Synapse Admin UI Users](./img/admin-ui-users.png)
+![Synapse Admin UI Users](./admin-ui-users.png)
 
 ## What's Next?
 

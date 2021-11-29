@@ -2,7 +2,7 @@
 title: "Create a Modern CSS-only Fold-Out Burger Menu"
 date: 2021-08-03T03:30:10+02:00
 cover:
-  src: "img/www.pexels.comphotoham-burger-with-vegetables-1639557.webp"
+  src: "www.pexels.comphotoham-burger-with-vegetables-1639557.webp"
 draft: false
 comments: true
 tags:
@@ -159,7 +159,7 @@ The icon looks like this:
 
 Here is a breakdown of the arrangement of the burger's three `<line />` elements inside the SVG:
 
-![anatomy](./img/anatomy.svg)
+![anatomy](./anatomy.svg)
 
 When we later animate the lines, this will be important to know.
 
@@ -358,7 +358,7 @@ Before we get started, we have to understand [how transformation origins work](h
 
 In our case, the default transform-origin is `(0,0)`. So before we apply transformations, we have to move the transform-origins of every `line` to their respective center:
 
-![transform-origin](./img/transform-origin.svg)
+![transform-origin](./transform-origin.svg)
 
 ```css
 .menu-burger svg line:nth-of-type(1) {

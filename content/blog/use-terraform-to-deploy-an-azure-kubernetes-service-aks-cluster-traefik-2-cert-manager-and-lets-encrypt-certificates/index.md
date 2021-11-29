@@ -2,7 +2,7 @@
 title: "Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates"
 date: 2021-04-25T01:00:27+02:00
 cover:
-  src: "img/cover.png"
+  src: "cover.png"
 draft: false
 comments: true
 tags:
@@ -546,7 +546,7 @@ resource "kubernetes_ingress" "hello" {
 
 After running `terraform apply` again, we should be able to visit the demo site [https://hello.k8s.schnerring.net/](https://hello.k8s.schnerring.net/):
 
-![nginx Demo](img/nginx-demo.png)
+![nginx Demo](nginx-demo.png)
 
 To verify the HTTPS redirect works, we run `curl -svDL http://hello.k8s.schnerring.net` (PowerShell), or `curl -sLD - http://hello.k8s.schnerring.net` (Bash):
 

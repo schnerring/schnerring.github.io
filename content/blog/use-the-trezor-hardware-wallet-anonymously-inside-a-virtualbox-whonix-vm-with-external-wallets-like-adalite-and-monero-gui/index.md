@@ -2,7 +2,7 @@
 title: "Use the Trezor Hardware Wallet Anonymously Inside a VirtualBox Whonix VM With External Wallets Like Adalite and Monero GUI"
 date: 2021-10-22T20:15:36+02:00
 cover:
-  src: "img/cover.png"
+  src: "cover.png"
 comments: true
 tags:
   - adalite
@@ -49,7 +49,7 @@ At this point, we can optionally clone the workstation VM to have a clean Whonix
 
 We can now connect the Trezor device to our computer. We then right-click on the workstation VM and select **Settings...**. Under **USB**, we check the **Enable USB Controller** and add the **Trezor** device. This way, it will be automatically attached to the workstation VM.
 
-![Enable USB Controller](img/enable-usb-controller.png)
+![Enable USB Controller](enable-usb-controller.png)
 
 Let's start the VM, open a terminal, and [import the udev rule for Trezor](https://wiki.trezor.io/Udev_rules) to enable communication with the Trezor device via Linux kernel:
 

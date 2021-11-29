@@ -2,7 +2,7 @@
 title: "Use Custom DNS Servers With Mullvad And Any WireGuard Client"
 date: 2021-10-31T08:19:52+01:00
 cover:
-  src: "img/cover.svg"
+  src: "cover.svg"
 comments: true
 tags:
   - dns
@@ -52,11 +52,11 @@ Next, let's look at how the app requests IPs. [Fortunately it's open-source and 
 
 For testing, we'll be using the [official WireGuard client](https://www.wireguard.com/install/). Let's open the client, click `Add empty tunnel...`, and give it a name:
 
-![Screenshot of WireGuard client "Add Tunnel" context menu](img/wireguard-add-tunnel-menu.png)
+![Screenshot of WireGuard client "Add Tunnel" context menu](wireguard-add-tunnel-menu.png)
 
 The tunnel will initially look like this:
 
-![Screenshot of initial tunnel configuration](img/wireguard-initial-tunnel-configuration.png)
+![Screenshot of initial tunnel configuration](wireguard-initial-tunnel-configuration.png)
 
 Copy the public key and execute the following to request our Mullvad IPs:
 
@@ -82,13 +82,13 @@ We use the `de24-wireguard` Mullvad server as peer and [Quad9](https://quad9.org
 
 Let's activate the tunnel and browse to [Mullvad's connection check](mullvad.net/check):
 
-![Screenshot of Mullvad connection check without leak](img/mullvad-connection-check-no-leak.png)
+![Screenshot of Mullvad connection check without leak](mullvad-connection-check-no-leak.png)
 
 As expected, the Quad9 DNS server is not leaking through because Mullvad hijacks our DNS requests and redirects them to their DNS servers.
 
 Next, we use the API the app uses to request the Mullvad IPs. We expect to get a different IP for which DNS hijacking is disabled. Before we can do this, we need to [revoke the WireGuard key on the Mullvad website](https://mullvad.net/en/account/#/ports) because we already requested an IP for this public key:
 
-![Screenshot of "Manage ports and WireGuard key" page on Mullvad webiste](img/mullvad-revoke-key.png)
+![Screenshot of "Manage ports and WireGuard key" page on Mullvad webiste](mullvad-revoke-key.png)
 
 After revoking the key, we run the following command:
 
@@ -98,6 +98,6 @@ curl -sSL https://api.mullvad.net/app/v1/wireguard-keys -H "Content-Type: applic
 
 Next, we replace the IP in `Address` field of the WireGuard config with the new IP we received. Then we re-activate the tunnel and visit [Mullvad's connection check](mullvad.net/check):
 
-![Screenshot of Mullvad connection check with leak](img/mullvad-connection-check-leak.png)
+![Screenshot of Mullvad connection check with leak](mullvad-connection-check-leak.png)
 
 Hooray, the Quad9 DNS servers leak through, so Mullvad is not hijacking our DNS traffic for this tunnel!
