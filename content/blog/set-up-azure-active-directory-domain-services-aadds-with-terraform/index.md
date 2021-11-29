@@ -2,7 +2,7 @@
 title: "Set Up Azure Active Directory Domain Services (AADDS) with Terraform"
 date: 2021-05-22T16:23:36+02:00
 cover:
-  src: "cover.svg"
+  src: "cover.jpg"
 comments: true
 tags:
   - aadds

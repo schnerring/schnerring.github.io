@@ -159,7 +159,7 @@ The icon looks like this:
 
 Here is a breakdown of the arrangement of the burger's three `<line />` elements inside the SVG:
 
-![anatomy](./anatomy.svg)
+![anatomy](./anatomy.png)
 
 When we later animate the lines, this will be important to know.
 
@@ -358,7 +358,7 @@ Before we get started, we have to understand [how transformation origins work](h
 
 In our case, the default transform-origin is `(0,0)`. So before we apply transformations, we have to move the transform-origins of every `line` to their respective center:
 
-![transform-origin](./transform-origin.svg)
+![transform-origin](./transform-origin.png)
 
 ```css
 .menu-burger svg line:nth-of-type(1) {
