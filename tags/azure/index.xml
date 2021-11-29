@@ -1,4 +1,67 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>azure on Michael Schnerring</title><link>https://schnerring.net/tags/azure/</link><description>Recent content in azure on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>© 2020 Michael Schnerring</copyright><lastBuildDate>Sun, 25 Apr 2021 01:00:27 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/azure/index.xml" rel="self" type="application/rss+xml"/><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p>In this post, we will deploy a simple &lt;a
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Azure on Michael Schnerring</title><link>https://schnerring.net/tags/azure/</link><description>Recent content in Azure on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>© 2020 Michael Schnerring</copyright><lastBuildDate>Sat, 22 May 2021 16:23:36 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/azure/index.xml" rel="self" type="application/rss+xml"/><item><title>Set Up Azure Active Directory Domain Services (AADDS) with Terraform</title><link>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/</link><pubDate>Sat, 22 May 2021 16:23:36 +0200</pubDate><guid>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/</guid><description>&lt;h2 id="update-2021-08-03">
+Update 2021-08-03
+&lt;a href="#update-2021-08-03" class="post-heading__anchor" aria-hidden="true">#&lt;/a>
+&lt;/h2>
+&lt;p>With &lt;a
+href="https://github.com/terraform-providers/terraform-provider-azurerm/releases/tag/v2.69.0"
+class="link--external" target="_blank" rel="noreferrer"
+>v2.69.0 of the official Terraform azurerm provider&lt;/a> released two weeks ago, the &lt;a
+href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service"
+class="link--external" target="_blank" rel="noreferrer"
+>&lt;code>active_directory_domain_service&lt;/code>&lt;/a> and &lt;a
+href="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service_replica_set"
+class="link--external" target="_blank" rel="noreferrer"
+>&lt;code>active_directory_domain_service_replica_set&lt;/code>&lt;/a> resources are now available. If you are newly adding AADDS, there is no point in reading any further — use the official resources.&lt;/p>
+&lt;p>I will switch in the coming weeks and write a short migration guide for the people using my &lt;a
+href="https://registry.terraform.io/modules/schnerring/aadds/azurerm/latest"
+class="link--external" target="_blank" rel="noreferrer"
+>AADDS Terraform module&lt;/a>.&lt;/p>
+&lt;hr>
+&lt;p>Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a &lt;em>Microsoft-managed&lt;/em> solution, providing a subset of &lt;a
+href="https://docs.microsoft.com/en-us/azure/active-directory-domain-services/compare-identity-solutions"
+class="link--external" target="_blank" rel="noreferrer"
+>traditional AD DS features&lt;/a> without the need to &lt;em>self-manage&lt;/em> DCs.&lt;/p>
+&lt;p>One such service that requires AD DS features is &lt;a
+href="https://docs.microsoft.com/en-us/azure/virtual-desktop/overview"
+class="link--external" target="_blank" rel="noreferrer"
+>Windows Virtual Desktop (WVD)&lt;/a>. I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.&lt;/p></description></item><item><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</title><link>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</link><pubDate>Fri, 14 May 2021 01:13:33 +0200</pubDate><guid>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</guid><description>&lt;p>Did you ever think about running a Matrix homeserver? In this post, we will set one up on the &lt;a
+href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
+class="link--external" target="_blank" rel="noreferrer"
+>Azure Kubernetes Service&lt;/a> (AKS). We will use the reference homeserver implementation, which is &lt;a
+href="https://github.com/matrix-org/synapse/"
+class="link--external" target="_blank" rel="noreferrer"
+>Synapse&lt;/a> from the folks at &lt;a
+href="https://matrix.org/"
+class="link--external" target="_blank" rel="noreferrer"
+>matrix.org&lt;/a>. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like &lt;a
+href="https://github.com/matrix-org/synapse/blob/master/docs/federate.md"
+class="link--external" target="_blank" rel="noreferrer"
+>federation&lt;/a>, &lt;a
+href="https://github.com/matrix-org/synapse/blob/master/docs/delegate.md"
+class="link--external" target="_blank" rel="noreferrer"
+>delegation&lt;/a> and &lt;a
+href="https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database"
+class="link--external" target="_blank" rel="noreferrer"
+>PostgreSQL&lt;/a> are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the &lt;a
+href="https://github.com/Awesome-Technologies/synapse-admin"
+class="link--external" target="_blank" rel="noreferrer"
+>Synapse Admin UI&lt;/a> deployment with secure access to the &lt;a
+href="https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints"
+class="link--external" target="_blank" rel="noreferrer"
+>administration endpoints&lt;/a> to make management of our homeserver easier.&lt;/p></description></item><item><title>Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website</title><link>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</link><pubDate>Sun, 09 May 2021 09:31:13 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</guid><description>&lt;p>Building upon our previous work, we will deploy &lt;a
+href="https://remark42.com/"
+class="link--external" target="_blank" rel="noreferrer"
+>Remark42&lt;/a> on Kubernetes with &lt;a
+href="https://www.terraform.io/"
+class="link--external" target="_blank" rel="noreferrer"
+>Terraform&lt;/a> and integrate it with your existing &lt;a
+href="https://gohugo.io/"
+class="link--external" target="_blank" rel="noreferrer"
+>Hugo&lt;/a> website. Make sure to check out my previous posts about &lt;a
+href="../create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
+>creating a Hugo Website&lt;/a> and &lt;a
+href="../use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt"
+>deploying an Azure Kubernetes Service cluster&lt;/a> if you haven&amp;rsquo;t already.&lt;/p></description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p>In this post, we will deploy a simple &lt;a
 href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
 class="link--external" target="_blank" rel="noreferrer"
 >Azure Kubernetes Service (AKS)&lt;/a> cluster from scratch. To expose our web services securely, we will install Traefik 2 and configure &lt;a

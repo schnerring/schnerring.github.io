@@ -8,17 +8,17 @@
 <link rel=preload as=font type=font/woff2 href=/fonts/fira-code-latin-400.woff2 crossorigin=anonymous>
 <link rel=prefetch as=font type=font/woff2 href=/fonts/fira-code-latin-700.woff2 crossorigin=anonymous>
 <meta name=robots content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-<title>azure kubernetes service&nbsp;::&nbsp;Michael Schnerring&nbsp;—&nbsp;Software Engineer</title>
+<title>Azure Kubernetes Service&nbsp;::&nbsp;Michael Schnerring&nbsp;—&nbsp;Software Engineer</title>
 <meta name=description content="Michael Schnerring is a coder and computer enthusiast.">
 <link rel=canonical href=https://schnerring.net/tags/azure-kubernetes-service/>
 <meta name=twitter:card content="summary">
-<meta name=twitter:title content="azure kubernetes service">
+<meta name=twitter:title content="Azure Kubernetes Service">
 <meta name=twitter:description content="Michael Schnerring is a coder and computer enthusiast.">
-<meta property="og:title" content="azure kubernetes service">
+<meta property="og:title" content="Azure Kubernetes Service">
 <meta property="og:description" content="Michael Schnerring is a coder and computer enthusiast.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://schnerring.net/tags/azure-kubernetes-service/">
-<meta itemprop=name content="azure kubernetes service">
+<meta itemprop=name content="Azure Kubernetes Service">
 <meta itemprop=description content="Michael Schnerring is a coder and computer enthusiast.">
 <link rel=alternate type=application/rss+xml href=/tags/azure-kubernetes-service/index.xml title="Michael Schnerring">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
@@ -57,7 +57,7 @@
 <nav id=menu>
 <ul class=menu--horizontal>
 <li class=menu__item>
-<a href=/posts>Blog</a>
+<a href=/blog>Blog</a>
 </li>
 <li class=menu__item>
 <a href=/cv>CV</a>
@@ -73,7 +73,7 @@
 <input class=menu__item type=checkbox aria-label="Open main menu"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
 <ul class=menu--vertical>
 <li>
-<a class=menu__item href=/posts>Blog</a>
+<a class=menu__item href=/blog>Blog</a>
 </li>
 <li>
 <a class=menu__item href=/cv>CV</a>
@@ -97,7 +97,69 @@
 <article class=post>
 <div class=post-header>
 <h1>
-<a href=/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let&rsquo;s Encrypt Certificates</a>
+<a href=/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</a>
+</h1>
+<div class=post-meta>
+<span>2021-05-14</span>
+<div class=post-tags>
+<a class=post-tag href=https://schnerring.net/tags/aks>aks</a>
+<a class=post-tag href=https://schnerring.net/tags/azure>azure</a>
+<a class=post-tag href=https://schnerring.net/tags/azure-kubernetes-service>azure&#8209;kubernetes&#8209;service</a>
+<a class=post-tag href=https://schnerring.net/tags/cloud>cloud</a>
+<a class=post-tag href=https://schnerring.net/tags/k8s>k8s</a>
+<a class=post-tag href=https://schnerring.net/tags/kubernetes>kubernetes</a>
+<a class=post-tag href=https://schnerring.net/tags/matrix>matrix</a>
+<a class=post-tag href=https://schnerring.net/tags/self-host>self&#8209;host</a>
+<a class=post-tag href=https://schnerring.net/tags/synapse>synapse</a>
+<a class=post-tag href=https://schnerring.net/tags/terraform>terraform</a>
+</div>
+<img src=/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/cover.svg alt>
+</div>
+</div>
+<div class=post-content>
+<span>
+<p>Did you ever think about running a Matrix homeserver? In this post, we will set one up on the <a href=https://azure.microsoft.com/en-us/services/kubernetes-service/ class=link--external target=_blank rel=noreferrer>Azure Kubernetes Service</a> (AKS). We will use the reference homeserver implementation, which is <a href=https://github.com/matrix-org/synapse/ class=link--external target=_blank rel=noreferrer>Synapse</a> from the folks at <a href=https://matrix.org/ class=link--external target=_blank rel=noreferrer>matrix.org</a>. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like <a href=https://github.com/matrix-org/synapse/blob/master/docs/federate.md class=link--external target=_blank rel=noreferrer>federation</a>, <a href=https://github.com/matrix-org/synapse/blob/master/docs/delegate.md class=link--external target=_blank rel=noreferrer>delegation</a> and <a href=https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database class=link--external target=_blank rel=noreferrer>PostgreSQL</a> are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the <a href=https://github.com/Awesome-Technologies/synapse-admin class=link--external target=_blank rel=noreferrer>Synapse Admin UI</a> deployment with secure access to the <a href=https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints class=link--external target=_blank rel=noreferrer>administration endpoints</a> to make management of our homeserver easier.</p>
+<div class=post-content__read-more>
+<a href=/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/>Read more ></a>
+</div>
+</span>
+</div>
+</article>
+<article class=post>
+<div class=post-header>
+<h1>
+<a href=/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/>Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website</a>
+</h1>
+<div class=post-meta>
+<span>2021-05-09</span>
+<div class=post-tags>
+<a class=post-tag href=https://schnerring.net/tags/aks>aks</a>
+<a class=post-tag href=https://schnerring.net/tags/azure>azure</a>
+<a class=post-tag href=https://schnerring.net/tags/azure-kubernetes-service>azure&#8209;kubernetes&#8209;service</a>
+<a class=post-tag href=https://schnerring.net/tags/cloud>cloud</a>
+<a class=post-tag href=https://schnerring.net/tags/hugo>hugo</a>
+<a class=post-tag href=https://schnerring.net/tags/k8s>k8s</a>
+<a class=post-tag href=https://schnerring.net/tags/kubernetes>kubernetes</a>
+<a class=post-tag href=https://schnerring.net/tags/remark42>remark42</a>
+<a class=post-tag href=https://schnerring.net/tags/self-host>self&#8209;host</a>
+<a class=post-tag href=https://schnerring.net/tags/terraform>terraform</a>
+</div>
+<img src=/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/cover.svg alt>
+</div>
+</div>
+<div class=post-content>
+<span>
+<p>Building upon our previous work, we will deploy <a href=https://remark42.com/ class=link--external target=_blank rel=noreferrer>Remark42</a> on Kubernetes with <a href=https://www.terraform.io/ class=link--external target=_blank rel=noreferrer>Terraform</a> and integrate it with your existing <a href=https://gohugo.io/ class=link--external target=_blank rel=noreferrer>Hugo</a> website. Make sure to check out my previous posts about <a href=../create-a-hugo-website-with-github-pages-github-actions-and-cloudflare>creating a Hugo Website</a> and <a href=../use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt>deploying an Azure Kubernetes Service cluster</a> if you haven&rsquo;t already.</p>
+<div class=post-content__read-more>
+<a href=/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/>Read more ></a>
+</div>
+</span>
+</div>
+</article>
+<article class=post>
+<div class=post-header>
+<h1>
+<a href=/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let&rsquo;s Encrypt Certificates</a>
 </h1>
 <div class=post-meta>
 <span>2021-04-25</span>
@@ -106,17 +168,21 @@
 <a class=post-tag href=https://schnerring.net/tags/azure>azure</a>
 <a class=post-tag href=https://schnerring.net/tags/azure-kubernetes-service>azure&#8209;kubernetes&#8209;service</a>
 <a class=post-tag href=https://schnerring.net/tags/cert-manager>cert&#8209;manager</a>
+<a class=post-tag href=https://schnerring.net/tags/cloud>cloud</a>
 <a class=post-tag href=https://schnerring.net/tags/devops>devops</a>
 <a class=post-tag href=https://schnerring.net/tags/helm>helm</a>
 <a class=post-tag href=https://schnerring.net/tags/k8s>k8s</a>
 <a class=post-tag href=https://schnerring.net/tags/kubernetes>kubernetes</a>
-<a class=post-tag href=https://schnerring.net/tags/letsencrypt>letsencrypt</a>
+<a class=post-tag href=https://schnerring.net/tags/lets-encrypt>lets&#8209;encrypt</a>
+<a class=post-tag href=https://schnerring.net/tags/network>network</a>
+<a class=post-tag href=https://schnerring.net/tags/reverse-proxy>reverse&#8209;proxy</a>
+<a class=post-tag href=https://schnerring.net/tags/self-host>self&#8209;host</a>
 <a class=post-tag href=https://schnerring.net/tags/terraform>terraform</a>
 <a class=post-tag href=https://schnerring.net/tags/traefik>traefik</a>
 </div>
 <picture>
-<source srcset="/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover_hub92c13112e866e68a0ecc70223090fce_159308_300x0_resize_q90_h2_box_3.webp 300w,/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover_hub92c13112e866e68a0ecc70223090fce_159308_400x0_resize_q90_h2_box_3.webp 400w,/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover_hub92c13112e866e68a0ecc70223090fce_159308_500x0_resize_q90_h2_box_3.webp 500w,/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover_hub92c13112e866e68a0ecc70223090fce_159308_600x0_resize_q90_h2_box_3.webp 600w,/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover_hub92c13112e866e68a0ecc70223090fce_159308_700x0_resize_q90_h2_box_3.webp 700w">
-<img src=/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover.png srcset="/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover_hub92c13112e866e68a0ecc70223090fce_159308_300x0_resize_box_3.png 300w,/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover_hub92c13112e866e68a0ecc70223090fce_159308_400x0_resize_box_3.png 400w,/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover_hub92c13112e866e68a0ecc70223090fce_159308_500x0_resize_box_3.png 500w,/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover_hub92c13112e866e68a0ecc70223090fce_159308_600x0_resize_box_3.png 600w,/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/img/cover_hub92c13112e866e68a0ecc70223090fce_159308_700x0_resize_box_3.png 700w" alt loading=lazy width=921 height=482>
+<source srcset="/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover_hub92c13112e866e68a0ecc70223090fce_159308_300x0_resize_q90_h2_box_3.webp 300w,/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover_hub92c13112e866e68a0ecc70223090fce_159308_400x0_resize_q90_h2_box_3.webp 400w,/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover_hub92c13112e866e68a0ecc70223090fce_159308_500x0_resize_q90_h2_box_3.webp 500w,/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover_hub92c13112e866e68a0ecc70223090fce_159308_600x0_resize_q90_h2_box_3.webp 600w,/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover_hub92c13112e866e68a0ecc70223090fce_159308_700x0_resize_q90_h2_box_3.webp 700w">
+<img src=/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover.png srcset="/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover_hub92c13112e866e68a0ecc70223090fce_159308_300x0_resize_box_3.png 300w,/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover_hub92c13112e866e68a0ecc70223090fce_159308_400x0_resize_box_3.png 400w,/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover_hub92c13112e866e68a0ecc70223090fce_159308_500x0_resize_box_3.png 500w,/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover_hub92c13112e866e68a0ecc70223090fce_159308_600x0_resize_box_3.png 600w,/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover_hub92c13112e866e68a0ecc70223090fce_159308_700x0_resize_box_3.png 700w" alt loading=lazy width=921 height=482>
 </picture>
 </div>
 </div>
@@ -124,7 +190,7 @@
 <span>
 <p>In this post, we will deploy a simple <a href=https://azure.microsoft.com/en-us/services/kubernetes-service/ class=link--external target=_blank rel=noreferrer>Azure Kubernetes Service (AKS)</a> cluster from scratch. To expose our web services securely, we will install Traefik 2 and configure <a href=https://cert-manager.io/ class=link--external target=_blank rel=noreferrer>cert-manager</a> to manage Let&rsquo;s Encrypt certificates. The best part about it: we will do everything with <a href=https://www.terraform.io/ class=link--external target=_blank rel=noreferrer>Terraform</a>.</p>
 <div class=post-content__read-more>
-<a href=/posts/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/>Read more ></a>
+<a href=/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/>Read more ></a>
 </div>
 </span>
 </div>
@@ -187,7 +253,7 @@
 </div>
 </footer>
 <script type=text/javascript src=/js/main.07941426570c3f29ce826eb3a40437438c08ed970d117f62cfd361ba175908c57b2c2b7c68c33ca90f1f364a94dd11114c147f94a4967aa1d460f5e24087751e.js integrity="sha512-B5QUJlcMPynOgm6zpAQ3Q4wI7ZcNEX9iz9NhuhdZCMV7LCt8aMM8qQ8fNkqU3RERTBR/lKSWeqHUYPXiQId1Hg=="></script>
-<script type=text/javascript src=/js/flexsearch.dc1f22f1a3b696fb7435d10a9c274f2484dc3aec4b69b85ae8d4258c45bf5de8ac913be94d6ef1658fceb7acb1561fe2b9ebef50e63e269c9029b1865abd7272.js integrity="sha512-3B8i8aO2lvt0NdEKnCdPJITcOuxLabha6NQljEW/XeiskTvpTW7xZY/Ot6yxVh/iuevvUOY+JpyQKbGGWr1ycg=="></script>
+<script type=text/javascript src=/js/flexsearch.249ce0c4bdaeed4ff8c9dd3003018d9c28b0c53a65d2eadc2d61e8bdee012c89fe549572938790a8d5ba445769c79c449c7681c5dc8dea8dd57300fa7fd4686a.js integrity="sha512-JJzgxL2u7U/4yd0wAwGNnCiwxTpl0urcLWHove4BLIn+VJVyk4eQqNW6RFdpx5xEnHaBxdyN6o3VcwD6f9Roag=="></script>
 </div>
 </body>
 </html>
