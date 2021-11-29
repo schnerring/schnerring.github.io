@@ -2,7 +2,7 @@
 title: "Install the Ubiquiti Unifi Controller Software v6 Inside a TrueNAS Jail"
 date: 2021-11-04T23:15:27+01:00
 cover:
-  src: "cover.png"
+  src: cover.png
 comments: true
 tags:
   - FreeBSD

@@ -4,7 +4,7 @@ date: 2021-11-28T21:18:30+01:00
 comments: true
 toc: false
 cover:
-  src: "cover.png"
+  src: cover.png
 tags:
   - Firewall
   - Mullvad

@@ -2,7 +2,7 @@
 title: "Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates"
 date: 2021-04-25T01:00:27+02:00
 cover:
-  src: "cover.png"
+  src: cover.png
 draft: false
 comments: true
 tags:

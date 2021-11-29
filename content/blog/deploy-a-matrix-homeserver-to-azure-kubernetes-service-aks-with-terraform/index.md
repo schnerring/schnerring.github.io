@@ -2,7 +2,7 @@
 title: "Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform"
 date: 2021-05-14T01:13:33+02:00
 cover:
-  src: "cover.svg"
+  src: cover.svg
 comments: true
 tags:
   - AKS

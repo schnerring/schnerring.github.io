@@ -2,7 +2,7 @@
 title: "Create a Modern CSS-only Fold-Out Burger Menu"
 date: 2021-08-03T03:30:10+02:00
 cover:
-  src: "www.pexels.comphotoham-burger-with-vegetables-1639557.webp"
+  src: www.pexels.comphotoham-burger-with-vegetables-1639557.webp
 draft: false
 comments: true
 tags:

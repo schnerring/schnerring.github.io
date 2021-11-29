@@ -5,5 +5,5 @@ draft: true
 comments: true
 toc: false
 cover:
-  src: "cover.png"
+  src: cover.png
 ---

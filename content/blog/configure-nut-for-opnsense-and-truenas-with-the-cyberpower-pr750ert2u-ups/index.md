@@ -4,7 +4,7 @@ date: 2021-11-28T03:50:22+01:00
 comments: true
 toc: false
 cover:
-  src: "cover.jpg"
+  src: cover.jpg
 toc: true
 tags:
   - CyberPower

@@ -2,7 +2,7 @@
 title: "Use the Trezor Hardware Wallet Anonymously Inside a VirtualBox Whonix VM With External Wallets Like Adalite and Monero GUI"
 date: 2021-10-22T20:15:36+02:00
 cover:
-  src: "cover.png"
+  src: cover.png
 comments: true
 tags:
   - Adalite
