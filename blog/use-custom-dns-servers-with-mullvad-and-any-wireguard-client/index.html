@@ -183,7 +183,7 @@ PublicKey = 9hIGjit4ApkNGuEWYBLpahxokEoP0cT9CMZ+ELEygzo=
 AllowedIPs = 0.0.0.0/0
 Endpoint = 194.36.25.18:51820
 </code></pre></div><p>We use the <code>de24-wireguard</code> Mullvad server as peer and <a href=https://quad9.org/ class=link--external target=_blank rel=noreferrer>Quad9</a> as DNS server.</p>
-<p>Let&rsquo;s activate the tunnel and browse to <a href=mullvad.net/check>Mullvad&rsquo;s connection check</a>:</p>
+<p>Let&rsquo;s activate the tunnel and browse to <a href=https://mullvad.net/en/check class=link--external target=_blank rel=noreferrer>Mullvad&rsquo;s connection check</a>:</p>
 <p>
 <picture>
 <source srcset="/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/mullvad-connection-check-no-leak_huad89d5bde04cabd671f3894ec3c4aa05_41984_300x0_resize_q90_h2_box_3.webp 300w,/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/mullvad-connection-check-no-leak_huad89d5bde04cabd671f3894ec3c4aa05_41984_400x0_resize_q90_h2_box_3.webp 400w,/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/mullvad-connection-check-no-leak_huad89d5bde04cabd671f3894ec3c4aa05_41984_500x0_resize_q90_h2_box_3.webp 500w,/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/mullvad-connection-check-no-leak_huad89d5bde04cabd671f3894ec3c4aa05_41984_600x0_resize_q90_h2_box_3.webp 600w,/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/mullvad-connection-check-no-leak_huad89d5bde04cabd671f3894ec3c4aa05_41984_700x0_resize_q90_h2_box_3.webp 700w">
@@ -200,7 +200,7 @@ Endpoint = 194.36.25.18:51820
 </p>
 <p>After revoking the key, we run the following command:</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>curl -sSL https://api.mullvad.net/app/v1/wireguard-keys -H <span style=color:#e6db74>&#34;Content-Type: application/json&#34;</span> -H <span style=color:#e6db74>&#34;Authorization: Token YOURMULLVADACCOUNTNUMBER&#34;</span> -d <span style=color:#e6db74>&#39;{&#34;pubkey&#34;:&#34;YOURPUBLICKEY&#34;}&#39;</span>
-</code></pre></div><p>Next, we replace the IP in <code>Address</code> field of the WireGuard config with the new IP we received. Then we re-activate the tunnel and visit <a href=mullvad.net/check>Mullvad&rsquo;s connection check</a>:</p>
+</code></pre></div><p>Next, we replace the IP in <code>Address</code> field of the WireGuard config with the new IP we received. Then we re-activate the tunnel and visit <a href=https://mullvad.net/en/check class=link--external target=_blank rel=noreferrer>Mullvad&rsquo;s connection check</a>:</p>
 <p>
 <picture>
 <source srcset="/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/mullvad-connection-check-leak_hu052d25c9fe540134932a67c7bfd47cd0_59901_300x0_resize_q90_h2_box_3.webp 300w,/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/mullvad-connection-check-leak_hu052d25c9fe540134932a67c7bfd47cd0_59901_400x0_resize_q90_h2_box_3.webp 400w,/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/mullvad-connection-check-leak_hu052d25c9fe540134932a67c7bfd47cd0_59901_500x0_resize_q90_h2_box_3.webp 500w,/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/mullvad-connection-check-leak_hu052d25c9fe540134932a67c7bfd47cd0_59901_600x0_resize_q90_h2_box_3.webp 600w,/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/mullvad-connection-check-leak_hu052d25c9fe540134932a67c7bfd47cd0_59901_700x0_resize_q90_h2_box_3.webp 700w">
