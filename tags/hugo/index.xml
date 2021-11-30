@@ -8,7 +8,7 @@ class="link--external" target="_blank" rel="noreferrer"
 href="https://gohugo.io/"
 class="link--external" target="_blank" rel="noreferrer"
 >Hugo&lt;/a> website. Make sure to check out my previous posts about &lt;a
-href="../create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
+href="https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
 >creating a Hugo Website&lt;/a> and &lt;a
-href="../use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt"
+href="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates"
 >deploying an Azure Kubernetes Service cluster&lt;/a> if you haven&amp;rsquo;t already.&lt;/p></description></item><item><title>Create a Hugo Website with GitHub Pages, GitHub Actions, and Cloudflare</title><link>https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare/</link><pubDate>Fri, 19 Mar 2021 21:14:22 +0100</pubDate><guid>https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare/</guid><description>&lt;p>In this beginner guide, you&amp;rsquo;ll create a Hugo website from scratch and publish the website on GitHub Pages. You&amp;rsquo;ll configure Cloudflare&amp;rsquo;s DNS and utilize its caching capabilities to optimize page speeds. Finally, implementing automated deployments with GitHub Pages will enable you to publish new content on your site easily.&lt;/p></description></item></channel></rss>
