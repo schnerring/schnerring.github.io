@@ -1247,7 +1247,7 @@ corp.example.com.    3600    IN      SOA     opnsense.corp.example.com. root.exa
 
 ##### VLAN20_VPN: DNS Leak Test
 
-In your browser, navigate to [dnsleaktest.com](https://dnsleaktest.com/) or [mullvad.net/check](https://mullvad.net/en/check/). We expect the "leaked" DNS server to match our Mullvad public Mullvad IP. The second leak is from the **Outgoing Interface** we configured for Unbound:
+In your browser, navigate to [dnsleaktest.com](https://dnsleaktest.com/) or [mullvad.net/check](https://mullvad.net/en/check). We expect the "leaked" DNS server to match our Mullvad public Mullvad IP. The second leak is from the **Outgoing Interface** we configured for Unbound:
 
 ![Screenshot of Mullvad DNS leak test for VPN network](verify-dns-leak-test-vpn.png)
 

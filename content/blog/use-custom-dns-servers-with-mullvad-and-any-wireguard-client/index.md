@@ -81,7 +81,7 @@ Endpoint = 194.36.25.18:51820
 
 We use the `de24-wireguard` Mullvad server as peer and [Quad9](https://quad9.org/) as DNS server.
 
-Let's activate the tunnel and browse to [Mullvad's connection check](mullvad.net/check):
+Let's activate the tunnel and browse to [Mullvad's connection check](https://mullvad.net/en/check):
 
 ![Screenshot of Mullvad connection check without leak](mullvad-connection-check-no-leak.png)
 
@@ -97,7 +97,7 @@ After revoking the key, we run the following command:
 curl -sSL https://api.mullvad.net/app/v1/wireguard-keys -H "Content-Type: application/json" -H "Authorization: Token YOURMULLVADACCOUNTNUMBER" -d '{"pubkey":"YOURPUBLICKEY"}'
 ```
 
-Next, we replace the IP in `Address` field of the WireGuard config with the new IP we received. Then we re-activate the tunnel and visit [Mullvad's connection check](mullvad.net/check):
+Next, we replace the IP in `Address` field of the WireGuard config with the new IP we received. Then we re-activate the tunnel and visit [Mullvad's connection check](https://mullvad.net/en/check):
 
 ![Screenshot of Mullvad connection check with leak](mullvad-connection-check-leak.png)
 

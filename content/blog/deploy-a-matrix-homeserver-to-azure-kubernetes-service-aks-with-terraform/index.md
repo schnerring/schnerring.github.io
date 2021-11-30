@@ -33,7 +33,7 @@ Synapse requires valid TLS certificates to work. It [~~ships~~ used to ship with
 
 The last thing we have to set up is [Terraform](https://www.terraform.io/) with a [properly configured `kubernetes` provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs). If you do not want to use Terraform, transforming the code to regular YAML manifests is trivial.
 
-Depending on your needs, reverse proxy (ingress) functionality and certificate management is the part where your setup differs the most. If you are starting out from scratch, check out [my previous post](/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt), covering much of the steps required to set up the AKS cluster.
+Depending on your needs, reverse proxy (ingress) functionality and certificate management is the part where your setup differs the most. If you are starting out from scratch, check out [my previous post](/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates), covering much of the steps required to set up the AKS cluster.
 
 ## Ingress
 
