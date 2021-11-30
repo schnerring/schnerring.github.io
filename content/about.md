@@ -15,7 +15,7 @@ I am the author of the Hugo theme you see. It uses the [gruvbox](https://github.
 
 I self-host [Plausible Analytics](https://plausible.io/), an open-source, privacy-respecting, and lightweight website analytics tool.
 
-I don't collect any personal data. [All analytics data is publicly accessible on the stats page](/analytics).
+I don't collect any personal data. [All analytics data is publicly accessible on the stats page](/stats).
 
 ## Legal
 

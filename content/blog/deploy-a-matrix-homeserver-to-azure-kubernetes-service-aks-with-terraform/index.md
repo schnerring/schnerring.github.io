@@ -29,11 +29,11 @@ Besides some basic knowledge about AKS, Kubernetes, and Terraform, we have to se
 
 We need an AKS cluster with a configured [Ingress Controller](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/) to be able to expose our homeserver to the world. I use [Traefik 2](https://doc.traefik.io/traefik/) in combination with its [Kubernetes Ingress](https://doc.traefik.io/traefik/providers/kubernetes-ingress/) implementation.
 
-Synapse requires valid TLS certificates to work and [ships with functionality](https://github.com/matrix-org/synapse/blob/master/docs/ACME.md) to automatically provision [Let's Encrypt](https://letsencrypt.org/) certificates. However, I use [cert-manager](https://cert-manager.io/) as a certificate management solution for all my services. So we skip over that part of the configuration, too.
+Synapse requires valid TLS certificates to work. It [~~ships~~ used to ship with functionality](https://github.com/matrix-org/synapse/commit/55f2617f8ce798da4e8ca0fa351db60dc13ef355#diff-fb360161e5a1b576c9029cc93122255ed2d90639274c5744b282f71c68db5963) to automatically provision [Let's Encrypt](https://letsencrypt.org/) certificates. However, I use [cert-manager](https://cert-manager.io/) as a certificate management solution for all my services. So we skip over that part of the configuration, too.
 
 The last thing we have to set up is [Terraform](https://www.terraform.io/) with a [properly configured `kubernetes` provider](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs). If you do not want to use Terraform, transforming the code to regular YAML manifests is trivial.
 
-Depending on your needs, reverse proxy (ingress) functionality and certificate management is the part where your setup differs the most. If you are starting out from scratch, check out [my previous post](../use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt), covering much of the steps required to set up the AKS cluster.
+Depending on your needs, reverse proxy (ingress) functionality and certificate management is the part where your setup differs the most. If you are starting out from scratch, check out [my previous post](/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt), covering much of the steps required to set up the AKS cluster.
 
 ## Ingress
 

@@ -36,7 +36,7 @@ I pay CHF 33.50 per month for the `Standard_B2ms` VM instance, which the screens
 
 ## Using Terraform to Deploy AKS
 
-[I use Terraform to manage my AKS cluster.](/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates) The `azurerm_kubernetes_cluster` Terraform resource features the [`os_disk_type`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster#os_disk_type) option:
+[I use Terraform to manage my AKS cluster.](/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates) The `azurerm_kubernetes_cluster` Terraform resource features the [`os_disk_type`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/kubernetes_cluster#os_disk_type) option:
 
 > (Optional) The type of disk which should be used for the Operating System. Possible values are `Ephemeral` and `Managed`. Defaults to `Managed`. Changing this forces a new resource to be created.
 
