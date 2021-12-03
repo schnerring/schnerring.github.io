@@ -1,6 +1,6 @@
-github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20211020170905-b0d048864583 h1:ED5p4++N24dvOIeGMHXsE4uyeWCJsJiBrOtbQFFC7X8=
-github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20211020170905-b0d048864583/go.mod h1:UFUlab+9vQRmtTw2vE8tPRitMp3lYLUYUcfD9QwP/oE=
-github.com/schnerring/hugo-mod-json-resume v0.0.0-20211021131217-daf0b579c56e h1:R2RxTrjfVWQRISRnfibp2Js+PspjaKMT85F8QdeniCI=
-github.com/schnerring/hugo-mod-json-resume v0.0.0-20211021131217-daf0b579c56e/go.mod h1:8XG8axdWciaWCd44mdQQLWGvoijmUurVOeyI4sD2hOw=
-github.com/schnerring/hugo-theme-gruvbox v0.0.0-20211129005429-c401103d4a85 h1:WzxJrGDczzw6Vrk5r5++/gX9qji5Q9gK5Oa+w7hJ6RE=
-github.com/schnerring/hugo-theme-gruvbox v0.0.0-20211129005429-c401103d4a85/go.mod h1:/8LWJ34eg2gBVdfomNjKwuYYTVl3uePP80yZPb99Fnc=
+github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20211203215447-e9269bf41c2d h1:j38Knl7FT+GuaIN6qvL9Sw33FqNuUdqCpJBy+HTbtRM=
+github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20211203215447-e9269bf41c2d/go.mod h1:UFUlab+9vQRmtTw2vE8tPRitMp3lYLUYUcfD9QwP/oE=
+github.com/schnerring/hugo-mod-json-resume v0.0.0-20211203215358-16640c740b0e h1:WTjUV3E1uiFggj9Sunf0xvA+hp6laVh9W1C1++F5cpw=
+github.com/schnerring/hugo-mod-json-resume v0.0.0-20211203215358-16640c740b0e/go.mod h1:8XG8axdWciaWCd44mdQQLWGvoijmUurVOeyI4sD2hOw=
+github.com/schnerring/hugo-theme-gruvbox v0.0.0-20211203220637-ae5bd980b20f h1:CuWPpXWN2S2eEwjv+fsDRFf+jLndXGaH+K4G72jCq5Y=
+github.com/schnerring/hugo-theme-gruvbox v0.0.0-20211203220637-ae5bd980b20f/go.mod h1:3RJA4pNDRRl5qVrIH45hvUE62/i6AUgpClFNhm6OLiQ=
