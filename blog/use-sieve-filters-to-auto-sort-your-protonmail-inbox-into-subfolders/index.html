@@ -149,23 +149,23 @@ The Solution
 <a href=#the-solution class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
 <p>You can add custom sieve filters in the ProtonMail web client by navigating to <code>Settings</code> → <code>Filters</code> → <code>Add sieve filter</code>. The following snippet meets all of my requirements:</p>
-<pre tabindex=0><code class=language-sieve data-lang=sieve>require [&quot;include&quot;, &quot;variables&quot;, &quot;fileinto&quot;, &quot;envelope&quot;];
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sieve data-lang=sieve><span style=color:#f92672>require</span> [<span style=color:#e6db74>&#34;include&#34;</span>, <span style=color:#e6db74>&#34;variables&#34;</span>, <span style=color:#e6db74>&#34;fileinto&#34;</span>, <span style=color:#e6db74>&#34;envelope&#34;</span>];
 
-if envelope :localpart :matches &quot;To&quot; &quot;*+*&quot; {
-  set :lower &quot;category&quot; &quot;${1}&quot;;
-  set :lower &quot;website&quot;  &quot;${2}&quot;;
+if envelope <span style=color:#f92672>:localpart</span> <span style=color:#f92672>:matches</span> <span style=color:#e6db74>&#34;To&#34;</span> <span style=color:#e6db74>&#34;*+*&#34;</span> {
+  <span style=color:#66d9ef>set</span> <span style=color:#f92672>:lower</span> <span style=color:#e6db74>&#34;category&#34;</span> <span style=color:#e6db74>&#34;${1}&#34;</span>;
+  <span style=color:#66d9ef>set</span> <span style=color:#f92672>:lower</span> <span style=color:#e6db74>&#34;website&#34;</span>  <span style=color:#e6db74>&#34;${2}&#34;</span>;
 }
 else {
-  return;
+  <span style=color:#960050;background-color:#1e0010>return</span>;
 }
 
-if string :is &quot;${website}&quot; &quot;exlibris&quot; {
-  fileinto &quot;${category}/Ex Libris&quot;;
+if string <span style=color:#f92672>:is</span> <span style=color:#e6db74>&#34;${website}&#34;</span> <span style=color:#e6db74>&#34;exlibris&#34;</span> {
+  fileinto <span style=color:#e6db74>&#34;${category}/Ex Libris&#34;</span>;
 } else {
-  fileinto &quot;${category}&quot;;
-  fileinto &quot;${category}/${website}&quot;;
+  fileinto <span style=color:#e6db74>&#34;${category}&#34;</span>;
+  fileinto <span style=color:#e6db74>&#34;${category}/${website}&#34;</span>;
 }
-</code></pre><p>The <code>require</code> command in the first line is used to load extensions that provide functionality, like <code>fileinto</code> to file messages into folders or <code>variables</code> to declare variables.</p>
+</code></pre></div><p>The <code>require</code> command in the first line is used to load extensions that provide functionality, like <code>fileinto</code> to file messages into folders or <code>variables</code> to declare variables.</p>
 <p>Next, the <code>if</code>-conditional checks the <code>:localpart</code>, the part before the <code>@</code> symbol, of the <code>To</code> address. If it matches the pattern <code>*+*</code> (<code>category+website</code>):</p>
 <ul>
 <li>the value of the <code>category</code> variable is set to the match left of <code>+</code> symbol (<code>${1}</code>)</li>
@@ -173,16 +173,16 @@ if string :is &quot;${website}&quot; &quot;exlibris&quot; {
 </ul>
 <p>If <code>:localpart</code> does not match the pattern (<code>else</code>), the sieve filter exits (<code>return</code>).</p>
 <p>Next, the actual sorting happens. Let&rsquo;s look into the <code>else</code> case first:</p>
-<pre tabindex=0><code class=language-sieve data-lang=sieve>} else {
-  fileinto &quot;${category}&quot;;
-  fileinto &quot;${category}/${website}&quot;;
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sieve data-lang=sieve>} else {
+  fileinto <span style=color:#e6db74>&#34;${category}&#34;</span>;
+  fileinto <span style=color:#e6db74>&#34;${category}/${website}&#34;</span>;
 }
-</code></pre><p>Most of the magic happens here. The email is first moved to the <code>category</code> folder and then moved to the more specific <code>website</code> folder. This way, if the <code>website</code> subfolder does not (yet) exist, the email is at least moved into the root-level <code>category</code> folder. I find this useful when only ordering at a webshop <em>once</em> via guest checkout instead of signing up. This way, I don&rsquo;t need to bother creating an extra subfolder that will only ever contain one or two emails.</p>
+</code></pre></div><p>Most of the magic happens here. The email is first moved to the <code>category</code> folder and then moved to the more specific <code>website</code> folder. This way, if the <code>website</code> subfolder does not (yet) exist, the email is at least moved into the root-level <code>category</code> folder. I find this useful when only ordering at a webshop <em>once</em> via guest checkout instead of signing up. This way, I don&rsquo;t need to bother creating an extra subfolder that will only ever contain one or two emails.</p>
 <p>Lastly, let&rsquo;s cover the exception for the <code>exlibris</code> webshop in the <code>if</code>-part:</p>
-<pre tabindex=0><code class=language-sieve data-lang=sieve>if string :is &quot;${website}&quot; &quot;exlibris&quot; {
-  fileinto &quot;${category}/Ex Libris&quot;;
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sieve data-lang=sieve>if string <span style=color:#f92672>:is</span> <span style=color:#e6db74>&#34;${website}&#34;</span> <span style=color:#e6db74>&#34;exlibris&#34;</span> {
+  fileinto <span style=color:#e6db74>&#34;${category}/Ex Libris&#34;</span>;
 }
-</code></pre><p>It is just a cosmetic exception. When I register at a webshop with <code>webshops+exlibris@schnerring.net</code> but want to map it to a folder called <code>Ex Libris</code>, an explicit mapping is required. Note that <code>fileinto</code> is not case-sensitive, so it is valid if the email address is <code>webshops+amazon@schnerring.net</code>, but the folder name is <code>Webshops/Amazon/</code>. It also is easily extensible by adding more <code>elseif</code> conditions.</p>
+</code></pre></div><p>It is just a cosmetic exception. When I register at a webshop with <code>webshops+exlibris@schnerring.net</code> but want to map it to a folder called <code>Ex Libris</code>, an explicit mapping is required. Note that <code>fileinto</code> is not case-sensitive, so it is valid if the email address is <code>webshops+amazon@schnerring.net</code>, but the folder name is <code>Webshops/Amazon/</code>. It also is easily extensible by adding more <code>elseif</code> conditions.</p>
 <p>For more details on advanced custom sieve filtering, check the <a href=https://protonmail.com/support/knowledge-base/sieve-advanced-custom-filters/ class=link--external target=_blank rel=noreferrer>official ProtonMail documentation</a>.</p>
 </div>
 <div id=remark42></div>
@@ -257,8 +257,8 @@ if string :is &quot;${website}&quot; &quot;exlibris&quot; {
 © 2020 Michael Schnerring
 </div>
 </footer>
-<script type=text/javascript src=/js/main.07941426570c3f29ce826eb3a40437438c08ed970d117f62cfd361ba175908c57b2c2b7c68c33ca90f1f364a94dd11114c147f94a4967aa1d460f5e24087751e.js integrity="sha512-B5QUJlcMPynOgm6zpAQ3Q4wI7ZcNEX9iz9NhuhdZCMV7LCt8aMM8qQ8fNkqU3RERTBR/lKSWeqHUYPXiQId1Hg=="></script>
-<script type=text/javascript src=/js/flexsearch.66a3a82a88f016f04c0e722c8483163642ef2799eacee61e16130bddcc8bb99c1452423a43cf190393bef7201064338a50512613ee22713497bf53b1b03611a2.js integrity="sha512-ZqOoKojwFvBMDnIshIMWNkLvJ5nqzuYeFhML3cyLuZwUUkI6Q88ZA5O+9yAQZDOKUFEmE+4icTSXv1OxsDYRog=="></script>
+<script type=text/javascript src=/js/main.8a5b9360e3994a45d35016fb8a7e3bc69a56392afb4ab2be7c98f049247d0ce85c50f8665cddd3fbdd6a9d0b927446dea0c7ba0d15aaf9000d8409974502b337.js integrity="sha512-iluTYOOZSkXTUBb7in47xppWOSr7SrK+fJjwSSR9DOhcUPhmXN3T+91qnQuSdEbeoMe6DRWq+QANhAmXRQKzNw=="></script>
+<script type=text/javascript src=/js/flexsearch.9d744e2de8a8d252f9d99b7773d6ef6916daba1d2474535f29c76faf86ffa16ddf7d92e17b01584398eeadb831914e55c08eaede16a3cfa254b61a308f0a47b6.js integrity="sha512-nXROLeio0lL52Zt3c9bvaRbauh0kdFNfKcdvr4b/oW3ffZLhewFYQ5jurbgxkU5VwI6u3hajz6JUthowjwpHtg=="></script>
 </div>
 </body>
 </html>
