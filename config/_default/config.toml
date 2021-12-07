@@ -46,6 +46,7 @@ enableRobotsTXT = true
       "ignore",
       "json",
       "markdown",
+      "powershell",
       "toml",
       "yaml"
     ]

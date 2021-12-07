@@ -41,3 +41,21 @@ I pay CHF 33.50 per month for the `Standard_B2ms` VM instance, which the screens
 > (Optional) The type of disk which should be used for the Operating System. Possible values are `Ephemeral` and `Managed`. Defaults to `Managed`. Changing this forces a new resource to be created.
 
 Here it is! I didn't explicitly set it to `Ephemeral` when I initially configured my cluster over six months ago. An expensive mistake!
+
+## Update on Ephemeral OS Disk Support for B-series VMs
+
+As someone correctly pointed out in the comments, B-series VMs don't support ephemeral OS disks. My tests with the Azure CLI and Terraform confirm his findings. The information from the official Microsoft documentation on this is inconsistent. [Someone on GitHub mentioned a query](https://github.com/MicrosoftDocs/azure-docs/issues/75465#issuecomment-987248830) from [the Microsoft docs to determine VM types supporting ephemeral OS disks](https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks#frequently-asked-questions). Interestingly, the query result suggests B-series VMs support ephemeral OS storage.
+
+```powershell
+$vmSizes = Get-AzComputeResourceSku | where { $_.ResourceType -eq 'virtualMachines' -and $_.Locations.Contains('CentralUSEUAP') }
+
+foreach ($vmSize in $vmSizes) {
+  foreach ($capability in $vmSize.capabilities) {
+    if ($capability.Name -eq 'EphemeralOSDiskSupported' -and $capability.Value -eq 'true') {
+      $vmSize
+    }
+  }
+}
+```
+
+Due to these limitations with B-series VMs, right now, it's more efficient to run general-purpose D-series VMs instead.
