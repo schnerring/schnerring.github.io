@@ -40,6 +40,8 @@ See also: [Legal issues with BitTorrent (Wikipedia)](https://en.wikipedia.org/wi
 
 I'll only cover options that deviate from the defaults. I use DHCP reservations to manage my server IPs, so I use the `dhcp=1` option to create jails.
 
+Note that using hardlinks with the \*arrs doesn't work with this setup. For hardlinking to work, the torrent client and \*arrs must share the same dataset and jail mount points.
+
 ## Goals
 
 The diagram above translates to the following requirements:
