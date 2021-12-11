@@ -25,7 +25,7 @@
 <meta itemprop=name content="Install qBittorrent, Jackett, Lidarr, Radarr, Sonarr, and Plex inside TrueNAS Jails">
 <meta itemprop=description content="This post documents the steps required to install qBittorrent, Jackett, Lidarr, Radarr, Sonarr, and Plex in TrueNAS jails version 12.0-U6."><meta itemprop=datePublished content="2021-11-14T20:41:04+01:00">
 <meta itemprop=dateModified content="2021-11-14T20:41:04+01:00">
-<meta itemprop=wordCount content="1362"><meta itemprop=image content="https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/cover.png">
+<meta itemprop=wordCount content="1392"><meta itemprop=image content="https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/cover.png">
 <meta itemprop=keywords content="FreeBSD,Homelab,iocage,Jackett,Jail,Lidarr,Plex,qBittorrent,Radarr,Self-host,Sonarr,Torrent,TrueNAS,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:100;src:local("Roboto Slab Thin "),local("Roboto Slab-Thin"),url(/fonts/roboto-slab-latin-100.woff2) format("woff2"),url(/fonts/roboto-slab-latin-100.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:200;src:local("Roboto Slab Extra Light "),local("Roboto Slab-Extra Light"),url(/fonts/roboto-slab-latin-200.woff2) format("woff2"),url(/fonts/roboto-slab-latin-200.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:300;src:local("Roboto Slab Light "),local("Roboto Slab-Light"),url(/fonts/roboto-slab-latin-300.woff2) format("woff2"),url(/fonts/roboto-slab-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:400;src:local("Roboto Slab Regular "),local("Roboto Slab-Regular"),url(/fonts/roboto-slab-latin-400.woff2) format("woff2"),url(/fonts/roboto-slab-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:500;src:local("Roboto Slab Medium "),local("Roboto Slab-Medium"),url(/fonts/roboto-slab-latin-500.woff2) format("woff2"),url(/fonts/roboto-slab-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:600;src:local("Roboto Slab SemiBold "),local("Roboto Slab-SemiBold"),url(/fonts/roboto-slab-latin-600.woff2) format("woff2"),url(/fonts/roboto-slab-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:700;src:local("Roboto Slab Bold "),local("Roboto Slab-Bold"),url(/fonts/roboto-slab-latin-700.woff2) format("woff2"),url(/fonts/roboto-slab-latin-700.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:800;src:local("Roboto Slab ExtraBold "),local("Roboto Slab-ExtraBold"),url(/fonts/roboto-slab-latin-800.woff2) format("woff2"),url(/fonts/roboto-slab-latin-800.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:900;src:local("Roboto Slab Black "),local("Roboto Slab-Black"),url(/fonts/roboto-slab-latin-900.woff2) format("woff2"),url(/fonts/roboto-slab-latin-900.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:300;src:local("Fira Code Light "),local("Fira Code-Light"),url(/fonts/fira-code-latin-300.woff2) format("woff2"),url(/fonts/fira-code-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:400;src:local("Fira Code Regular "),local("Fira Code-Regular"),url(/fonts/fira-code-latin-400.woff2) format("woff2"),url(/fonts/fira-code-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:500;src:local("Fira Code Medium "),local("Fira Code-Medium"),url(/fonts/fira-code-latin-500.woff2) format("woff2"),url(/fonts/fira-code-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:600;src:local("Fira Code SemiBold "),local("Fira Code-SemiBold"),url(/fonts/fira-code-latin-600.woff2) format("woff2"),url(/fonts/fira-code-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:700;src:local("Fira Code Bold "),local("Fira Code-Bold"),url(/fonts/fira-code-latin-700.woff2) format("woff2"),url(/fonts/fira-code-latin-700.woff) format("woff")}
@@ -141,6 +141,7 @@ Disclaimer
 </blockquote>
 <p>See also: <a href=https://en.wikipedia.org/wiki/Legal_issues_with_BitTorrent class=link--external target=_blank rel=noreferrer>Legal issues with BitTorrent (Wikipedia)</a></p>
 <p>I&rsquo;ll only cover options that deviate from the defaults. I use DHCP reservations to manage my server IPs, so I use the <code>dhcp=1</code> option to create jails.</p>
+<p>Note that using hardlinks with the *arrs doesn&rsquo;t work with this setup. For hardlinking to work, the torrent client and *arrs must share the same dataset and jail mount points.</p>
 <h2 id=goals>
 Goals
 <a href=#goals class=post-heading__anchor aria-hidden=true>#</a>
@@ -1140,6 +1141,12 @@ iocage exec plex service plexmediaserver start
 </div>
 </div>
 </a>
+<a href=https://schnerring.net/index.xml>
+<div class=jr-basics__profile-item>
+<div class=jr-basics__profile-icon><svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>RSS</title><path d="M19.199 24C19.199 13.467 10.533 4.8.0 4.8V0c13.165.0 24 10.835 24 24h-4.801zM3.291 17.415c1.814.0 3.293 1.479 3.293 3.295.0 1.813-1.485 3.29-3.301 3.29C1.47 24 0 22.526.0 20.71s1.475-3.294 3.291-3.295zM15.909 24h-4.665c0-6.169-5.075-11.245-11.244-11.245V8.09c8.727.0 15.909 7.184 15.909 15.91z"/></svg>
+</div>
+</div>
+</a>
 </div>
 </section>
 </aside>
@@ -1151,7 +1158,7 @@ iocage exec plex service plexmediaserver start
 </div>
 </footer>
 <script type=text/javascript src=/js/main.8a5b9360e3994a45d35016fb8a7e3bc69a56392afb4ab2be7c98f049247d0ce85c50f8665cddd3fbdd6a9d0b927446dea0c7ba0d15aaf9000d8409974502b337.js integrity="sha512-iluTYOOZSkXTUBb7in47xppWOSr7SrK+fJjwSSR9DOhcUPhmXN3T+91qnQuSdEbeoMe6DRWq+QANhAmXRQKzNw=="></script>
-<script type=text/javascript src=/js/flexsearch.9d744e2de8a8d252f9d99b7773d6ef6916daba1d2474535f29c76faf86ffa16ddf7d92e17b01584398eeadb831914e55c08eaede16a3cfa254b61a308f0a47b6.js integrity="sha512-nXROLeio0lL52Zt3c9bvaRbauh0kdFNfKcdvr4b/oW3ffZLhewFYQ5jurbgxkU5VwI6u3hajz6JUthowjwpHtg=="></script>
+<script type=text/javascript src=/js/flexsearch.3f8cbeda1f7052839484063d8df87ea92b918d36f64e74b0a8cd416c5e78fe53c83bb30fb0ad2709f75723172fc92e44c5822dc03420fb11db6b479206f36abe.js integrity="sha512-P4y+2h9wUoOUhAY9jfh+qSuRjTb2TnSwqM1BbF54/lPIO7MPsK0nCfdXIxcvyS5ExYItwDQg+xHba0eSBvNqvg=="></script>
 </div>
 </body>
 </html>
