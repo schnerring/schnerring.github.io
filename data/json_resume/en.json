@@ -32,6 +32,10 @@
       {
         "network": "StackOverflow",
         "url": "https://stackoverflow.com/users/1154965/michael-schnerring"
+      },
+      {
+        "network": "RSS",
+        "url": "https://schnerring.net/index.xml"
       }
     ]
   },
