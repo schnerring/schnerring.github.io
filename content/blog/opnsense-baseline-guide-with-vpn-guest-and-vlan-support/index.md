@@ -381,9 +381,9 @@ Select the **Endpoints** tab and click **Add**. Here is the configuration for th
 | Endpoint Port    | `51820`                                        |
 | Keepalive        | `25`                                           |
 
-To mitigate risks against DNS poisoning, resolve the server's hostname and enter its IP as **Endpoint Address**. You can do this by running `nslookup ch5-wireguard.mullvad.net` in a shell.
+To mitigate risks against DNS poisoning, resolve the server's hostname and enter its IP as **Endpoint Address**. You can do this by running `nslookup ch5-wireguard.mullvad.net` in a shell. Make sure to not confuse this address with the SOCKS5 Proxy Address from Mullvad's server list!
 
-Repeat the steps above to add another server, e.g., `ch6-wireguard`. Note that for all endpoint configurations, the **Endpoint Port** is `51820`.
+Repeat the steps above to add another server, e.g., `ch6-wireguard`. Note that all endpoint configurations use the **Endpoint Port** `51820`.
 
 ### Local Peers
 
