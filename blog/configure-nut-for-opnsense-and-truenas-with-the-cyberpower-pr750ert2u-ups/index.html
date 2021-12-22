@@ -8,7 +8,7 @@
 <link rel=preload as=font type=font/woff2 href=/fonts/fira-code-latin-400.woff2 crossorigin=anonymous>
 <link rel=prefetch as=font type=font/woff2 href=/fonts/fira-code-latin-700.woff2 crossorigin=anonymous>
 <meta name=robots content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
-<title>Configure NUT for OPNsense and TrueNAS with the CyberPower PR750ERT2U UPS&nbsp;::&nbsp;Michael Schnerring&nbsp;—&nbsp;Software Engineer</title>
+<title>Configure NUT for OPNsense and TrueNAS with the CyberPower PR750ERT2U UPS</title>
 <meta name=description content="For storage in my homelab, I use TrueNAS. Additionally, I run a couple of apps on top of it as jails. For over a year, I&amp;rsquo;ve been using an uninterruptible power supply (UPS) to protect my TrueNAS from possible data loss in case of a power failure. What I&amp;rsquo;ve been missing throughout that time are the monitoring and management tools to shut down everything gracefully when the battery of the UPS runs low. In the event of a power outage lasting longer than 30 minutes, the battery would run out of juice. Everything attached to the UPS would be powered off immediately, and data loss might occur. Luckily I live in an area where power outages rarely happen. I also have backups I could restore if my TrueNAS data gets corrupted. Still, doing this right and configuring Network UPS Tools (NUT) to orchestrate shutdowns has been on my to-do list for way too long. It&amp;rsquo;s time to tackle the issue!
 ">
 <link rel=canonical href=https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/>
