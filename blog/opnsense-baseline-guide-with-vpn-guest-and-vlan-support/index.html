@@ -1287,13 +1287,13 @@ DNS
 <p>OPNsense includes a DNS <em>resolver</em> (Unbound) and a DNS <em>forwarder</em> (Dnsmasq / Unbound in forwarding mode). Simple setups usually use one of either, but we&rsquo;ll use both. Because we&rsquo;ll also use Unbound and Dnsmasq for internal DNS resolution, we don&rsquo;t want to use them for the Guest network, as this would expose our internal network structure. That&rsquo;s the reason why we earlier configured it to use Cloudflare DNS servers instead.</p>
 <p>Like the name suggests, a DNS forwarder forwards DNS requests to an external DNS resolver of an ISP, Quad9, Cloudflare, or similar service provider. We&rsquo;ll configure the forwarder for the Clear network. In case the primary, secured networks lose connectivity, the Clear network can serve as a backup.</p>
 <p>One of the advantages of self-hosting a DNS resolver is improved privacy. A resolver iteratively queries a chain of one or more DNS servers to resolve a request, so there isn&rsquo;t a single instance knowing all your DNS requests. It comes at the cost of speed when resolving a hostname for the first time. As Unbound&rsquo;s cache grows, the cost diminishes. We&rsquo;ll configure our primary networks to use Unbound.</p>
-<p>We&rsquo;ll also keep DNS traffic from Unbound within the VPN tunnels. In the rare case of a VPN outage, we&rsquo;ll want local DNS services to fail and not leak through the ISP WAN. The reason for this isn&rsquo;t improved privacy as you might think. In some cases, this might even hurt your privacy. Why? Either your ISP or your VPN provider will see the iterative DNS requests Unbound sends. So it becomes a question of who you rather entrust with this data. But if there are no privacy benefits, why do it? Honestly, I don&rsquo;t require such a setup. I configured it for educational purposes and fun. Other reasons that don&rsquo;t affect me but other users are.</p>
+<p>We&rsquo;ll also keep DNS traffic from Unbound within the VPN tunnels. In the rare case of a VPN outage, we&rsquo;ll want local DNS services to fail and not leak through the ISP WAN. The reason for this isn&rsquo;t improved privacy as you might think. In some cases, this might even hurt your privacy. Why? Either your ISP or your VPN provider will see the iterative DNS requests Unbound sends. So it becomes a question of who you rather entrust with this data. But if there are no privacy benefits, why do it? Honestly, I don&rsquo;t require such a setup. I configured it for educational purposes and fun. Other reasons that don&rsquo;t affect me but other users are:</p>
 <ul>
 <li>ISP selling user data</li>
 <li>ISP enforcing censorship</li>
 <li>ISP hijacking DNS traffic to redirect it to their DNS resolver; this makes self-hosting a DNS resolver impossible</li>
 </ul>
-<p>Let&rsquo;s summarize our goals.</p>
+<p>Let&rsquo;s summarize our goals:</p>
 <ul>
 <li>Use a DNS resolver for the management and VPN networks</li>
 <li>Resolve private domain hostnames for management and VPN networks</li>
@@ -3197,7 +3197,7 @@ Thanks For Reading ❤️
 </div>
 </footer>
 <script type=text/javascript src=/js/main.8a5b9360e3994a45d35016fb8a7e3bc69a56392afb4ab2be7c98f049247d0ce85c50f8665cddd3fbdd6a9d0b927446dea0c7ba0d15aaf9000d8409974502b337.js integrity="sha512-iluTYOOZSkXTUBb7in47xppWOSr7SrK+fJjwSSR9DOhcUPhmXN3T+91qnQuSdEbeoMe6DRWq+QANhAmXRQKzNw=="></script>
-<script type=text/javascript src=/js/flexsearch.4ee091b2196ede3164a62eba954cfba6889ba554787230e7ad98497f5c45e417d5ecc0626d50b03b0c083180429a0aa5ae7c889e777537584f8ccf85eb7e75c4.js integrity="sha512-TuCRshlu3jFkpi66lUz7poibpVR4cjDnrZhJf1xF5BfV7MBibVCwOwwIMYBCmgqlrnyInnd1N1hPjM+F6351xA=="></script>
+<script type=text/javascript src=/js/flexsearch.e43ffbe0a0cd6f5ccab9b5af8b5c25205574287ccd3ff385ab65a45f59190e683d9dc5476d863f8ae2b43fcaf6740655abc13f8c372aad7172bc4aa6a3c4b51b.js integrity="sha512-5D/74KDNb1zKubWvi1wlIFV0KHzNP/OFq2WkX1kZDmg9ncVHbYY/iuK0P8r2dAZVq8E/jDcqrXFyvEqmo8S1Gw=="></script>
 </div>
 </body>
 </html>
