@@ -1,8 +1,9 @@
 ---
-title: "{{ replace .Name "-" " " | title }}"
-date: {{ .Date }}
+title: "{{ humanize .Name | title }}"
+date: "{{ .Date }}"
 draft: true
-comments: true
+comments: false
+socialShare: false
 toc: false
 cover:
   src: cover.png
