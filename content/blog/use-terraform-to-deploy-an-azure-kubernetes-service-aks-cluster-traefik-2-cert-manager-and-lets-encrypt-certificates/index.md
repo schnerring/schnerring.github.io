@@ -5,6 +5,7 @@ cover:
   src: cover.png
 draft: false
 comments: true
+socialShare: true
 tags:
   - AKS
   - Azure

@@ -4,6 +4,7 @@ date: 2021-10-31T08:19:52+01:00
 cover:
   src: cover.jpg
 comments: true
+socialShare: true
 tags:
   - DNS
   - Mullvad

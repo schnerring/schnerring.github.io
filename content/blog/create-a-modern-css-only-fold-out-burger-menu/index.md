@@ -5,6 +5,7 @@ cover:
   src: www.pexels.comphotoham-burger-with-vegetables-1639557.webp
 draft: false
 comments: true
+socialShare: true
 tags:
   - CSS
 aliases:

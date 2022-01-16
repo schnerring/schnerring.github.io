@@ -2,6 +2,7 @@
 title: "Router on a Stick VLAN Configuration with SwOS on the Mikrotik CRS328-24P-4S+RM Switch"
 date: 2021-11-10T03:30:18+01:00
 comments: true
+socialShare: true
 cover:
   src: cover.png
 tags:

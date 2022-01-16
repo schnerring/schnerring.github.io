@@ -4,8 +4,9 @@ date: 2021-11-17T03:56:35+01:00
 cover:
   src: cover.png
 draft: false
-toc: true
 comments: true
+socialShare: true
+toc: true
 tags:
   - DNS
   - Dnsmasq

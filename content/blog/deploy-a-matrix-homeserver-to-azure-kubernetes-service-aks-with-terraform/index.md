@@ -4,6 +4,7 @@ date: 2021-05-14T01:13:33+02:00
 cover:
   src: cover.svg
 comments: true
+socialShare: true
 tags:
   - AKS
   - Azure

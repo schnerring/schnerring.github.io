@@ -4,6 +4,7 @@ date: 2021-05-22T16:23:36+02:00
 cover:
   src: cover.jpg
 comments: true
+socialShare: true
 tags:
   - AADDS
   - ARM

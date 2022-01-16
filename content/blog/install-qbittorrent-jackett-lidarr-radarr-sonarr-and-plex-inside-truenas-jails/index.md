@@ -3,6 +3,7 @@ title: "Install qBittorrent, Jackett, Lidarr, Radarr, Sonarr, and Plex inside Tr
 date: 2021-11-14T20:41:04+01:00
 draft: false
 comments: true
+socialShare: true
 toc: true
 cover:
   src: cover.png

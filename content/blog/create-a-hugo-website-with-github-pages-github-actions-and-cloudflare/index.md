@@ -5,6 +5,7 @@ cover:
   src: cover.jpg
 draft: false
 comments: true
+socialShare: true
 tags:
   - Hugo
   - Cloudflare

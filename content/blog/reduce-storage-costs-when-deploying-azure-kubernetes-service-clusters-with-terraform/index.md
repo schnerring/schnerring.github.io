@@ -2,6 +2,7 @@
 title: "Reduce Storage Costs when Deploying Azure Kubernetes Service Clusters with Terraform"
 date: 2021-11-29T03:50:04+01:00
 comments: true
+socialShare: true
 toc: false
 cover:
   src: pexels-maitree-rimthong-1602726.jpg

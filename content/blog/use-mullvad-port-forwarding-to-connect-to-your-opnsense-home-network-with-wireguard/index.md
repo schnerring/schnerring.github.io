@@ -2,6 +2,7 @@
 title: "Use Mullvad Port Forwarding to Connect to Your OPNsense Home Network with WireGuard"
 date: 2021-11-28T21:18:30+01:00
 comments: true
+socialShare: true
 toc: false
 cover:
   src: cover.png

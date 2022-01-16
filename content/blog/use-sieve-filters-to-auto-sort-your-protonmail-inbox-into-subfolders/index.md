@@ -4,6 +4,7 @@ date: 2021-06-16T20:32:21+02:00
 cover:
   src: cover.jpg
 comments: true
+socialShare: true
 tags:
   - Privacy
   - ProtonMail

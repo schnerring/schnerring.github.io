@@ -4,6 +4,7 @@ date: 2021-11-04T23:15:27+01:00
 cover:
   src: cover.png
 comments: true
+socialShare: true
 tags:
   - FreeBSD
   - Homelab

@@ -4,6 +4,7 @@ date: 2021-10-22T20:15:36+02:00
 cover:
   src: cover.png
 comments: true
+socialShare: true
 tags:
   - Adalite
   - Anonymity
