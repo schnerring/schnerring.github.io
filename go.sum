@@ -2,5 +2,5 @@ github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20211203215447-e9269bf
 github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20211203215447-e9269bf41c2d/go.mod h1:UFUlab+9vQRmtTw2vE8tPRitMp3lYLUYUcfD9QwP/oE=
 github.com/schnerring/hugo-mod-json-resume v0.0.0-20220103225122-8db2171ee838 h1:hMA2WJ2C6iKP9Al17FgUmaCTcPdXYHDlSJsdfMlH5X0=
 github.com/schnerring/hugo-mod-json-resume v0.0.0-20220103225122-8db2171ee838/go.mod h1:8XG8axdWciaWCd44mdQQLWGvoijmUurVOeyI4sD2hOw=
-github.com/schnerring/hugo-theme-gruvbox v0.0.0-20220116165140-03d418548b7f h1:kWfeIwQh7FS/n0EeQ2qfP1eD1hRRQTpiZvcLNY0wv4M=
-github.com/schnerring/hugo-theme-gruvbox v0.0.0-20220116165140-03d418548b7f/go.mod h1:BVm2SILdsLrgyX1P11ESoHkzRsySZHClD3uyMVg6e68=
+github.com/schnerring/hugo-theme-gruvbox v0.0.0-20220116191855-2d034d8f1888 h1:bL7o1LWZ5KRYYSs5MF0VHRBG4Dsl4yjMuJGEb2rdQRM=
+github.com/schnerring/hugo-theme-gruvbox v0.0.0-20220116191855-2d034d8f1888/go.mod h1:BVm2SILdsLrgyX1P11ESoHkzRsySZHClD3uyMVg6e68=
