@@ -1,7 +1,7 @@
 ---
 title: "Percent-encoding with the Hugo `urlquery` Function"
 date: "2022-01-16T21:33:17+01:00"
-comments: false
+comments: true
 socialShare: true
 toc: false
 cover:

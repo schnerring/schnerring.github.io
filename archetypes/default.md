@@ -2,7 +2,7 @@
 title: "{{ humanize .Name | title }}"
 date: "{{ .Date }}"
 draft: true
-comments: false
+comments: true
 socialShare: false
 toc: false
 cover:
