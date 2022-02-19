@@ -25,7 +25,7 @@
 <meta itemprop=name content="Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates">
 <meta itemprop=description content="In this post, we will deploy a simple Azure Kubernetes Service (AKS) cluster from scratch. To expose our web services securely, we will install Traefik 2 and configure cert-manager to manage Let&rsquo;s Encrypt certificates. The best part about it: we will do everything with Terraform."><meta itemprop=datePublished content="2021-04-25T01:00:27+02:00">
 <meta itemprop=dateModified content="2021-04-25T01:00:27+02:00">
-<meta itemprop=wordCount content="2144"><meta itemprop=image content="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover.png">
+<meta itemprop=wordCount content="2093"><meta itemprop=image content="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover.png">
 <meta itemprop=keywords content="AKS,Azure,Azure Kubernetes Service,cert-manager,Cloud,DevOps,Helm,k8s,Kubernetes,Let's Encrypt,Network,Reverse Proxy,Self-host,Terraform,Traefik,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:100;src:local("Roboto Slab Thin "),local("Roboto Slab-Thin"),url(/fonts/roboto-slab-latin-100.woff2) format("woff2"),url(/fonts/roboto-slab-latin-100.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:200;src:local("Roboto Slab Extra Light "),local("Roboto Slab-Extra Light"),url(/fonts/roboto-slab-latin-200.woff2) format("woff2"),url(/fonts/roboto-slab-latin-200.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:300;src:local("Roboto Slab Light "),local("Roboto Slab-Light"),url(/fonts/roboto-slab-latin-300.woff2) format("woff2"),url(/fonts/roboto-slab-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:400;src:local("Roboto Slab Regular "),local("Roboto Slab-Regular"),url(/fonts/roboto-slab-latin-400.woff2) format("woff2"),url(/fonts/roboto-slab-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:500;src:local("Roboto Slab Medium "),local("Roboto Slab-Medium"),url(/fonts/roboto-slab-latin-500.woff2) format("woff2"),url(/fonts/roboto-slab-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:600;src:local("Roboto Slab SemiBold "),local("Roboto Slab-SemiBold"),url(/fonts/roboto-slab-latin-600.woff2) format("woff2"),url(/fonts/roboto-slab-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:700;src:local("Roboto Slab Bold "),local("Roboto Slab-Bold"),url(/fonts/roboto-slab-latin-700.woff2) format("woff2"),url(/fonts/roboto-slab-latin-700.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:800;src:local("Roboto Slab ExtraBold "),local("Roboto Slab-ExtraBold"),url(/fonts/roboto-slab-latin-800.woff2) format("woff2"),url(/fonts/roboto-slab-latin-800.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:900;src:local("Roboto Slab Black "),local("Roboto Slab-Black"),url(/fonts/roboto-slab-latin-900.woff2) format("woff2"),url(/fonts/roboto-slab-latin-900.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:300;src:local("Fira Code Light "),local("Fira Code-Light"),url(/fonts/fira-code-latin-300.woff2) format("woff2"),url(/fonts/fira-code-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:400;src:local("Fira Code Regular "),local("Fira Code-Regular"),url(/fonts/fira-code-latin-400.woff2) format("woff2"),url(/fonts/fira-code-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:500;src:local("Fira Code Medium "),local("Fira Code-Medium"),url(/fonts/fira-code-latin-500.woff2) format("woff2"),url(/fonts/fira-code-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:600;src:local("Fira Code SemiBold "),local("Fira Code-SemiBold"),url(/fonts/fira-code-latin-600.woff2) format("woff2"),url(/fonts/fira-code-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:700;src:local("Fira Code Bold "),local("Fira Code-Bold"),url(/fonts/fira-code-latin-700.woff2) format("woff2"),url(/fonts/fira-code-latin-700.woff) format("woff")}
@@ -172,7 +172,6 @@ Step 1: Setup Terraform
 <li><a href=https://registry.terraform.io/providers/hashicorp/azurerm/latest class=link--external target=_blank rel=noreferrer><code>azurerm</code></a> to manage our AKS cluster</li>
 <li><a href=https://registry.terraform.io/providers/hashicorp/helm/latest class=link--external target=_blank rel=noreferrer><code>helm</code></a> to deploy cert-manager and Traefik</li>
 <li><a href=https://registry.terraform.io/providers/hashicorp/kubernetes/latest class=link--external target=_blank rel=noreferrer><code>kubernetes</code></a> to manage namespaces and deploy our demo app</li>
-<li><a href=https://registry.terraform.io/providers/hashicorp/kubernetes-alpha/latest class=link--external target=_blank rel=noreferrer><code>kubernetes-alpha</code></a> to manage <a href=https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/ class=link--external target=_blank rel=noreferrer>CRD resources</a></li>
 <li><a href=https://registry.terraform.io/providers/cloudflare/cloudflare/latest class=link--external target=_blank rel=noreferrer><code>cloudflare</code></a> to manage DNS records</li>
 </ul>
 <p>We add a <code>provider.tf</code> file with the following content:</p>
@@ -182,27 +181,22 @@ Step 1: Setup Terraform
   <span style=color:#66d9ef>required_providers</span> {
     azurerm <span style=color:#f92672>=</span> {
       source  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;azurerm&#34;</span>
-      version <span style=color:#f92672>=</span> &#34;<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>.<span style=color:#ae81ff>56</span>.<span style=color:#ae81ff>0</span><span style=color:#960050;background-color:#1e0010>&#34;</span>
+      version <span style=color:#f92672>=</span> &#34;<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>.<span style=color:#ae81ff>97</span>.<span style=color:#ae81ff>0</span><span style=color:#960050;background-color:#1e0010>&#34;</span>
     }
 
     cloudflare <span style=color:#f92672>=</span> {
       source  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;cloudflare/cloudflare&#34;</span>
-      version <span style=color:#f92672>=</span> &#34;<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>.<span style=color:#ae81ff>20</span>.<span style=color:#ae81ff>0</span><span style=color:#960050;background-color:#1e0010>&#34;</span>
+      version <span style=color:#f92672>=</span> &#34;<span style=color:#f92672>=</span><span style=color:#ae81ff>3</span>.<span style=color:#ae81ff>9</span>.<span style=color:#ae81ff>1</span><span style=color:#960050;background-color:#1e0010>&#34;</span>
     }
 
     helm <span style=color:#f92672>=</span> {
       source  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;helm&#34;</span>
-      version <span style=color:#f92672>=</span> &#34;<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>.<span style=color:#ae81ff>1</span>.<span style=color:#ae81ff>1</span><span style=color:#960050;background-color:#1e0010>&#34;</span>
+      version <span style=color:#f92672>=</span> &#34;<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>.<span style=color:#ae81ff>4</span>.<span style=color:#ae81ff>1</span><span style=color:#960050;background-color:#1e0010>&#34;</span>
     }
 
     kubernetes <span style=color:#f92672>=</span> {
       source  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;kubernetes&#34;</span>
-      version <span style=color:#f92672>=</span> &#34;<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>.<span style=color:#ae81ff>1</span>.<span style=color:#ae81ff>0</span><span style=color:#960050;background-color:#1e0010>&#34;</span>
-    }
-
-    kubernetes-alpha <span style=color:#f92672>=</span> {
-      source  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;kubernetes-alpha&#34;</span>
-      version <span style=color:#f92672>=</span> &#34;<span style=color:#f92672>=</span><span style=color:#ae81ff>0</span>.<span style=color:#ae81ff>3</span>.<span style=color:#ae81ff>2</span><span style=color:#960050;background-color:#1e0010>&#34;</span>
+      version <span style=color:#f92672>=</span> &#34;<span style=color:#f92672>=</span><span style=color:#ae81ff>2</span>.<span style=color:#ae81ff>8</span>.<span style=color:#ae81ff>0</span><span style=color:#960050;background-color:#1e0010>&#34;</span>
     }
   }
 }
@@ -212,10 +206,10 @@ Step 1: Setup Terraform
 }
 
 <span style=color:#66d9ef>provider</span> <span style=color:#e6db74>&#34;cloudflare&#34;</span> {}
-</code></pre></div><p>For now, we only configured the <code>azurerm</code> and <code>cloudflare</code> providers. After we set up the AKS cluster, we will configure the <code>helm</code>, <code>kubernetes</code>, and <code>kubernetes-alpha</code> providers.</p>
+</code></pre></div><p>For now, we only configured the <code>azurerm</code> and <code>cloudflare</code> providers. After setting up the AKS cluster, we will configure the <code>helm</code> and <code>kubernetes</code> providers.</p>
 <p>I have opted to <a href=https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret#configuring-the-service-principal-in-terraform class=link--external target=_blank rel=noreferrer>configure the <code>azurerm</code> provider with environment variables</a>. You might want to <a href=https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs#authenticating-to-azure class=link--external target=_blank rel=noreferrer>choose a different approach</a> depending on your needs.</p>
 <p>To authenticate the <code>cloudflare</code> provider, I use a <a href=https://developers.cloudflare.com/api/tokens/create class=link--external target=_blank rel=noreferrer>Cloudflare API Token</a> with <code>Edit Zone</code> permissions.</p>
-<p>After, we have to make sure to run <code>terraform init</code> to get started.</p>
+<p>After, we make sure to run <code>terraform init</code> to get started.</p>
 <h2 id=step-2-create-the-aks-cluster>
 Step 2: Create the AKS cluster
 <a href=#step-2-create-the-aks-cluster class=post-heading__anchor aria-hidden=true>#</a>
@@ -242,7 +236,7 @@ Step 2: Create the AKS cluster
   <span style=color:#66d9ef>default_node_pool</span> {
     name       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;default&#34;</span>
     node_count <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>
-    vm_size    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Standard_B2s&#34;</span>
+    vm_size    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Standard_B2ms&#34;</span>
   }
 
   <span style=color:#66d9ef>identity</span> {
@@ -268,7 +262,7 @@ service/kubernetes   ClusterIP   10.0.0.1     &lt;none&gt;        443/TCP   3m54
 Step 3: Deploy cert-manager
 <a href=#step-3-deploy-cert-manager class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
-<p>To issue free <a href=https://letsencrypt.org/ class=link--external target=_blank rel=noreferrer>Let&rsquo;s Encrypt</a> certificates for the web services we provide, the first thing we have to deploy is <a href=https://cert-manager.io/docs/installation/kubernetes/#installing-with-helm class=link--external target=_blank rel=noreferrer>cert-manager</a>. We need to configure the <a href=https://registry.terraform.io/providers/hashicorp/helm/latest/docs#credentials-config class=link--external target=_blank rel=noreferrer><code>helm</code></a> provider first. While we are on it, we also configure the <a href=https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#authentication class=link--external target=_blank rel=noreferrer><code>kubernetes</code></a> and <a href=https://registry.terraform.io/providers/hashicorp/kubernetes-alpha/latest/docs class=link--external target=_blank rel=noreferrer><code>kubernetes-alpha</code></a> providers:</p>
+<p>To issue free <a href=https://letsencrypt.org/ class=link--external target=_blank rel=noreferrer>Let&rsquo;s Encrypt</a> certificates for the web services we provide, the first thing we have to deploy is <a href=https://cert-manager.io/docs/installation/kubernetes/#installing-with-helm class=link--external target=_blank rel=noreferrer>cert-manager</a>. We need to configure the <a href=https://registry.terraform.io/providers/hashicorp/helm/latest/docs#credentials-config class=link--external target=_blank rel=noreferrer><code>helm</code></a> provider first. While we are on it, we also configure the <a href=https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#authentication class=link--external target=_blank rel=noreferrer><code>kubernetes</code></a> provider:</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>provider</span> <span style=color:#e6db74>&#34;helm&#34;</span> {
   <span style=color:#66d9ef>kubernetes</span> {
     host <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_kubernetes_cluster</span>.<span style=color:#66d9ef>k8s</span>.<span style=color:#66d9ef>kube_config</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>host</span>
@@ -280,14 +274,6 @@ Step 3: Deploy cert-manager
 }
 
 <span style=color:#66d9ef>provider</span> <span style=color:#e6db74>&#34;kubernetes&#34;</span> {
-  host <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_kubernetes_cluster</span>.<span style=color:#66d9ef>k8s</span>.<span style=color:#66d9ef>kube_config</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>host</span>
-
-  client_certificate     <span style=color:#f92672>=</span> <span style=color:#66d9ef>base64decode</span>(<span style=color:#66d9ef>azurerm_kubernetes_cluster</span>.<span style=color:#66d9ef>k8s</span>.<span style=color:#66d9ef>kube_config</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>client_certificate</span>)
-  client_key             <span style=color:#f92672>=</span> <span style=color:#66d9ef>base64decode</span>(<span style=color:#66d9ef>azurerm_kubernetes_cluster</span>.<span style=color:#66d9ef>k8s</span>.<span style=color:#66d9ef>kube_config</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>client_key</span>)
-  cluster_ca_certificate <span style=color:#f92672>=</span> <span style=color:#66d9ef>base64decode</span>(<span style=color:#66d9ef>azurerm_kubernetes_cluster</span>.<span style=color:#66d9ef>k8s</span>.<span style=color:#66d9ef>kube_config</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>cluster_ca_certificate</span>)
-}
-
-<span style=color:#66d9ef>provider</span> <span style=color:#e6db74>&#34;kubernetes-alpha&#34;</span> {
   host <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_kubernetes_cluster</span>.<span style=color:#66d9ef>k8s</span>.<span style=color:#66d9ef>kube_config</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>host</span>
 
   client_certificate     <span style=color:#f92672>=</span> <span style=color:#66d9ef>base64decode</span>(<span style=color:#66d9ef>azurerm_kubernetes_cluster</span>.<span style=color:#66d9ef>k8s</span>.<span style=color:#66d9ef>kube_config</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>client_certificate</span>)
@@ -306,8 +292,8 @@ Step 3: Deploy cert-manager
   name       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;cert-manager&#34;</span>
   repository <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;https://charts.jetstack.io&#34;</span>
   chart      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;cert-manager&#34;</span>
-  version    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;1.3.1&#34;</span>
-  namespace  <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>cert_manager</span>.<span style=color:#66d9ef>metadata</span>[<span style=color:#ae81ff>0</span>].<span style=color:#66d9ef>name</span>
+  version    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;v1.7.1&#34;</span>
+  namespace  <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>cert_manager</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
 
   <span style=color:#66d9ef>set</span> {
     name  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;installCRDs&#34;</span>
@@ -359,14 +345,14 @@ Step 4: Configure Let&rsquo;s Encrypt Certificates
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_secret&#34; &#34;letsencrypt_cloudflare_api_token_secret&#34;</span> {
   <span style=color:#66d9ef>metadata</span> {
     name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;letsencrypt-cloudflare-api-token-secret&#34;</span>
-    namespace <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;cert-manager&#34;</span>
+    namespace <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>cert_manager</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
   }
 
   data <span style=color:#f92672>=</span> {
     &#34;api-token&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>letsencrypt_cloudflare_api_token</span>
   }
 }
-</code></pre></div><p>Next, we add the staging and production <code>ClusterIssuer</code> cert-manager CRD resources that use Let&rsquo;s Encrypt servers. We will have to use regular Kubernetes YAML manifests since we cannot deploy CRDs with the <code>kubernetes</code> provider. Here, the <a href=https://registry.terraform.io/providers/hashicorp/kubernetes-alpha/latest/docs/resources/kubernetes_manifest class=link--external target=_blank rel=noreferrer><code>kubernetes_manifest</code></a> resource of the <code>kubernetes-alpha</code> provider comes in. Together with the Terraform <a href=https://www.terraform.io/docs/language/functions/yamldecode.html class=link--external target=_blank rel=noreferrer><code>yamldecode()</code></a> and <a href=https://www.terraform.io/docs/language/functions/templatefile.html class=link--external target=_blank rel=noreferrer><code>templatefile()</code></a> functions, we get a pretty nice solution.</p>
+</code></pre></div><p>Next, we add the staging and production <code>ClusterIssuer</code> cert-manager CRD resources that use Let&rsquo;s Encrypt servers. We will have to use regular Kubernetes YAML manifests since we cannot deploy CRDs with the <code>kubernetes</code> provider. Here, the <a href=https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest class=link--external target=_blank rel=noreferrer><code>kubernetes_manifest</code></a> resource comes in. Together with the Terraform <a href=https://www.terraform.io/docs/language/functions/yamldecode.html class=link--external target=_blank rel=noreferrer><code>yamldecode()</code></a> and <a href=https://www.terraform.io/docs/language/functions/templatefile.html class=link--external target=_blank rel=noreferrer><code>templatefile()</code></a> functions, we get a pretty nice solution.</p>
 <p>Let&rsquo;s start by defining the <code>letsencrypt-issuer.tpl.yaml</code> template file:</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>cert-manager.io/v1</span>
 <span style=color:#f92672>kind</span>: <span style=color:#ae81ff>ClusterIssuer</span>
@@ -386,16 +372,14 @@ Step 4: Configure Let&rsquo;s Encrypt Certificates
               <span style=color:#f92672>key</span>: <span style=color:#ae81ff>${api_token_secret_data_key}</span>
 </code></pre></div><p>We then create the staging and production <code>ClusterIssuer</code>s like so:</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_manifest&#34; &#34;letsencrypt_issuer_staging&#34;</span> {
-  provider <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>alpha</span>
-
   manifest <span style=color:#f92672>=</span> <span style=color:#66d9ef>yamldecode</span>(<span style=color:#66d9ef>templatefile</span>(
     <span style=color:#e6db74>&#34;${path.module}/letsencrypt-issuer.tpl.yaml&#34;</span>,
     {
       &#34;name&#34;                      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;letsencrypt-staging&#34;</span>
       &#34;email&#34;                     <span style=color:#f92672>=</span> <span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>letsencrypt_email</span>
       &#34;server&#34;                    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;https://acme-staging-v02.api.letsencrypt.org/directory&#34;</span>
-      &#34;api_token_secret_name&#34;     <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_secret</span>.<span style=color:#66d9ef>letsencrypt_cloudflare_api_token_secret</span>.<span style=color:#66d9ef>metadata</span>[<span style=color:#ae81ff>0</span>].<span style=color:#66d9ef>name</span>
-      &#34;api_token_secret_data_key&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>keys</span>(<span style=color:#66d9ef>kubernetes_secret</span>.<span style=color:#66d9ef>letsencrypt_cloudflare_api_token_secret</span>.<span style=color:#66d9ef>data</span>)[<span style=color:#ae81ff>0</span>]
+      &#34;api_token_secret_name&#34;     <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_secret</span>.<span style=color:#66d9ef>letsencrypt_cloudflare_api_token_secret</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
+      &#34;api_token_secret_data_key&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>keys</span>(<span style=color:#66d9ef>kubernetes_secret</span>.<span style=color:#66d9ef>letsencrypt_cloudflare_api_token_secret</span>.<span style=color:#66d9ef>data</span>).<span style=color:#ae81ff>0</span>
     }
   ))
 
@@ -403,16 +387,14 @@ Step 4: Configure Let&rsquo;s Encrypt Certificates
 }
 
 <span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_manifest&#34; &#34;letsencrypt_issuer_production&#34;</span> {
-  provider <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#66d9ef>alpha</span>
-
   manifest <span style=color:#f92672>=</span> <span style=color:#66d9ef>yamldecode</span>(<span style=color:#66d9ef>templatefile</span>(
     <span style=color:#e6db74>&#34;${path.module}/letsencrypt-issuer.tpl.yaml&#34;</span>,
     {
       &#34;name&#34;                      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;letsencrypt-production&#34;</span>
       &#34;email&#34;                     <span style=color:#f92672>=</span> <span style=color:#66d9ef>var</span>.<span style=color:#66d9ef>letsencrypt_email</span>
       &#34;server&#34;                    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;https://acme-v02.api.letsencrypt.org/directory&#34;</span>
-      &#34;api_token_secret_name&#34;     <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_secret</span>.<span style=color:#66d9ef>letsencrypt_cloudflare_api_token_secret</span>.<span style=color:#66d9ef>metadata</span>[<span style=color:#ae81ff>0</span>].<span style=color:#66d9ef>name</span>
-      &#34;api_token_secret_data_key&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>keys</span>(<span style=color:#66d9ef>kubernetes_secret</span>.<span style=color:#66d9ef>letsencrypt_cloudflare_api_token_secret</span>.<span style=color:#66d9ef>data</span>)[<span style=color:#ae81ff>0</span>]
+      &#34;api_token_secret_name&#34;     <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_secret</span>.<span style=color:#66d9ef>letsencrypt_cloudflare_api_token_secret</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
+      &#34;api_token_secret_data_key&#34; <span style=color:#f92672>=</span> <span style=color:#66d9ef>keys</span>(<span style=color:#66d9ef>kubernetes_secret</span>.<span style=color:#66d9ef>letsencrypt_cloudflare_api_token_secret</span>.<span style=color:#66d9ef>data</span>).<span style=color:#ae81ff>0</span>
     }
   ))
 
@@ -436,8 +418,8 @@ Step 5: Deploy Traefik
   name       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;traefik&#34;</span>
   repository <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;https://helm.traefik.io/traefik&#34;</span>
   chart      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;traefik&#34;</span>
-  version    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;9.18.2&#34;</span>
-  namespace  <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>traefik</span>.<span style=color:#66d9ef>metadata</span>[<span style=color:#ae81ff>0</span>].<span style=color:#66d9ef>name</span>
+  version    <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;10.14.2&#34;</span>
+  namespace  <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>traefik</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
 
   <span style=color:#66d9ef>set</span> {
     name  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;ports.web.redirectTo&#34;</span>
@@ -600,7 +582,7 @@ Step 6: Deploy a Demo Application
 One Last Thing
 <a href=#one-last-thing class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
-<p>If we want to tear down the cluster and rebuild, we cannot achieve this in <em>one</em> <code>terraform apply</code> operation. The reason is that the <code>kubernetes-alpha</code> provider <a href=https://github.com/hashicorp/terraform-provider-kubernetes-alpha/issues/180#issuecomment-805169792 class=link--external target=_blank rel=noreferrer>requires an operational cluster</a> during the <code>terraform plan</code> phase. On top of that, any CRDs we deploy with the <code>kubernetes-alpha</code> provider have to be available during <code>terraform plan</code>, too.</p>
+<p>If we want to tear down the cluster and rebuild, we cannot achieve this in <em>one</em> <code>terraform apply</code> operation. The reason is that the <code>kubernetes</code> provider requires an operational cluster during the <code>terraform plan</code> phase. On top of that, any CRDs we deploy have to be available during <code>terraform plan</code>, too.</p>
 <p>So when rebuilding, we would first create the AKS cluster and deploy cert-manager and then apply the rest:</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>terraform destroy -target <span style=color:#e6db74>&#34;azurerm_resource_group.k8s&#34;</span>
 
@@ -609,9 +591,9 @@ terraform apply infrastructure.tfplan
 
 terraform plan -out infrastructure.tfplan
 terraform apply infrastructure.tfplan
-</code></pre></div><p>I already mentioned this earlier. The need for the workaround above originates from stacking Kubernetes cluster infrastructure with Kubernetes resources which the <a href=https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources class=link--external target=_blank rel=noreferrer>official Kubernetes provider documentation discourages</a> recommend against that. Adhering to the docs and separate cluster and Kubernetes resources into different modules will probably save you a headache!</p>
+</code></pre></div><p>I already mentioned this earlier. The need for the workaround above originates from stacking Kubernetes cluster infrastructure with Kubernetes resources which the <a href=https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources class=link--external target=_blank rel=noreferrer>official Kubernetes provider documentation discourages</a> recommend against that. Adhering to the docs and separating cluster and Kubernetes resources into different modules will probably save you a headache!</p>
 <p>Other than that, we created a pretty cool solution, fully managed by Terraform, did we not?</p>
-<p>You can find all the code on GitHub in my <a href=https://github.com/schnerring/infrastructure/blob/v0.1.0/k8s.tf class=link--external target=_blank rel=noreferrer>schnerring/infrastructure repository</a>, which is evolving continuously. After committing the code to the repo, I added the <code>v0.1.0</code> tag. This way, in the future, we can easily find the code depicted in this post.</p>
+<p>You can find all the code on GitHub in my <a href=https://github.com/schnerring/infrastructure/blob/v0.4.0/k8s.tf class=link--external target=_blank rel=noreferrer>schnerring/infrastructure repository</a>, which is evolving continuously. After committing the code to the repo, I added the <code>v0.4.0</code> tag. This way, in the future, we can easily find the code depicted in this post.</p>
 </div>
 <div class=social-share>
 <strong>Share this post: </strong>
@@ -725,7 +707,7 @@ terraform apply infrastructure.tfplan
 </div>
 </footer>
 <script type=text/javascript src=/js/main.8a5b9360e3994a45d35016fb8a7e3bc69a56392afb4ab2be7c98f049247d0ce85c50f8665cddd3fbdd6a9d0b927446dea0c7ba0d15aaf9000d8409974502b337.js integrity="sha512-iluTYOOZSkXTUBb7in47xppWOSr7SrK+fJjwSSR9DOhcUPhmXN3T+91qnQuSdEbeoMe6DRWq+QANhAmXRQKzNw=="></script>
-<script type=text/javascript src=/js/flexsearch.b269f165dbba10c47c2dd1799cfa34bc5c5cd3a2975f7e4263264aadaa16124f53d686f695bcb6e86422c6449f6bccc8588eaca9712f9fd90446f67585338460.js integrity="sha512-smnxZdu6EMR8LdF5nPo0vFxc06KXX35CYyZKraoWEk9T1ob2lby26GQixkSfa8zIWI6sqXEvn9kERvZ1hTOEYA=="></script>
+<script type=text/javascript src=/js/flexsearch.f10bbd59f589bf8a03a8e368d8501ca2450c068bff54304c149b0002fa3212afb54c3af93b9695d9d592f5b0b40b2acc67cbac860f5198d59a300a45ba8dc1dd.js integrity="sha512-8Qu9WfWJv4oDqONo2FAcokUMBov/VDBMFJsAAvoyEq+1TDr5O5aV2dWS9bC0CyrMZ8ushg9RmNWaMApFuo3B3Q=="></script>
 </div>
 </body>
 </html>
