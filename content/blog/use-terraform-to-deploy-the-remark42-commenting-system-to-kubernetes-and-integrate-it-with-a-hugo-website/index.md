@@ -144,7 +144,7 @@ For this post, I have kept the configuration to a minimum:
 - `SITE`: site name(s)
 - `SECRET`: secret key
 
-Check the [official documentation](https://remark42.com/docs) or [my code on GitHub](https://github.com/schnerring/infrastructure/blob/v0.2.0/remark42.tf) for more configuration options.
+Check the [official documentation](https://remark42.com/docs) or [my code on GitHub](https://github.com/schnerring/infrastructure-core/blob/v0.2.0/remark42.tf) for more configuration options.
 
 You might have noticed that I reference a `cloudflare_record` in the `REMARK_URL` part. That's because I also manage my DNS records with Terraform. The DNS record for `remark42.schnerring.net` pointing to the DNS record of my cluster looks like this:
 
@@ -391,7 +391,7 @@ Note that we wait 10 ms before reading from local storage to avoid race conditio
 
 You can find all the code on my GitHub. I also tagged the commits to make it easier to find the code for future reference:
 
-- [schnerring/infrastructure](https://github.com/schnerring/infrastructure/blob/v0.2.0/remark42.tf) (Terraform, tag `v0.2.0`)
+- [schnerring/infrastructure-core](https://github.com/schnerring/infrastructure-core/blob/v0.2.0/remark42.tf) (Terraform, tag `v0.2.0`)
 - [schnerring/schnerring.github.io](https://github.com/schnerring/schnerring.github.io/blob/v1.1.0/layouts/partials/comments.html) (Hugo, tag `v1.1.0`)
 
 Any feedback in the comments below is appreciated.
