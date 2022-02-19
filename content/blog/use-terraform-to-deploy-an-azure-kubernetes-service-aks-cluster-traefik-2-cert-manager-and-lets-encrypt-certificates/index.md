@@ -63,7 +63,6 @@ We will make use of Terraform providers to put everything together:
 - [`azurerm`](https://registry.terraform.io/providers/hashicorp/azurerm/latest) to manage our AKS cluster
 - [`helm`](https://registry.terraform.io/providers/hashicorp/helm/latest) to deploy cert-manager and Traefik
 - [`kubernetes`](https://registry.terraform.io/providers/hashicorp/kubernetes/latest) to manage namespaces and deploy our demo app
-- [`kubernetes-alpha`](https://registry.terraform.io/providers/hashicorp/kubernetes-alpha/latest) to manage [CRD resources](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/)
 - [`cloudflare`](https://registry.terraform.io/providers/cloudflare/cloudflare/latest) to manage DNS records
 
 We add a `provider.tf` file with the following content:
@@ -75,27 +74,22 @@ terraform {
   required_providers {
     azurerm = {
       source  = "azurerm"
-      version = "=2.56.0"
+      version = "=2.97.0"
     }
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "=2.20.0"
+      version = "=3.9.1"
     }
 
     helm = {
       source  = "helm"
-      version = "=2.1.1"
+      version = "=2.4.1"
     }
 
     kubernetes = {
       source  = "kubernetes"
-      version = "=2.1.0"
-    }
-
-    kubernetes-alpha = {
-      source  = "kubernetes-alpha"
-      version = "=0.3.2"
+      version = "=2.8.0"
     }
   }
 }
@@ -107,13 +101,13 @@ provider "azurerm" {
 provider "cloudflare" {}
 ```
 
-For now, we only configured the `azurerm` and `cloudflare` providers. After we set up the AKS cluster, we will configure the `helm`, `kubernetes`, and `kubernetes-alpha` providers.
+For now, we only configured the `azurerm` and `cloudflare` providers. After setting up the AKS cluster, we will configure the `helm` and `kubernetes` providers.
 
 I have opted to [configure the `azurerm` provider with environment variables](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/service_principal_client_secret#configuring-the-service-principal-in-terraform). You might want to [choose a different approach](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs#authenticating-to-azure) depending on your needs.
 
 To authenticate the `cloudflare` provider, I use a [Cloudflare API Token](https://developers.cloudflare.com/api/tokens/create) with `Edit Zone` permissions.
 
-After, we have to make sure to run `terraform init` to get started.
+After, we make sure to run `terraform init` to get started.
 
 ## Step 2: Create the AKS cluster
 
@@ -142,7 +136,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   default_node_pool {
     name       = "default"
     node_count = 1
-    vm_size    = "Standard_B2s"
+    vm_size    = "Standard_B2ms"
   }
 
   identity {
@@ -185,7 +179,7 @@ service/kubernetes   ClusterIP   10.0.0.1     <none>        443/TCP   3m54s
 
 ## Step 3: Deploy cert-manager
 
-To issue free [Let's Encrypt](https://letsencrypt.org/) certificates for the web services we provide, the first thing we have to deploy is [cert-manager](https://cert-manager.io/docs/installation/kubernetes/#installing-with-helm). We need to configure the [`helm`](https://registry.terraform.io/providers/hashicorp/helm/latest/docs#credentials-config) provider first. While we are on it, we also configure the [`kubernetes`](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#authentication) and [`kubernetes-alpha`](https://registry.terraform.io/providers/hashicorp/kubernetes-alpha/latest/docs) providers:
+To issue free [Let's Encrypt](https://letsencrypt.org/) certificates for the web services we provide, the first thing we have to deploy is [cert-manager](https://cert-manager.io/docs/installation/kubernetes/#installing-with-helm). We need to configure the [`helm`](https://registry.terraform.io/providers/hashicorp/helm/latest/docs#credentials-config) provider first. While we are on it, we also configure the [`kubernetes`](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#authentication) provider:
 
 ```hcl
 provider "helm" {
@@ -199,14 +193,6 @@ provider "helm" {
 }
 
 provider "kubernetes" {
-  host = azurerm_kubernetes_cluster.k8s.kube_config.0.host
-
-  client_certificate     = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.client_certificate)
-  client_key             = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.client_key)
-  cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.cluster_ca_certificate)
-}
-
-provider "kubernetes-alpha" {
   host = azurerm_kubernetes_cluster.k8s.kube_config.0.host
 
   client_certificate     = base64decode(azurerm_kubernetes_cluster.k8s.kube_config.0.client_certificate)
@@ -230,8 +216,8 @@ resource "helm_release" "cert_manager" {
   name       = "cert-manager"
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version    = "1.3.1"
-  namespace  = kubernetes_namespace.cert_manager.metadata[0].name
+  version    = "v1.7.1"
+  namespace  = kubernetes_namespace.cert_manager.metadata.0.name
 
   set {
     name  = "installCRDs"
@@ -294,7 +280,7 @@ With Terraform, we then add the secret containing the API token to our cluster. 
 resource "kubernetes_secret" "letsencrypt_cloudflare_api_token_secret" {
   metadata {
     name      = "letsencrypt-cloudflare-api-token-secret"
-    namespace = "cert-manager"
+    namespace = kubernetes_namespace.cert_manager.metadata.0.name
   }
 
   data = {
@@ -303,7 +289,7 @@ resource "kubernetes_secret" "letsencrypt_cloudflare_api_token_secret" {
 }
 ```
 
-Next, we add the staging and production `ClusterIssuer` cert-manager CRD resources that use Let's Encrypt servers. We will have to use regular Kubernetes YAML manifests since we cannot deploy CRDs with the `kubernetes` provider. Here, the [`kubernetes_manifest`](https://registry.terraform.io/providers/hashicorp/kubernetes-alpha/latest/docs/resources/kubernetes_manifest) resource of the `kubernetes-alpha` provider comes in. Together with the Terraform [`yamldecode()`](https://www.terraform.io/docs/language/functions/yamldecode.html) and [`templatefile()`](https://www.terraform.io/docs/language/functions/templatefile.html) functions, we get a pretty nice solution.
+Next, we add the staging and production `ClusterIssuer` cert-manager CRD resources that use Let's Encrypt servers. We will have to use regular Kubernetes YAML manifests since we cannot deploy CRDs with the `kubernetes` provider. Here, the [`kubernetes_manifest`](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/manifest) resource comes in. Together with the Terraform [`yamldecode()`](https://www.terraform.io/docs/language/functions/yamldecode.html) and [`templatefile()`](https://www.terraform.io/docs/language/functions/templatefile.html) functions, we get a pretty nice solution.
 
 Let's start by defining the `letsencrypt-issuer.tpl.yaml` template file:
 
@@ -330,16 +316,14 @@ We then create the staging and production `ClusterIssuer`s like so:
 
 ```hcl
 resource "kubernetes_manifest" "letsencrypt_issuer_staging" {
-  provider = kubernetes-alpha
-
   manifest = yamldecode(templatefile(
     "${path.module}/letsencrypt-issuer.tpl.yaml",
     {
       "name"                      = "letsencrypt-staging"
       "email"                     = var.letsencrypt_email
       "server"                    = "https://acme-staging-v02.api.letsencrypt.org/directory"
-      "api_token_secret_name"     = kubernetes_secret.letsencrypt_cloudflare_api_token_secret.metadata[0].name
-      "api_token_secret_data_key" = keys(kubernetes_secret.letsencrypt_cloudflare_api_token_secret.data)[0]
+      "api_token_secret_name"     = kubernetes_secret.letsencrypt_cloudflare_api_token_secret.metadata.0.name
+      "api_token_secret_data_key" = keys(kubernetes_secret.letsencrypt_cloudflare_api_token_secret.data).0
     }
   ))
 
@@ -347,16 +331,14 @@ resource "kubernetes_manifest" "letsencrypt_issuer_staging" {
 }
 
 resource "kubernetes_manifest" "letsencrypt_issuer_production" {
-  provider = kubernetes-alpha
-
   manifest = yamldecode(templatefile(
     "${path.module}/letsencrypt-issuer.tpl.yaml",
     {
       "name"                      = "letsencrypt-production"
       "email"                     = var.letsencrypt_email
       "server"                    = "https://acme-v02.api.letsencrypt.org/directory"
-      "api_token_secret_name"     = kubernetes_secret.letsencrypt_cloudflare_api_token_secret.metadata[0].name
-      "api_token_secret_data_key" = keys(kubernetes_secret.letsencrypt_cloudflare_api_token_secret.data)[0]
+      "api_token_secret_name"     = kubernetes_secret.letsencrypt_cloudflare_api_token_secret.metadata.0.name
+      "api_token_secret_data_key" = keys(kubernetes_secret.letsencrypt_cloudflare_api_token_secret.data).0
     }
   ))
 
@@ -385,8 +367,8 @@ resource "helm_release" "traefik" {
   name       = "traefik"
   repository = "https://helm.traefik.io/traefik"
   chart      = "traefik"
-  version    = "9.18.2"
-  namespace  = kubernetes_namespace.traefik.metadata[0].name
+  version    = "10.14.2"
+  namespace  = kubernetes_namespace.traefik.metadata.0.name
 
   set {
     name  = "ports.web.redirectTo"
@@ -566,7 +548,7 @@ To get rid of the certificate warning, set `"cert-manager.io/cluster-issuer" = "
 
 ## One Last Thing
 
-If we want to tear down the cluster and rebuild, we cannot achieve this in _one_ `terraform apply` operation. The reason is that the `kubernetes-alpha` provider [requires an operational cluster](https://github.com/hashicorp/terraform-provider-kubernetes-alpha/issues/180#issuecomment-805169792) during the `terraform plan` phase. On top of that, any CRDs we deploy with the `kubernetes-alpha` provider have to be available during `terraform plan`, too.
+If we want to tear down the cluster and rebuild, we cannot achieve this in _one_ `terraform apply` operation. The reason is that the `kubernetes` provider requires an operational cluster during the `terraform plan` phase. On top of that, any CRDs we deploy have to be available during `terraform plan`, too.
 
 So when rebuilding, we would first create the AKS cluster and deploy cert-manager and then apply the rest:
 
@@ -580,8 +562,8 @@ terraform plan -out infrastructure.tfplan
 terraform apply infrastructure.tfplan
 ```
 
-I already mentioned this earlier. The need for the workaround above originates from stacking Kubernetes cluster infrastructure with Kubernetes resources which the [official Kubernetes provider documentation discourages](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources) recommend against that. Adhering to the docs and separate cluster and Kubernetes resources into different modules will probably save you a headache!
+I already mentioned this earlier. The need for the workaround above originates from stacking Kubernetes cluster infrastructure with Kubernetes resources which the [official Kubernetes provider documentation discourages](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources) recommend against that. Adhering to the docs and separating cluster and Kubernetes resources into different modules will probably save you a headache!
 
 Other than that, we created a pretty cool solution, fully managed by Terraform, did we not?
 
-You can find all the code on GitHub in my [schnerring/infrastructure repository](https://github.com/schnerring/infrastructure/blob/v0.1.0/k8s.tf), which is evolving continuously. After committing the code to the repo, I added the `v0.1.0` tag. This way, in the future, we can easily find the code depicted in this post.
+You can find all the code on GitHub in my [schnerring/infrastructure repository](https://github.com/schnerring/infrastructure/blob/v0.4.0/k8s.tf), which is evolving continuously. After committing the code to the repo, I added the `v0.4.0` tag. This way, in the future, we can easily find the code depicted in this post.
