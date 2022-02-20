@@ -25,7 +25,7 @@
 <meta itemprop=name content="Set Up Azure Active Directory Domain Services (AADDS) with Terraform">
 <meta itemprop=description content="I wanted to revisit this topic for a while because the previous guide I wrote about setting up Azure Active Directory Domain Services (AADDS) with Terraform is outdated. However, the article still attracts around 100 visitors per month. People also keep downloading the deprecated Terraform module I created. Time to set things right!"><meta itemprop=datePublished content="2022-02-20T06:05:36+01:00">
 <meta itemprop=dateModified content="2022-02-20T06:05:36+01:00">
-<meta itemprop=wordCount content="713"><meta itemprop=image content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/cover.jpg">
+<meta itemprop=wordCount content="716"><meta itemprop=image content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/cover.jpg">
 <meta itemprop=keywords content="AADDS,ARM,Azure,Azure Active Directory Domain Services,Cloud,IaC,Infrastructure As Code,Terraform,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:100;src:local("Roboto Slab Thin "),local("Roboto Slab-Thin"),url(/fonts/roboto-slab-latin-100.woff2) format("woff2"),url(/fonts/roboto-slab-latin-100.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:200;src:local("Roboto Slab Extra Light "),local("Roboto Slab-Extra Light"),url(/fonts/roboto-slab-latin-200.woff2) format("woff2"),url(/fonts/roboto-slab-latin-200.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:300;src:local("Roboto Slab Light "),local("Roboto Slab-Light"),url(/fonts/roboto-slab-latin-300.woff2) format("woff2"),url(/fonts/roboto-slab-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:400;src:local("Roboto Slab Regular "),local("Roboto Slab-Regular"),url(/fonts/roboto-slab-latin-400.woff2) format("woff2"),url(/fonts/roboto-slab-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:500;src:local("Roboto Slab Medium "),local("Roboto Slab-Medium"),url(/fonts/roboto-slab-latin-500.woff2) format("woff2"),url(/fonts/roboto-slab-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:600;src:local("Roboto Slab SemiBold "),local("Roboto Slab-SemiBold"),url(/fonts/roboto-slab-latin-600.woff2) format("woff2"),url(/fonts/roboto-slab-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:700;src:local("Roboto Slab Bold "),local("Roboto Slab-Bold"),url(/fonts/roboto-slab-latin-700.woff2) format("woff2"),url(/fonts/roboto-slab-latin-700.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:800;src:local("Roboto Slab ExtraBold "),local("Roboto Slab-ExtraBold"),url(/fonts/roboto-slab-latin-800.woff2) format("woff2"),url(/fonts/roboto-slab-latin-800.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:900;src:local("Roboto Slab Black "),local("Roboto Slab-Black"),url(/fonts/roboto-slab-latin-900.woff2) format("woff2"),url(/fonts/roboto-slab-latin-900.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:300;src:local("Fira Code Light "),local("Fira Code-Light"),url(/fonts/fira-code-latin-300.woff2) format("woff2"),url(/fonts/fira-code-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:400;src:local("Fira Code Regular "),local("Fira Code-Regular"),url(/fonts/fira-code-latin-400.woff2) format("woff2"),url(/fonts/fira-code-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:500;src:local("Fira Code Medium "),local("Fira Code-Medium"),url(/fonts/fira-code-latin-500.woff2) format("woff2"),url(/fonts/fira-code-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:600;src:local("Fira Code SemiBold "),local("Fira Code-SemiBold"),url(/fonts/fira-code-latin-600.woff2) format("woff2"),url(/fonts/fira-code-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:700;src:local("Fira Code Bold "),local("Fira Code-Bold"),url(/fonts/fira-code-latin-700.woff2) format("woff2"),url(/fonts/fira-code-latin-700.woff) format("woff")}
@@ -126,7 +126,7 @@
 <div class=post-content>
 <p>I wanted to revisit this topic for a while because the <a href=/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform>previous guide I wrote about setting up Azure Active Directory Domain Services (AADDS) with Terraform</a> is outdated. However, the article still attracts around 100 visitors per month. People also keep downloading the deprecated Terraform module I created. Time to set things right!</p>
 <p>With <a href=https://github.com/terraform-providers/terraform-provider-azurerm/releases/tag/v2.69.0 class=link--external target=_blank rel=noreferrer>v2.69.0 of the official Terraform azurerm provider</a> released, the <a href=https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service class=link--external target=_blank rel=noreferrer><code>active_directory_domain_service</code></a> and <a href=https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service_replica_set class=link--external target=_blank rel=noreferrer><code>active_directory_domain_service_replica_set</code></a> resources are now available. In this post, I&rsquo;ll briefly walk you through the required steps of setting up AADDS. <a href=https://docs.microsoft.com/en-us/azure/active-directory-domain-services/powershell-create-instance#create-required-azure-ad-resources class=link--external target=_blank rel=noreferrer>See also the official Microsoft documentation for more details.</a></p>
-<p><a href=https://github.com/schnerring/terraform-azurerm-aadds-avd class=link--external target=_blank rel=noreferrer>I also published the code to a sample GitHub repo.</a> Go check it out!</p>
+<p><a href=https://github.com/schnerring/terraform-azurerm-aadds-avd class=link--external target=_blank rel=noreferrer>I also published the code to a sample GitHub repo.</a></p>
 <h2 id=what-are-azure-active-directory-domain-services>
 What Are Azure Active Directory Domain Services?
 <a href=#what-are-azure-active-directory-domain-services class=post-heading__anchor aria-hidden=true>#</a>
@@ -228,9 +228,10 @@ Network Resources
     destination_port_range     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;443&#34;</span>
     source_address_prefix      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AzureActiveDirectoryDomainServices&#34;</span>
     destination_address_prefix <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
-  }
-
-  <span style=color:#66d9ef>security_rule</span> {
+  }<span style=color:#75715e>
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>  # See https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-nsg#inbound-security-rules
+</span><span style=color:#75715e></span>  <span style=color:#66d9ef>security_rule</span> {
     name                       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AllowRD&#34;</span>
     priority                   <span style=color:#f92672>=</span> <span style=color:#ae81ff>201</span>
     direction                  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Inbound&#34;</span>
@@ -252,9 +253,11 @@ Network Resources
     destination_port_range     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;5986&#34;</span>
     source_address_prefix      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AzureActiveDirectoryDomainServices&#34;</span>
     destination_address_prefix <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
-  }
-
-  <span style=color:#66d9ef>security_rule</span> {
+  }<span style=color:#75715e>
+</span><span style=color:#75715e>
+</span><span style=color:#75715e>  # See https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-ldaps#resolution
+</span><span style=color:#75715e>  # See https://docs.microsoft.com/en-us/azure/active-directory-domain-services/tutorial-configure-ldaps#lock-down-secure-ldap-access-over-the-internet
+</span><span style=color:#75715e></span>  <span style=color:#66d9ef>security_rule</span> {
     name                       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AllowLDAPS&#34;</span>
     priority                   <span style=color:#f92672>=</span> <span style=color:#ae81ff>401</span>
     direction                  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Inbound&#34;</span>
@@ -420,7 +423,7 @@ AADDS Managed Domain
 </div>
 </footer>
 <script type=text/javascript src=/js/main.8a5b9360e3994a45d35016fb8a7e3bc69a56392afb4ab2be7c98f049247d0ce85c50f8665cddd3fbdd6a9d0b927446dea0c7ba0d15aaf9000d8409974502b337.js integrity="sha512-iluTYOOZSkXTUBb7in47xppWOSr7SrK+fJjwSSR9DOhcUPhmXN3T+91qnQuSdEbeoMe6DRWq+QANhAmXRQKzNw=="></script>
-<script type=text/javascript src=/js/flexsearch.8793e3774c03dfd74b84c30ebb40d604d4c8a6f6c5fa481b5e864bd13607326d1c3e9ed8f41b9923b0c79ecf79f8f69839ba175df3feeb9f7182deb8e7e304bd.js integrity="sha512-h5Pjd0wD39dLhMMOu0DWBNTIpvbF+kgbXoZL0TYHMm0cPp7Y9BuZI7DHns95+PaYOboXXfP+659xgt645+MEvQ=="></script>
+<script type=text/javascript src=/js/flexsearch.8398baf4d15c33f228bcd809412606ba6804bf82dbc4ad4a71a3153c9c44262ab6ce8442f27574c2513220fdfe92605df446f3214a7faf698d41497b6084239e.js integrity="sha512-g5i69NFcM/IovNgJQSYGumgEv4LbxK1KcaMVPJxEJiq2zoRC8nV0wlEyIP3+kmBd9EbzIUp/r2mNQUl7YIQjng=="></script>
 </div>
 </body>
 </html>
