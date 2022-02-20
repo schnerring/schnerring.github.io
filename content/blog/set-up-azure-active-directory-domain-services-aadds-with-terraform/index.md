@@ -27,9 +27,7 @@ This guide is outdated! [Please click here to go to the new guide I wrote.](/blo
 
 ## Update 2021-08-03
 
-With [v2.69.0 of the official Terraform azurerm provider](https://github.com/terraform-providers/terraform-provider-azurerm/releases/tag/v2.69.0) released two weeks ago, the [`active_directory_domain_service`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service) and [`active_directory_domain_service_replica_set`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service_replica_set) resources are now available. If you are newly adding AADDS, there is no point in reading any further — use the official resources.
-
-I will switch in the coming weeks and write a short migration guide for the people using my [AADDS Terraform module](https://registry.terraform.io/modules/schnerring/aadds/azurerm/latest).
+With [v2.69.0 of the official Terraform azurerm provider](https://github.com/terraform-providers/terraform-provider-azurerm/releases/tag/v2.69.0) released two weeks ago, the [`active_directory_domain_service`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service) resource is now available. If you are freshly adding AADDS, there is no point in reading any further — use the official resources.
 
 ---
 
