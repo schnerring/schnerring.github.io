@@ -12,10 +12,18 @@ tags:
   - Azure Active Directory Domain Services
   - Azure Resource Manager Template
   - Cloud
+  - IaC
+  - Infrastructure as Code
   - Terraform
 aliases:
   - /posts/set-up-azure-active-directory-domain-services-aadds-with-terraform
 ---
+
+## Update 2022-02-20
+
+This guide is outdated! [Please click here to go to the new guide I wrote.](/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated)
+
+<!--more-->
 
 ## Update 2021-08-03
 
@@ -27,9 +35,7 @@ I will switch in the coming weeks and write a short migration guide for the peop
 
 Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a _Microsoft-managed_ solution, providing a subset of [traditional AD DS features](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/compare-identity-solutions) without the need to _self-manage_ DCs.
 
-One such service that requires AD DS features is [Windows Virtual Desktop (WVD)](https://docs.microsoft.com/en-us/azure/virtual-desktop/overview). I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.
-
-<!--more-->
+One such service that requires AD DS features is [Azure Virtual Desktop (WVD)](https://docs.microsoft.com/en-us/azure/virtual-desktop/overview). I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.
 
 If you are lazy, you can [skip to the end](#wrapping-up) and use the custom Terraform module [I published to the Terraform Registry](https://registry.terraform.io/modules/schnerring/aadds/azurerm/latest).
 
