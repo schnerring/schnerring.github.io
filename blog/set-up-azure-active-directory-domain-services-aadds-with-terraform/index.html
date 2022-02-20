@@ -9,51 +9,36 @@
 <link rel=prefetch as=font type=font/woff2 href=/fonts/fira-code-latin-700.woff2 crossorigin=anonymous>
 <meta name=robots content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1">
 <title>Set Up Azure Active Directory Domain Services (AADDS) with Terraform</title>
-<meta name=description content="Update 2021-08-03 #  With v2.69.0 of the official Terraform azurerm provider released two weeks ago, the active_directory_domain_service and active_directory_domain_service_replica_set resources are now available. If you are newly adding AADDS, there is no point in reading any further — use the official resources.
-I will switch in the coming weeks and write a short migration guide for the people using my AADDS Terraform module.
- Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a Microsoft-managed solution, providing a subset of traditional AD DS features without the need to self-manage DCs.
-One such service that requires AD DS features is Windows Virtual Desktop (WVD). I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.
+<meta name=description content="Update 2022-02-20 #  This guide is outdated! Please click here to go to the new guide I wrote.
 ">
 <link rel=canonical href=https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/>
 <meta name=twitter:card content="summary_large_image">
 <meta name=twitter:image content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/cover.jpg">
 <meta name=twitter:title content="Set Up Azure Active Directory Domain Services (AADDS) with Terraform">
 <meta name=twitter:description content="
-  Update 2021-08-03
+  Update 2022-02-20
   #
 
-With v2.69.0 of the official Terraform azurerm provider released two weeks ago, the active_directory_domain_service and active_directory_domain_service_replica_set resources are now available. If you are newly adding AADDS, there is no point in reading any further — use the official resources.
-I will switch in the coming weeks and write a short migration guide for the people using my AADDS Terraform module.
-
-Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a Microsoft-managed solution, providing a subset of traditional AD DS features without the need to self-manage DCs.
-One such service that requires AD DS features is Windows Virtual Desktop (WVD). I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.">
+This guide is outdated! Please click here to go to the new guide I wrote.">
 <meta property="og:title" content="Set Up Azure Active Directory Domain Services (AADDS) with Terraform">
 <meta property="og:description" content="
-  Update 2021-08-03
+  Update 2022-02-20
   #
 
-With v2.69.0 of the official Terraform azurerm provider released two weeks ago, the active_directory_domain_service and active_directory_domain_service_replica_set resources are now available. If you are newly adding AADDS, there is no point in reading any further — use the official resources.
-I will switch in the coming weeks and write a short migration guide for the people using my AADDS Terraform module.
-
-Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a Microsoft-managed solution, providing a subset of traditional AD DS features without the need to self-manage DCs.
-One such service that requires AD DS features is Windows Virtual Desktop (WVD). I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.">
+This guide is outdated! Please click here to go to the new guide I wrote.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/"><meta property="og:image" content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/cover.jpg"><meta property="article:section" content="blog">
 <meta property="article:published_time" content="2021-05-22T16:23:36+02:00">
 <meta property="article:modified_time" content="2021-05-22T16:23:36+02:00">
 <meta itemprop=name content="Set Up Azure Active Directory Domain Services (AADDS) with Terraform">
 <meta itemprop=description content="
-  Update 2021-08-03
+  Update 2022-02-20
   #
 
-With v2.69.0 of the official Terraform azurerm provider released two weeks ago, the active_directory_domain_service and active_directory_domain_service_replica_set resources are now available. If you are newly adding AADDS, there is no point in reading any further — use the official resources.
-I will switch in the coming weeks and write a short migration guide for the people using my AADDS Terraform module.
-
-Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a Microsoft-managed solution, providing a subset of traditional AD DS features without the need to self-manage DCs.
-One such service that requires AD DS features is Windows Virtual Desktop (WVD). I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform."><meta itemprop=datePublished content="2021-05-22T16:23:36+02:00">
+This guide is outdated! Please click here to go to the new guide I wrote."><meta itemprop=datePublished content="2021-05-22T16:23:36+02:00">
 <meta itemprop=dateModified content="2021-05-22T16:23:36+02:00">
-<meta itemprop=wordCount content="1117"><meta itemprop=image content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/cover.jpg">
-<meta itemprop=keywords content="AADDS,ARM,Azure,Azure Active Directory Domain Services,Azure Resource Manager Template,Cloud,Terraform,">
+<meta itemprop=wordCount content="1135"><meta itemprop=image content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/cover.jpg">
+<meta itemprop=keywords content="AADDS,ARM,Azure,Azure Active Directory Domain Services,Azure Resource Manager Template,Cloud,IaC,Infrastructure as Code,Terraform,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:100;src:local("Roboto Slab Thin "),local("Roboto Slab-Thin"),url(/fonts/roboto-slab-latin-100.woff2) format("woff2"),url(/fonts/roboto-slab-latin-100.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:200;src:local("Roboto Slab Extra Light "),local("Roboto Slab-Extra Light"),url(/fonts/roboto-slab-latin-200.woff2) format("woff2"),url(/fonts/roboto-slab-latin-200.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:300;src:local("Roboto Slab Light "),local("Roboto Slab-Light"),url(/fonts/roboto-slab-latin-300.woff2) format("woff2"),url(/fonts/roboto-slab-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:400;src:local("Roboto Slab Regular "),local("Roboto Slab-Regular"),url(/fonts/roboto-slab-latin-400.woff2) format("woff2"),url(/fonts/roboto-slab-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:500;src:local("Roboto Slab Medium "),local("Roboto Slab-Medium"),url(/fonts/roboto-slab-latin-500.woff2) format("woff2"),url(/fonts/roboto-slab-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:600;src:local("Roboto Slab SemiBold "),local("Roboto Slab-SemiBold"),url(/fonts/roboto-slab-latin-600.woff2) format("woff2"),url(/fonts/roboto-slab-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:700;src:local("Roboto Slab Bold "),local("Roboto Slab-Bold"),url(/fonts/roboto-slab-latin-700.woff2) format("woff2"),url(/fonts/roboto-slab-latin-700.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:800;src:local("Roboto Slab ExtraBold "),local("Roboto Slab-ExtraBold"),url(/fonts/roboto-slab-latin-800.woff2) format("woff2"),url(/fonts/roboto-slab-latin-800.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:900;src:local("Roboto Slab Black "),local("Roboto Slab-Black"),url(/fonts/roboto-slab-latin-900.woff2) format("woff2"),url(/fonts/roboto-slab-latin-900.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:300;src:local("Fira Code Light "),local("Fira Code-Light"),url(/fonts/fira-code-latin-300.woff2) format("woff2"),url(/fonts/fira-code-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:400;src:local("Fira Code Regular "),local("Fira Code-Regular"),url(/fonts/fira-code-latin-400.woff2) format("woff2"),url(/fonts/fira-code-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:500;src:local("Fira Code Medium "),local("Fira Code-Medium"),url(/fonts/fira-code-latin-500.woff2) format("woff2"),url(/fonts/fira-code-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:600;src:local("Fira Code SemiBold "),local("Fira Code-SemiBold"),url(/fonts/fira-code-latin-600.woff2) format("woff2"),url(/fonts/fira-code-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:700;src:local("Fira Code Bold "),local("Fira Code-Bold"),url(/fonts/fira-code-latin-700.woff2) format("woff2"),url(/fonts/fira-code-latin-700.woff) format("woff")}
 
@@ -141,6 +126,8 @@ One such service that requires AD DS features is Windows Virtual Desktop (WVD). 
 <a class=post-tag href=https://schnerring.net/tags/azure-active-directory-domain-services>azure&#8209;active&#8209;directory&#8209;domain&#8209;services</a>
 <a class=post-tag href=https://schnerring.net/tags/azure-resource-manager-template>azure&#8209;resource&#8209;manager&#8209;template</a>
 <a class=post-tag href=https://schnerring.net/tags/cloud>cloud</a>
+<a class=post-tag href=https://schnerring.net/tags/iac>iac</a>
+<a class=post-tag href=https://schnerring.net/tags/infrastructure-as-code>infrastructure&#8209;as&#8209;code</a>
 <a class=post-tag href=https://schnerring.net/tags/terraform>terraform</a>
 </div>
 <picture>
@@ -150,6 +137,11 @@ One such service that requires AD DS features is Windows Virtual Desktop (WVD). 
 </div>
 </div>
 <div class=post-content>
+<h2 id=update-2022-02-20>
+Update 2022-02-20
+<a href=#update-2022-02-20 class=post-heading__anchor aria-hidden=true>#</a>
+</h2>
+<p>This guide is outdated! <a href=/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated>Please click here to go to the new guide I wrote.</a></p>
 <h2 id=update-2021-08-03>
 Update 2021-08-03
 <a href=#update-2021-08-03 class=post-heading__anchor aria-hidden=true>#</a>
@@ -158,7 +150,7 @@ Update 2021-08-03
 <p>I will switch in the coming weeks and write a short migration guide for the people using my <a href=https://registry.terraform.io/modules/schnerring/aadds/azurerm/latest class=link--external target=_blank rel=noreferrer>AADDS Terraform module</a>.</p>
 <hr>
 <p>Bringing traditional Active Directory Domain Services (AD DS) to the cloud, typically required to set up, secure, and maintain domain controllers (DCs). Azure Active Directory Domain Services (AADDS or Azure AD DS) is a <em>Microsoft-managed</em> solution, providing a subset of <a href=https://docs.microsoft.com/en-us/azure/active-directory-domain-services/compare-identity-solutions class=link--external target=_blank rel=noreferrer>traditional AD DS features</a> without the need to <em>self-manage</em> DCs.</p>
-<p>One such service that requires AD DS features is <a href=https://docs.microsoft.com/en-us/azure/virtual-desktop/overview class=link--external target=_blank rel=noreferrer>Windows Virtual Desktop (WVD)</a>. I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.</p>
+<p>One such service that requires AD DS features is <a href=https://docs.microsoft.com/en-us/azure/virtual-desktop/overview class=link--external target=_blank rel=noreferrer>Azure Virtual Desktop (WVD)</a>. I have successfully deployed WVD with Terraform, but until recently, I struggled to do the same with AADDS. Today, I show you how to deploy AADDS with Terraform.</p>
 <p>If you are lazy, you can <a href=#wrapping-up>skip to the end</a> and use the custom Terraform module <a href=https://registry.terraform.io/modules/schnerring/aadds/azurerm/latest class=link--external target=_blank rel=noreferrer>I published to the Terraform Registry</a>.</p>
 <h2 id=prerequisites>
 Prerequisites
@@ -556,7 +548,7 @@ Wrapping Up
 </div>
 </footer>
 <script type=text/javascript src=/js/main.8a5b9360e3994a45d35016fb8a7e3bc69a56392afb4ab2be7c98f049247d0ce85c50f8665cddd3fbdd6a9d0b927446dea0c7ba0d15aaf9000d8409974502b337.js integrity="sha512-iluTYOOZSkXTUBb7in47xppWOSr7SrK+fJjwSSR9DOhcUPhmXN3T+91qnQuSdEbeoMe6DRWq+QANhAmXRQKzNw=="></script>
-<script type=text/javascript src=/js/flexsearch.3f7a42ff98202cf5ae75eb3d862073d9b69ba2e9b7ec91f4840345c41d420a1e5a4df7ec94b3fa6367d285a85ee3b76f833ffe3ca0b5f755e646c5b3e2f72289.js integrity="sha512-P3pC/5ggLPWudes9hiBz2baboum37JH0hANFxB1CCh5aTffslLP6Y2fShahe47dvgz/+PKC191XmRsWz4vciiQ=="></script>
+<script type=text/javascript src=/js/flexsearch.8793e3774c03dfd74b84c30ebb40d604d4c8a6f6c5fa481b5e864bd13607326d1c3e9ed8f41b9923b0c79ecf79f8f69839ba175df3feeb9f7182deb8e7e304bd.js integrity="sha512-h5Pjd0wD39dLhMMOu0DWBNTIpvbF+kgbXoZL0TYHMm0cPp7Y9BuZI7DHns95+PaYOboXXfP+659xgt645+MEvQ=="></script>
 </div>
 </body>
 </html>
