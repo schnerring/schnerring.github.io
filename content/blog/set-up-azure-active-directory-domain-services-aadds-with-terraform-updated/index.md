@@ -45,6 +45,27 @@ resource "azuread_service_principal" "aadds" {
 }
 ```
 
+If the service principal already exists, the following error occurs:
+
+```text
+Error: A resource with the ID "11111111-1111-1111-1111-111111111111" already exists
+
+  with azuread_service_principal.aadds,
+  on aadds.tf line 2, in resource "azuread_service_principal" "aadds":
+   2: resource "azuread_service_principal" "aadds" {
+
+To be managed via Terraform, this resource needs to be imported into the State. Please see the resource documentation for "azuread_service_principal" for more
+information.
+```
+
+Import the service principal with the following command:
+
+```hcl
+terraform import azuread_service_principal.aadds 11111111-1111-1111-1111-111111111111
+```
+
+Note that `11111111-1111-1111-1111-111111111111` is the _Object ID_ and not the _Application ID_.
+
 ## `Microsoft.AAD` Resource Provider Registration
 
 To use AADDS, register the `Microsoft.AAD` resource provider:
@@ -105,9 +126,6 @@ resource "azurerm_virtual_network" "aadds" {
   location            = azurerm_resource_group.aadds.location
   resource_group_name = azurerm_resource_group.aadds.name
   address_space       = ["10.0.0.0/16"]
-
-  # AADDS DCs
-  dns_servers = ["10.0.0.4", "10.0.0.5"]
 }
 
 resource "azurerm_subnet" "aadds" {
@@ -210,4 +228,4 @@ resource "azurerm_active_directory_domain_service" "aadds" {
 }
 ```
 
-Run `terraform apply` to deploy everything. It takes around 45 minutes to complete. Let me know what you think in the comments or on Twitter!
+Run `terraform apply` to deploy everything. It takes around 45 minutes to complete. Share your thoughts with me in the comments or on Twitter!
