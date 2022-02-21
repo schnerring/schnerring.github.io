@@ -25,7 +25,7 @@
 <meta itemprop=name content="Set Up Azure Active Directory Domain Services (AADDS) with Terraform">
 <meta itemprop=description content="I wanted to revisit this topic for a while because the previous guide I wrote about setting up Azure Active Directory Domain Services (AADDS) with Terraform is outdated. However, the article still attracts around 100 visitors per month. People also keep downloading the deprecated Terraform module I created. Time to set things right!"><meta itemprop=datePublished content="2022-02-20T06:05:36+01:00">
 <meta itemprop=dateModified content="2022-02-20T06:05:36+01:00">
-<meta itemprop=wordCount content="716"><meta itemprop=image content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/cover.jpg">
+<meta itemprop=wordCount content="710"><meta itemprop=image content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/cover.jpg">
 <meta itemprop=keywords content="AADDS,ARM,Azure,Azure Active Directory Domain Services,Cloud,IaC,Infrastructure As Code,Terraform,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:100;src:local("Roboto Slab Thin "),local("Roboto Slab-Thin"),url(/fonts/roboto-slab-latin-100.woff2) format("woff2"),url(/fonts/roboto-slab-latin-100.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:200;src:local("Roboto Slab Extra Light "),local("Roboto Slab-Extra Light"),url(/fonts/roboto-slab-latin-200.woff2) format("woff2"),url(/fonts/roboto-slab-latin-200.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:300;src:local("Roboto Slab Light "),local("Roboto Slab-Light"),url(/fonts/roboto-slab-latin-300.woff2) format("woff2"),url(/fonts/roboto-slab-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:400;src:local("Roboto Slab Regular "),local("Roboto Slab-Regular"),url(/fonts/roboto-slab-latin-400.woff2) format("woff2"),url(/fonts/roboto-slab-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:500;src:local("Roboto Slab Medium "),local("Roboto Slab-Medium"),url(/fonts/roboto-slab-latin-500.woff2) format("woff2"),url(/fonts/roboto-slab-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:600;src:local("Roboto Slab SemiBold "),local("Roboto Slab-SemiBold"),url(/fonts/roboto-slab-latin-600.woff2) format("woff2"),url(/fonts/roboto-slab-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:700;src:local("Roboto Slab Bold "),local("Roboto Slab-Bold"),url(/fonts/roboto-slab-latin-700.woff2) format("woff2"),url(/fonts/roboto-slab-latin-700.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:800;src:local("Roboto Slab ExtraBold "),local("Roboto Slab-ExtraBold"),url(/fonts/roboto-slab-latin-800.woff2) format("woff2"),url(/fonts/roboto-slab-latin-800.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:900;src:local("Roboto Slab Black "),local("Roboto Slab-Black"),url(/fonts/roboto-slab-latin-900.woff2) format("woff2"),url(/fonts/roboto-slab-latin-900.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:300;src:local("Fira Code Light "),local("Fira Code-Light"),url(/fonts/fira-code-latin-300.woff2) format("woff2"),url(/fonts/fira-code-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:400;src:local("Fira Code Regular "),local("Fira Code-Regular"),url(/fonts/fira-code-latin-400.woff2) format("woff2"),url(/fonts/fira-code-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:500;src:local("Fira Code Medium "),local("Fira Code-Medium"),url(/fonts/fira-code-latin-500.woff2) format("woff2"),url(/fonts/fira-code-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:600;src:local("Fira Code SemiBold "),local("Fira Code-SemiBold"),url(/fonts/fira-code-latin-600.woff2) format("woff2"),url(/fonts/fira-code-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:700;src:local("Fira Code Bold "),local("Fira Code-Bold"),url(/fonts/fira-code-latin-700.woff2) format("woff2"),url(/fonts/fira-code-latin-700.woff) format("woff")}
@@ -125,7 +125,7 @@
 </div>
 <div class=post-content>
 <p>I wanted to revisit this topic for a while because the <a href=/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform>previous guide I wrote about setting up Azure Active Directory Domain Services (AADDS) with Terraform</a> is outdated. However, the article still attracts around 100 visitors per month. People also keep downloading the deprecated Terraform module I created. Time to set things right!</p>
-<p>With <a href=https://github.com/terraform-providers/terraform-provider-azurerm/releases/tag/v2.69.0 class=link--external target=_blank rel=noreferrer>v2.69.0 of the official Terraform azurerm provider</a> released, the <a href=https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service class=link--external target=_blank rel=noreferrer><code>active_directory_domain_service</code></a> and <a href=https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service_replica_set class=link--external target=_blank rel=noreferrer><code>active_directory_domain_service_replica_set</code></a> resources are now available. In this post, I&rsquo;ll briefly walk you through the required steps of setting up AADDS. <a href=https://docs.microsoft.com/en-us/azure/active-directory-domain-services/powershell-create-instance#create-required-azure-ad-resources class=link--external target=_blank rel=noreferrer>See also the official Microsoft documentation for more details.</a></p>
+<p>With <a href=https://github.com/terraform-providers/terraform-provider-azurerm/releases/tag/v2.69.0 class=link--external target=_blank rel=noreferrer>v2.69.0 of the official Terraform azurerm provider</a> released, the <a href=https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service class=link--external target=_blank rel=noreferrer><code>active_directory_domain_service</code></a> resource is now available. In this post, I&rsquo;ll briefly walk you through the required steps of setting up AADDS. <a href=https://docs.microsoft.com/en-us/azure/active-directory-domain-services/powershell-create-instance#create-required-azure-ad-resources class=link--external target=_blank rel=noreferrer>See also the official Microsoft documentation for more details.</a></p>
 <p><a href=https://github.com/schnerring/terraform-azurerm-aadds-avd class=link--external target=_blank rel=noreferrer>I also published the code to a sample GitHub repo.</a></p>
 <h2 id=what-are-azure-active-directory-domain-services>
 What Are Azure Active Directory Domain Services?
@@ -149,8 +149,6 @@ Service Principal
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azuread_service_principal&#34; &#34;aadds&#34;</span> {
   application_id <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;2565bd9d-da50-47d4-8b85-4c97f669dc36&#34;</span>
 }
-</code></pre></div><p>If it already exists, you can import it into Terraform like this:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell>
 </code></pre></div><h2 id=microsoftaad-resource-provider-registration>
 <code>Microsoft.AAD</code> Resource Provider Registration
 <a href=#microsoftaad-resource-provider-registration class=post-heading__anchor aria-hidden=true>#</a>
@@ -203,8 +201,8 @@ Network Resources
   address_space       <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.0/16&#34;</span>]<span style=color:#75715e>
 </span><span style=color:#75715e>
 </span><span style=color:#75715e>  # AADDS DCs
-</span><span style=color:#75715e>  #dns_servers = [&#34;10.0.0.4&#34;, &#34;10.0.0.5&#34;] TODO?
-</span><span style=color:#75715e></span>}
+</span><span style=color:#75715e></span>  dns_servers <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.4&#34;, &#34;10.0.0.5&#34;</span>]
+}
 
 <span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_subnet&#34; &#34;aadds&#34;</span> {
   name                 <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-snet&#34;</span>
@@ -212,26 +210,13 @@ Network Resources
   virtual_network_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_virtual_network</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
   address_prefixes     <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.0/24&#34;</span>]
 }
-</code></pre></div><p>To lock down access to the managed domain, add the following <em>network security group</em>:</p>
+</code></pre></div><p>To lock down access to the managed domain, add the following <em>network security group</em>. The <code>AllowRD</code> and <code>AllowPSRemoting</code> rules <a href=https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-nsg#inbound-security-rules class=link--external target=_blank rel=noreferrer>allow the Azure platform to monitor, manage, and update the managed domain</a>:</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_network_security_group&#34; &#34;aadds&#34;</span> {
   name                <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-nsg&#34;</span>
   location            <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>location</span>
   resource_group_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
 
   <span style=color:#66d9ef>security_rule</span> {
-    name                       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AllowSyncWithAzureAD&#34;</span>
-    priority                   <span style=color:#f92672>=</span> <span style=color:#ae81ff>101</span>
-    direction                  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Inbound&#34;</span>
-    access                     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Allow&#34;</span>
-    protocol                   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Tcp&#34;</span>
-    source_port_range          <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
-    destination_port_range     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;443&#34;</span>
-    source_address_prefix      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AzureActiveDirectoryDomainServices&#34;</span>
-    destination_address_prefix <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
-  }<span style=color:#75715e>
-</span><span style=color:#75715e>
-</span><span style=color:#75715e>  # See https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-nsg#inbound-security-rules
-</span><span style=color:#75715e></span>  <span style=color:#66d9ef>security_rule</span> {
     name                       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AllowRD&#34;</span>
     priority                   <span style=color:#f92672>=</span> <span style=color:#ae81ff>201</span>
     direction                  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Inbound&#34;</span>
@@ -253,20 +238,6 @@ Network Resources
     destination_port_range     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;5986&#34;</span>
     source_address_prefix      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AzureActiveDirectoryDomainServices&#34;</span>
     destination_address_prefix <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
-  }<span style=color:#75715e>
-</span><span style=color:#75715e>
-</span><span style=color:#75715e>  # See https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-ldaps#resolution
-</span><span style=color:#75715e>  # See https://docs.microsoft.com/en-us/azure/active-directory-domain-services/tutorial-configure-ldaps#lock-down-secure-ldap-access-over-the-internet
-</span><span style=color:#75715e></span>  <span style=color:#66d9ef>security_rule</span> {
-    name                       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AllowLDAPS&#34;</span>
-    priority                   <span style=color:#f92672>=</span> <span style=color:#ae81ff>401</span>
-    direction                  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Inbound&#34;</span>
-    access                     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Allow&#34;</span>
-    protocol                   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Tcp&#34;</span>
-    source_port_range          <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
-    destination_port_range     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;636&#34;</span>
-    source_address_prefix      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
-    destination_address_prefix <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
   }
 }
 
@@ -274,11 +245,23 @@ Network Resources
   subnet_id                 <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_subnet</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>id</span>
   network_security_group_id <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_network_security_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>id</span>
 }
+</code></pre></div><p>When you enable secure LDAP, <a href=https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-ldaps#resolution class=link--external target=_blank rel=noreferrer>it&rsquo;s recommended to create an additional security rule to restrict inbound LDAPS access to specific IP addresses to protect the managed domain from brute force attacks</a>:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>security_rule</span> {
+  name                       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AllowLDAPS&#34;</span>
+  priority                   <span style=color:#f92672>=</span> <span style=color:#ae81ff>401</span>
+  direction                  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Inbound&#34;</span>
+  access                     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Allow&#34;</span>
+  protocol                   <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Tcp&#34;</span>
+  source_port_range          <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
+  destination_port_range     <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;636&#34;</span>
+  source_address_prefix      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&lt;Authorized LDAPS IPs&gt;&#34;</span>
+  destination_address_prefix <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;*&#34;</span>
+}
 </code></pre></div><h2 id=aadds-managed-domain>
 AADDS Managed Domain
 <a href=#aadds-managed-domain class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
-<p>The final step is to deploy the AADDS managed domain.</p>
+<p>Finally, deploy the AADDS managed domain:</p>
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_active_directory_domain_service&#34; &#34;aadds&#34;</span> {
   name                <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds&#34;</span>
   location            <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>location</span>
@@ -422,8 +405,8 @@ AADDS Managed Domain
 © 2020 Michael Schnerring
 </div>
 </footer>
-<script type=text/javascript src=/js/main.8a5b9360e3994a45d35016fb8a7e3bc69a56392afb4ab2be7c98f049247d0ce85c50f8665cddd3fbdd6a9d0b927446dea0c7ba0d15aaf9000d8409974502b337.js integrity="sha512-iluTYOOZSkXTUBb7in47xppWOSr7SrK+fJjwSSR9DOhcUPhmXN3T+91qnQuSdEbeoMe6DRWq+QANhAmXRQKzNw=="></script>
-<script type=text/javascript src=/js/flexsearch.8398baf4d15c33f228bcd809412606ba6804bf82dbc4ad4a71a3153c9c44262ab6ce8442f27574c2513220fdfe92605df446f3214a7faf698d41497b6084239e.js integrity="sha512-g5i69NFcM/IovNgJQSYGumgEv4LbxK1KcaMVPJxEJiq2zoRC8nV0wlEyIP3+kmBd9EbzIUp/r2mNQUl7YIQjng=="></script>
+<script type=text/javascript src=/js/main.4ff2f10f84f12edcd3384ac6f0e68ca3371accb50a70cf5cbee05b7624d88587a58830f04441b3e1d2311dcd379ee8e6f20a6c5b1124707e4007117247fe1b1d.js integrity="sha512-T/LxD4TxLtzTOErG8OaMozcazLUKcM9cvuBbdiTYhYeliDDwREGz4dIxHc03nujm8gpsWxEkcH5ABxFyR/4bHQ=="></script>
+<script type=text/javascript src=/js/flexsearch.9438a9d0afa295931aa10810015bd2256e8ee2089c62bf798481f984e7d07201b2fcf9190807ba60b9816b2ba394bee375b7ee202242bb862255d74169a11e6a.js integrity="sha512-lDip0K+ilZMaoQgQAVvSJW6O4gicYr95hIH5hOfQcgGy/PkZCAe6YLmBayujlL7jdbfuICJCu4YiVddBaaEeag=="></script>
 </div>
 </body>
 </html>
