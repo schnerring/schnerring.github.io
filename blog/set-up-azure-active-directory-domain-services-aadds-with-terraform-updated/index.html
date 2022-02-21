@@ -25,7 +25,7 @@
 <meta itemprop=name content="Set Up Azure Active Directory Domain Services (AADDS) with Terraform">
 <meta itemprop=description content="I wanted to revisit this topic for a while because the previous guide I wrote about setting up Azure Active Directory Domain Services (AADDS) with Terraform is outdated. However, the article still attracts around 100 visitors per month. People also keep downloading the deprecated Terraform module I created. Time to set things right!"><meta itemprop=datePublished content="2022-02-20T06:05:36+01:00">
 <meta itemprop=dateModified content="2022-02-20T06:05:36+01:00">
-<meta itemprop=wordCount content="710"><meta itemprop=image content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/cover.jpg">
+<meta itemprop=wordCount content="785"><meta itemprop=image content="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/cover.jpg">
 <meta itemprop=keywords content="AADDS,ARM,Azure,Azure Active Directory Domain Services,Cloud,IaC,Infrastructure As Code,Terraform,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:100;src:local("Roboto Slab Thin "),local("Roboto Slab-Thin"),url(/fonts/roboto-slab-latin-100.woff2) format("woff2"),url(/fonts/roboto-slab-latin-100.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:200;src:local("Roboto Slab Extra Light "),local("Roboto Slab-Extra Light"),url(/fonts/roboto-slab-latin-200.woff2) format("woff2"),url(/fonts/roboto-slab-latin-200.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:300;src:local("Roboto Slab Light "),local("Roboto Slab-Light"),url(/fonts/roboto-slab-latin-300.woff2) format("woff2"),url(/fonts/roboto-slab-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:400;src:local("Roboto Slab Regular "),local("Roboto Slab-Regular"),url(/fonts/roboto-slab-latin-400.woff2) format("woff2"),url(/fonts/roboto-slab-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:500;src:local("Roboto Slab Medium "),local("Roboto Slab-Medium"),url(/fonts/roboto-slab-latin-500.woff2) format("woff2"),url(/fonts/roboto-slab-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:600;src:local("Roboto Slab SemiBold "),local("Roboto Slab-SemiBold"),url(/fonts/roboto-slab-latin-600.woff2) format("woff2"),url(/fonts/roboto-slab-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:700;src:local("Roboto Slab Bold "),local("Roboto Slab-Bold"),url(/fonts/roboto-slab-latin-700.woff2) format("woff2"),url(/fonts/roboto-slab-latin-700.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:800;src:local("Roboto Slab ExtraBold "),local("Roboto Slab-ExtraBold"),url(/fonts/roboto-slab-latin-800.woff2) format("woff2"),url(/fonts/roboto-slab-latin-800.woff) format("woff")}@font-face{font-display:swap;font-family:Roboto Slab;font-style:normal;font-weight:900;src:local("Roboto Slab Black "),local("Roboto Slab-Black"),url(/fonts/roboto-slab-latin-900.woff2) format("woff2"),url(/fonts/roboto-slab-latin-900.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:300;src:local("Fira Code Light "),local("Fira Code-Light"),url(/fonts/fira-code-latin-300.woff2) format("woff2"),url(/fonts/fira-code-latin-300.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:400;src:local("Fira Code Regular "),local("Fira Code-Regular"),url(/fonts/fira-code-latin-400.woff2) format("woff2"),url(/fonts/fira-code-latin-400.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:500;src:local("Fira Code Medium "),local("Fira Code-Medium"),url(/fonts/fira-code-latin-500.woff2) format("woff2"),url(/fonts/fira-code-latin-500.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:600;src:local("Fira Code SemiBold "),local("Fira Code-SemiBold"),url(/fonts/fira-code-latin-600.woff2) format("woff2"),url(/fonts/fira-code-latin-600.woff) format("woff")}@font-face{font-display:swap;font-family:Fira Code;font-style:normal;font-weight:700;src:local("Fira Code Bold "),local("Fira Code-Bold"),url(/fonts/fira-code-latin-700.woff2) format("woff2"),url(/fonts/fira-code-latin-700.woff) format("woff")}
@@ -149,7 +149,19 @@ Service Principal
 <div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azuread_service_principal&#34; &#34;aadds&#34;</span> {
   application_id <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;2565bd9d-da50-47d4-8b85-4c97f669dc36&#34;</span>
 }
-</code></pre></div><h2 id=microsoftaad-resource-provider-registration>
+</code></pre></div><p>If the service principal already exists, the following error occurs:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-text data-lang=text>Error: A resource with the ID &#34;11111111-1111-1111-1111-111111111111&#34; already exists
+
+  with azuread_service_principal.aadds,
+  on aadds.tf line 2, in resource &#34;azuread_service_principal&#34; &#34;aadds&#34;:
+   2: resource &#34;azuread_service_principal&#34; &#34;aadds&#34; {
+
+To be managed via Terraform, this resource needs to be imported into the State. Please see the resource documentation for &#34;azuread_service_principal&#34; for more
+information.
+</code></pre></div><p>Import the service principal with the following command:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>terraform</span> <span style=color:#66d9ef>import</span> <span style=color:#66d9ef>azuread_service_principal</span>.<span style=color:#66d9ef>aadds</span> <span style=color:#ae81ff>11111111</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#ae81ff>1111</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#ae81ff>1111</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#ae81ff>1111</span><span style=color:#960050;background-color:#1e0010>-</span><span style=color:#ae81ff>111111111111</span>
+</code></pre></div><p>Note that <code>11111111-1111-1111-1111-111111111111</code> is the <em>Object ID</em> and not the <em>Application ID</em>.</p>
+<h2 id=microsoftaad-resource-provider-registration>
 <code>Microsoft.AAD</code> Resource Provider Registration
 <a href=#microsoftaad-resource-provider-registration class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
@@ -198,10 +210,7 @@ Network Resources
   name                <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;aadds-vnet&#34;</span>
   location            <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>location</span>
   resource_group_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>aadds</span>.<span style=color:#66d9ef>name</span>
-  address_space       <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.0/16&#34;</span>]<span style=color:#75715e>
-</span><span style=color:#75715e>
-</span><span style=color:#75715e>  # AADDS DCs
-</span><span style=color:#75715e></span>  dns_servers <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.4&#34;, &#34;10.0.0.5&#34;</span>]
+  address_space       <span style=color:#f92672>=</span> [<span style=color:#e6db74>&#34;10.0.0.0/16&#34;</span>]
 }
 
 <span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_subnet&#34; &#34;aadds&#34;</span> {
@@ -292,7 +301,7 @@ AADDS Managed Domain
     <span style=color:#66d9ef>azurerm_subnet_network_security_group_association</span>.<span style=color:#66d9ef>aadds</span>,
   ]
 }
-</code></pre></div><p>Run <code>terraform apply</code> to deploy everything. It takes around 45 minutes to complete. Let me know what you think in the comments or on Twitter!</p>
+</code></pre></div><p>Run <code>terraform apply</code> to deploy everything. It takes around 45 minutes to complete. Share your thoughts with me in the comments or on Twitter!</p>
 </div>
 <div class=social-share>
 <strong>Share this post: </strong>
@@ -406,7 +415,7 @@ AADDS Managed Domain
 </div>
 </footer>
 <script type=text/javascript src=/js/main.4ff2f10f84f12edcd3384ac6f0e68ca3371accb50a70cf5cbee05b7624d88587a58830f04441b3e1d2311dcd379ee8e6f20a6c5b1124707e4007117247fe1b1d.js integrity="sha512-T/LxD4TxLtzTOErG8OaMozcazLUKcM9cvuBbdiTYhYeliDDwREGz4dIxHc03nujm8gpsWxEkcH5ABxFyR/4bHQ=="></script>
-<script type=text/javascript src=/js/flexsearch.9438a9d0afa295931aa10810015bd2256e8ee2089c62bf798481f984e7d07201b2fcf9190807ba60b9816b2ba394bee375b7ee202242bb862255d74169a11e6a.js integrity="sha512-lDip0K+ilZMaoQgQAVvSJW6O4gicYr95hIH5hOfQcgGy/PkZCAe6YLmBayujlL7jdbfuICJCu4YiVddBaaEeag=="></script>
+<script type=text/javascript src=/js/flexsearch.8bd3a90d6a08103f03f5772fe465c174cfa16cd7801c1ab4895344e99f92c8465989d36ed3d2cd892bffa40ce1820b741a5b7793f41b61f5ddc47b3101671470.js integrity="sha512-i9OpDWoIED8D9Xcv5GXBdM+hbNeAHBq0iVNE6Z+SyEZZidNu09LNiSv/pAzhggt0Glt3k/QbYfXdxHsxAWcUcA=="></script>
 </div>
 </body>
 </html>
