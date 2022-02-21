@@ -45,12 +45,6 @@ resource "azuread_service_principal" "aadds" {
 }
 ```
 
-If it already exists, you can import it into Terraform like this:
-
-```shell
-
-```
-
 ## `Microsoft.AAD` Resource Provider Registration
 
 To use AADDS, register the `Microsoft.AAD` resource provider:
@@ -113,7 +107,7 @@ resource "azurerm_virtual_network" "aadds" {
   address_space       = ["10.0.0.0/16"]
 
   # AADDS DCs
-  #dns_servers = ["10.0.0.4", "10.0.0.5"] TODO?
+  dns_servers = ["10.0.0.4", "10.0.0.5"]
 }
 
 resource "azurerm_subnet" "aadds" {
@@ -124,7 +118,7 @@ resource "azurerm_subnet" "aadds" {
 }
 ```
 
-To lock down access to the managed domain, add the following _network security group_:
+To lock down access to the managed domain, add the following _network security group_. The `AllowRD` and `AllowPSRemoting` rules [allow the Azure platform to monitor, manage, and update the managed domain](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-nsg#inbound-security-rules):
 
 ```hcl
 resource "azurerm_network_security_group" "aadds" {
@@ -132,19 +126,6 @@ resource "azurerm_network_security_group" "aadds" {
   location            = azurerm_resource_group.aadds.location
   resource_group_name = azurerm_resource_group.aadds.name
 
-  security_rule {
-    name                       = "AllowSyncWithAzureAD"
-    priority                   = 101
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "AzureActiveDirectoryDomainServices"
-    destination_address_prefix = "*"
-  }
-
-  # See https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-nsg#inbound-security-rules
   security_rule {
     name                       = "AllowRD"
     priority                   = 201
@@ -168,20 +149,6 @@ resource "azurerm_network_security_group" "aadds" {
     source_address_prefix      = "AzureActiveDirectoryDomainServices"
     destination_address_prefix = "*"
   }
-
-  # See https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-ldaps#resolution
-  # See https://docs.microsoft.com/en-us/azure/active-directory-domain-services/tutorial-configure-ldaps#lock-down-secure-ldap-access-over-the-internet
-  security_rule {
-    name                       = "AllowLDAPS"
-    priority                   = 401
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "636"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
 }
 
 resource azurerm_subnet_network_security_group_association "aadds" {
@@ -190,9 +157,25 @@ resource azurerm_subnet_network_security_group_association "aadds" {
 }
 ```
 
+When you enable secure LDAP, [it's recommended to create an additional security rule to restrict inbound LDAPS access to specific IP addresses to protect the managed domain from brute force attacks](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/alert-ldaps#resolution):
+
+```hcl
+security_rule {
+  name                       = "AllowLDAPS"
+  priority                   = 401
+  direction                  = "Inbound"
+  access                     = "Allow"
+  protocol                   = "Tcp"
+  source_port_range          = "*"
+  destination_port_range     = "636"
+  source_address_prefix      = "<Authorized LDAPS IPs>"
+  destination_address_prefix = "*"
+}
+```
+
 ## AADDS Managed Domain
 
-The final step is to deploy the AADDS managed domain.
+Finally, deploy the AADDS managed domain:
 
 ```hcl
 resource "azurerm_active_directory_domain_service" "aadds" {
