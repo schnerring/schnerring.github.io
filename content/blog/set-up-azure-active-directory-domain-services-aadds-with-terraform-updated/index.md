@@ -118,7 +118,7 @@ resource "azurerm_resource_group" "aadds" {
 
 ## Network Resources
 
-Add the virtual network next. Make sure to set `dns_servers` to the IP addresses of the DCs. To verify, you can find them on the **Overview** page of the managed domain after the deployment succeeded.
+Add the virtual network and subnet next.
 
 ```hcl
 resource "azurerm_virtual_network" "aadds" {
