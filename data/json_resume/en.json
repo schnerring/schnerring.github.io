@@ -12,12 +12,7 @@
     "profiles": [
       {
         "network": "GitHub",
-        "username": "schnerring",
         "url": "https://github.com/schnerring"
-      },
-      {
-        "network": "Matrix",
-        "username": "@michael:schnerring.net"
       },
       {
         "network": "LinkedIn",
@@ -26,6 +21,10 @@
       {
         "network": "Twitter",
         "url": "https://twitter.com/schnerringo"
+      },
+      {
+        "network": "Matrix",
+        "url": "https://matrix.to/#/@michael:schnerring.net"
       },
       {
         "network": "StackOverflow",
