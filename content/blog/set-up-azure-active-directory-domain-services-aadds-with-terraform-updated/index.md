@@ -22,7 +22,7 @@ I wanted to revisit this topic for a while because the [previous guide I wrote a
 
 With [v2.69.0 of the official Terraform azurerm provider](https://github.com/terraform-providers/terraform-provider-azurerm/releases/tag/v2.69.0) released, the [`active_directory_domain_service`](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/active_directory_domain_service) resource is now available. In this post, I'll briefly walk you through the required steps of setting up AADDS. [See also the official Microsoft documentation for more details.](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/powershell-create-instance#create-required-azure-ad-resources)
 
-[I also published the code to a sample GitHub repo.](https://github.com/schnerring/terraform-azurerm-aadds-avd)
+[I also published the code to a sample GitHub repo.](https://github.com/schnerring/terraform-azurerm-aadds-avd/tree/v0.1.0)
 
 ## What Are Azure Active Directory Domain Services?
 

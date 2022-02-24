@@ -82,3 +82,47 @@ resource "azurerm_virtual_network_peering" "avd_to_aadds" {
   remote_virtual_network_id = azurerm_virtual_network.aadds.id
 }
 ```
+
+## Host Pool
+
+> A [host pool](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#host-pools) is a collection of Azure virtual machines that register to Azure Virtual Desktop as session hosts when you run the Azure Virtual Desktop agent. All session host virtual machines in a host pool should be sourced from the same image for a consistent user experience.
+
+We add the AVD host pool and the registration info. We'll later register the session hosts via VM extension to the host pool using the registration info:
+
+```hcl
+locals {
+  # Switzerland North is not supported
+  avd_location = "West Europe"
+}
+
+resource "azurerm_virtual_desktop_host_pool" "avd" {
+  name                = "vis-avd-hp"
+  location            = local.avd_location
+  resource_group_name = azurerm_resource_group.avd.name
+
+  type                = "Pooled"
+  load_balancer_type  = "BreadthFirst"
+  friendly_name       = "AVD Host Pool using AADDS"
+  start_vm_on_connect = true
+}
+
+resource "time_rotating" "avd_registration_expiration" {
+  # Must be between 1 hour and 30 days
+  rotation_days = 29
+}
+
+resource "azurerm_virtual_desktop_host_pool_registration_info" "avd" {
+  hostpool_id     = azurerm_virtual_desktop_host_pool.avd.id
+  expiration_date = time_rotating.avd_registration_expiration.rotation_rfc3339
+}
+```
+
+I deploy my AADDS and AVD resources to the `Switzerland North` region. However, I have to deploy AVD _service_ resources to `West Europe` because [the AVD service isn't available in all regions](https://docs.microsoft.com/en-us/azure/virtual-desktop/data-locations).
+
+To get the latest supported regions, [re-register the AVD resource provider](https://docs.microsoft.com/en-us/azure/virtual-desktop/troubleshoot-set-up-issues#i-only-see-us-when-setting-the-location-for-my-service-objects) like this:
+
+1. Select your subscription under **Subscriptions** in the Azure Portal.
+2. Select the **Resource Provider** menu.
+3. **Re-register** `Microsoft.DesktopVirtualization`.
+
+We also enable `start_vm_on_connect`. I like this option for small-scale deployments that don't require daily access. The trade-off for reducing costs this way is that the first person connecting to the pool will have to wait for the session host to boot.
