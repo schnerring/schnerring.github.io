@@ -39,7 +39,7 @@ We'll deploy AADDS and AVD resources to separate virtual networks and resource g
 
 ## Network Resources
 
-Create the `avd-rg` resource group and add the `avd-vnet` spoke network to it:
+Create the `avd-rg` resource group and add the `avd-vnet` spoke network to it. The network uses the AADDS domain controllers (DCs) as `dns_servers`:
 
 ```hcl
 resource "azurerm_resource_group" "avd" {
@@ -54,9 +54,7 @@ resource "azurerm_virtual_network" "avd" {
   location            = azurerm_resource_group.avd.location
   resource_group_name = azurerm_resource_group.avd.name
   address_space       = ["10.10.0.0/16"]
-
-  # Use AADDS DCs as DNS servers
-  dns_servers = azurerm_active_directory_domain_service.aadds.initial_replica_set.0.domain_controller_ip_addresses
+  dns_servers         = azurerm_active_directory_domain_service.aadds.initial_replica_set.0.domain_controller_ip_addresses
 }
 
 resource "azurerm_subnet" "avd" {
@@ -64,5 +62,23 @@ resource "azurerm_subnet" "avd" {
   resource_group_name  = azurerm_resource_group.avd.name
   virtual_network_name = azurerm_virtual_network.avd.name
   address_prefixes     = ["10.10.0.0/24"]
+}
+```
+
+To give AVD VMs line of sight of AADDS, we need to add the following network peerings:
+
+```hcl
+resource "azurerm_virtual_network_peering" "aadds_to_avd" {
+  name                      = "hub-to-avd-peer"
+  resource_group_name       = azurerm_resource_group.aadds.name
+  virtual_network_name      = azurerm_virtual_network.aadds.name
+  remote_virtual_network_id = azurerm_virtual_network.avd.id
+}
+
+resource "azurerm_virtual_network_peering" "avd_to_aadds" {
+  name                      = "avd-to-aadds-peer"
+  resource_group_name       = azurerm_resource_group.avd.name
+  virtual_network_name      = azurerm_virtual_network.avd.name
+  remote_virtual_network_id = azurerm_virtual_network.aadds.id
 }
 ```
