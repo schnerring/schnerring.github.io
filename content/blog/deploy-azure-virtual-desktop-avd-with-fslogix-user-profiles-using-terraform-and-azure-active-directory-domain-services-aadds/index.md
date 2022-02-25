@@ -96,7 +96,7 @@ locals {
 }
 
 resource "azurerm_virtual_desktop_host_pool" "avd" {
-  name                = "vis-avd-hp"
+  name                = "avd-hp"
   location            = local.avd_location
   resource_group_name = azurerm_resource_group.avd.name
 
@@ -126,3 +126,35 @@ To get the latest supported regions, [re-register the AVD resource provider](htt
 3. **Re-register** `Microsoft.DesktopVirtualization`.
 
 We also enable `start_vm_on_connect`. I like this option for small-scale deployments that don't require daily access. The trade-off for reducing costs this way is that the first person connecting to the pool will have to wait for the session host to boot.
+
+## Workspace and App Group
+
+Next, we create a [workspace](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#workspaces) and add an [app group](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#app-groups) to it. Two types of app groups exist:
+
+- `Desktop`: full desktop
+- `RemoteApp`: individual apps
+
+Adding the following gives AVD users the full desktop experience:
+
+```hcl
+resource "azurerm_virtual_desktop_workspace" "avd" {
+  name                = "avd-ws"
+  location            = local.avd_location
+  resource_group_name = azurerm_resource_group.avd.name
+}
+
+resource "azurerm_virtual_desktop_application_group" "avd" {
+  name                = "desktop-ag"
+  location            = local.avd_location
+  resource_group_name = azurerm_resource_group.avd.name
+
+  type          = "Desktop"
+  host_pool_id  = azurerm_virtual_desktop_host_pool.avd.id
+  friendly_name = "Full Desktop"
+}
+
+resource "azurerm_virtual_desktop_workspace_application_group_association" "avd" {
+  workspace_id         = azurerm_virtual_desktop_workspace.avd.id
+  application_group_id = azurerm_virtual_desktop_application_group.avd.id
+}
+```
