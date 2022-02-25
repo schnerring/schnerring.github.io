@@ -4,7 +4,7 @@ date: "2022-02-22T17:30:52+01:00"
 draft: true
 comments: true
 socialShare: true
-toc: false
+toc: true
 cover:
   src: cover.jpg
 tags:
@@ -25,15 +25,15 @@ With [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/vi
 
 ## Prerequisites
 
-Besides an active Azure subscription and [Terraform](https://www.terraform.io/) configured on your workstation, [Azure Active Directory Domain Services (AADDS)](https://azure.microsoft.com/en-us/services/active-directory-ds/) are required. [Check out my previous post on setting up AADDS with Terraform if you haven't already!](/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated)
+Besides an active Azure subscription and [Terraform](https://www.terraform.io/) configured on your workstation, [Azure Active Directory Domain Services (AADDS)](https://azure.microsoft.com/en-us/services/active-directory-ds/) are required. [Check out my previous post on setting up AADDS with Terraform if you haven't already!](/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated) Some Terraform resources in this guide, e.g., the network peerings and domain-join VM extension, depend on the AADDS resources from the that post.
 
 ## Do You Know What's Exciting?
 
-It's possible to just [Azure AD-join (AAD-join) AVD sessions hosts](https://docs.microsoft.com/en-us/azure/architecture/example-scenario/wvd/azure-virtual-desktop-azure-active-directory-join), eliminating the requirement to use AADDS or on-premise AD DS and reduce the costs and complexity of AVD deployments even more. Unfortunately, it's not yet fully production-ready because [FSLogix profile support for AAD-joined AVD VMs is only in public preview](https://azure.microsoft.com/en-us/updates/public-preview-fslogix-profiles-support-for-azure-adjoined-vms-for-azure-virtual-desktop/). Currently, using AAD authentication with Azure Files still requires [hybrid identities](https://docs.microsoft.com/en-us/azure/active-directory/hybrid/whatis-hybrid-identity). But AVD is now one step closer to being a cloud-only solution. I can't wait to terraformify all of it! Stay tuned because I'll post about it as soon as things are generally available.
+It's possible to just [Azure AD-join (AAD-join) AVD session hosts](https://docs.microsoft.com/en-us/azure/architecture/example-scenario/wvd/azure-virtual-desktop-azure-active-directory-join), eliminating the requirement to use AADDS or on-premise AD DS and reduce the costs and complexity of AVD deployments even more. Unfortunately, it's not yet fully production-ready because [FSLogix profile support for AAD-joined AVD VMs is only in public preview](https://azure.microsoft.com/en-us/updates/public-preview-fslogix-profiles-support-for-azure-adjoined-vms-for-azure-virtual-desktop/). Currently, using AAD authentication with Azure Files still requires [hybrid identities](https://docs.microsoft.com/en-us/azure/active-directory/hybrid/whatis-hybrid-identity). But it's nice that AVD is one step closer to being a cloud-only solution. I can't wait to terraformify all of it! Stay tuned because I'll post about it as soon as things are generally available.
 
 ## Overview
 
-We'll deploy AADDS and AVD resources to separate virtual networks and resource groups. It's a [hub-spoke network topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke), a typical approach to organize large-scale networks. The hub (`aadds-vnet`), the central connectivity point, typically contains other services besides AADDS. E.g. a [VPN gateway](https://azure.microsoft.com/en-us/services/vpn-gateway/) connecting your on-premises network to the Azure cloud, [Azure Bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview), or [Azure Firewall](https://docs.microsoft.com/en-us/azure/firewall/overview). Spoke networks (`avd-vnet`) contain isolated workloads using [network peerings](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) to connect to the hub.
+We'll deploy AADDS and AVD resources to separate virtual networks and resource groups. This is called a [hub-spoke network topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke), a typical approach to organize large-scale networks. The hub (`aadds-vnet`), the central connectivity point, typically contains other services besides AADDS. E.g. a [VPN gateway](https://azure.microsoft.com/en-us/services/vpn-gateway/) connecting your on-premises network to the Azure cloud. [Azure Bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) or [Azure Firewall](https://docs.microsoft.com/en-us/azure/firewall/overview) are also services that might reside in the hub network. Spoke networks (`avd-vnet`) contain isolated workloads using [network peerings](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) to connect to the hub.
 
 <!--![Hub-spoke network diagram](hub-spoke-network.png)-->
 
@@ -87,7 +87,7 @@ resource "azurerm_virtual_network_peering" "avd_to_aadds" {
 
 > A [host pool](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#host-pools) is a collection of Azure virtual machines that register to Azure Virtual Desktop as session hosts when you run the Azure Virtual Desktop agent. All session host virtual machines in a host pool should be sourced from the same image for a consistent user experience.
 
-We add the AVD host pool and the registration info. We'll later register the session hosts via VM extension to the host pool using the registration info:
+We add the AVD host pool and the registration info. We'll later register the session hosts via VM extension to the host pool using a token from the registration info:
 
 ```hcl
 locals {
@@ -158,3 +158,113 @@ resource "azurerm_virtual_desktop_workspace_application_group_association" "avd"
   application_group_id = azurerm_virtual_desktop_application_group.avd.id
 }
 ```
+
+## Session Host VMs
+
+Let's add two session hosts to the AVD host pool. To be able to adjust the amount of VMs inside the host pool later, we define a variable like this:
+
+```hcl
+variable "avd_host_pool_size" {
+  type        = number
+  description = "Number of session hosts to add to the AVD host pool."
+}
+```
+
+Next, we add the VM NICs for the session hosts:
+
+```hcl
+resource "azurerm_network_interface" "avd" {
+  count               = var.avd_host_pool_size
+  name                = "avd-nic-${count.index}"
+  location            = azurerm_resource_group.avd.location
+  resource_group_name = azurerm_resource_group.avd.name
+
+  ip_configuration {
+    name                          = "avd-ipconf"
+    subnet_id                     = azurerm_subnet.avd.id
+    private_ip_address_allocation = "Dynamic"
+  }
+}
+```
+
+After, we add the session host VMs like this:
+
+```hcl
+resource "random_password" "avd_local_admin" {
+  length = 64
+}
+
+resource "azurerm_windows_virtual_machine" "avd" {
+  count               = length(azurerm_network_interface.avd)
+  name                = "avd-vm-${count.index}"
+  location            = azurerm_resource_group.avd.location
+  resource_group_name = azurerm_resource_group.avd.name
+
+  size                  = "Standard_D4s_v5"
+  license_type          = "Windows_Client" # https://docs.microsoft.com/en-us/azure/virtual-machines/windows/windows-desktop-multitenant-hosting-deployment#verify-your-vm-is-utilizing-the-licensing-benefit
+  admin_username        = "avd-local-admin"
+  admin_password        = random_password.avd_local_admin.result
+  network_interface_ids = [azurerm_network_interface.avd[count.index].id]
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Premium_LRS"
+  }
+
+  source_image_reference {
+    publisher = "MicrosoftWindowsDesktop"
+    offer     = "windows-11"
+    sku       = "win11-21h2-avd"
+    version   = "latest"
+  }
+}
+```
+
+[To ensure the session host VMs utilize the licensing benefits available with AVD](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/windows-desktop-multitenant-hosting-deployment#verify-your-vm-is-utilizing-the-licensing-benefit), we select `Windows_Client` as `license_type` value.
+
+## AADDS Domain-join the VMs
+
+We domain-join the session host VMs with a [VM extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) called `JsonADDomainExtension`:
+
+```hcl
+resource "azurerm_virtual_machine_extension" "avd_aadds_domain_join" {
+  count                      = length(azurerm_windows_virtual_machine.avd)
+  name                       = "aadds-domain-join-vmext"
+  virtual_machine_id         = azurerm_windows_virtual_machine.avd[count.index].id
+  publisher                  = "Microsoft.Compute"
+  type                       = "JsonADDomainExtension"
+  type_handler_version       = "1.3"
+  auto_upgrade_minor_version = true
+
+  settings = <<-SETTINGS
+    {
+      "Name": "${azurerm_active_directory_domain_service.aadds.domain_name}",
+      "OUPath": "${join(",", formatlist("DC=%s", split(".", azurerm_active_directory_domain_service.aadds.domain_name)))}",
+      "User": "${azuread_user.dc_admin.user_principal_name}",
+      "Restart": "true",
+      "Options": "3"
+    }
+    SETTINGS
+
+  protected_settings = <<-PROTECTED_SETTINGS
+    {
+      "Password": "${random_password.dc_admin.result}"
+    }
+    PROTECTED_SETTINGS
+
+  lifecycle {
+    ignore_changes = [settings, protected_settings]
+  }
+
+  depends_on = [
+    azurerm_virtual_network_peering.aadds_to_avd,
+    azurerm_virtual_network_peering.avd_to_aadds
+  ]
+}
+```
+
+We have to make sure the session host VMs have line of sight of the AADDS DCs. To do that, we add the network peering resources to the `depends_on` list of the VM extension.
+
+The `join(",", formatlist("DC=%s", split(".", azurerm_active_directory_domain_service.aadds.domain_name)))` expression transforms a string like `aadds.example.com` to `DC=aadds,DC=example,DC=com`.
+
+After a VM has been domain-joined, it doesn't make sense to domain-join it again when the `settings` or `protected_settings` of the VM extension change, so we `ignore_changes` of these properties.
