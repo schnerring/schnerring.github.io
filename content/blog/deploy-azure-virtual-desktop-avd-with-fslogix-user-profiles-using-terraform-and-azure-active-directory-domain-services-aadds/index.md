@@ -201,7 +201,7 @@ resource "azurerm_windows_virtual_machine" "avd" {
   resource_group_name = azurerm_resource_group.avd.name
 
   size                  = "Standard_D4s_v5"
-  license_type          = "Windows_Client" # https://docs.microsoft.com/en-us/azure/virtual-machines/windows/windows-desktop-multitenant-hosting-deployment#verify-your-vm-is-utilizing-the-licensing-benefit
+  license_type          = "Windows_Client"
   admin_username        = "avd-local-admin"
   admin_password        = random_password.avd_local_admin.result
   network_interface_ids = [azurerm_network_interface.avd[count.index].id]
@@ -268,3 +268,41 @@ We have to make sure the session host VMs have line of sight of the AADDS DCs. T
 The `join(",", formatlist("DC=%s", split(".", azurerm_active_directory_domain_service.aadds.domain_name)))` expression transforms a string like `aadds.example.com` to `DC=aadds,DC=example,DC=com`.
 
 After a VM has been domain-joined, it doesn't make sense to domain-join it again when the `settings` or `protected_settings` of the VM extension change, so we `ignore_changes` of these properties.
+
+## Add VMs to the Host Pool
+
+```hcl
+resource "azurerm_virtual_machine_extension" "avd_add_session_host" {
+  count                = length(azurerm_windows_virtual_machine.avd)
+  name                 = "add-session-host-vmext"
+  virtual_machine_id   = azurerm_windows_virtual_machine.avd[count.index].id
+  publisher            = "Microsoft.Powershell"
+  type                 = "DSC"
+  type_handler_version = "2.73"
+
+  settings = <<-SETTINGS
+    {
+      "modulesUrl": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_3-10-2021.zip",
+      "configurationFunction": "Configuration.ps1\\AddSessionHost",
+      "properties": {
+        "hostPoolName": "${azurerm_virtual_desktop_host_pool.avd.name}",
+        "aadJoin": false
+      }
+    }
+    SETTINGS
+
+  protected_settings = <<-PROTECTED_SETTINGS
+    {
+      "properties": {
+        "registrationInfoToken": "${azurerm_virtual_desktop_host_pool_registration_info.avd.token}"
+      }
+    }
+    PROTECTED_SETTINGS
+
+  lifecycle {
+    ignore_changes = [settings, protected_settings]
+  }
+
+  depends_on = [azurerm_virtual_machine_extension.avd_aadds_domain_join]
+}
+```
