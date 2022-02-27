@@ -228,4 +228,4 @@ resource "azurerm_active_directory_domain_service" "aadds" {
 }
 ```
 
-Run `terraform apply` to deploy everything. It takes around 45 minutes to complete. Share your thoughts with me in the comments or on Twitter!
+Run `terraform apply` to deploy everything. It takes an hour to complete. Please share your thoughts with me in the comments or on Twitter!

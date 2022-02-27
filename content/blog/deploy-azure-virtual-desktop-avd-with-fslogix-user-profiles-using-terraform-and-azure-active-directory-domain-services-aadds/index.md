@@ -1,6 +1,6 @@
 ---
 title: "Deploy Azure Virtual Desktop (AVD) with FSLogix User Profiles Using Terraform and Azure Active Directory Domain Services (AADDS)"
-date: "2022-02-22T17:30:52+01:00"
+date: "2022-02-27T21:32:52+01:00"
 draft: true
 comments: true
 socialShare: true
@@ -25,7 +25,7 @@ With [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/vi
 
 ## Prerequisites
 
-Besides an active Azure subscription and [Terraform](https://www.terraform.io/) configured on your workstation, [Azure Active Directory Domain Services (AADDS)](https://azure.microsoft.com/en-us/services/active-directory-ds/) are required. [Check out my previous post on setting up AADDS with Terraform if you haven't already!](/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated) Some Terraform resources in this guide, e.g., the network peerings and domain-join VM extension, depend on the AADDS resources from the that post.
+Besides an active Azure subscription and [Terraform](https://www.terraform.io/) configured on your workstation, [Azure Active Directory Domain Services (AADDS)](https://azure.microsoft.com/en-us/services/active-directory-ds/) are required. [Check out my previous post on setting up AADDS with Terraform if you haven't already!](/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated) Some Terraform resources in this guide, e.g., the network peerings and domain-join VM extension, depend on the AADDS resources in that post.
 
 ## Do You Know What's Exciting?
 
@@ -33,7 +33,7 @@ It's possible to just [Azure AD-join (AAD-join) AVD session hosts](https://docs.
 
 ## Overview
 
-We'll deploy AADDS and AVD resources to separate virtual networks and resource groups. This is called a [hub-spoke network topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke), a typical approach to organize large-scale networks. The hub (`aadds-vnet`), the central connectivity point, typically contains other services besides AADDS. E.g. a [VPN gateway](https://azure.microsoft.com/en-us/services/vpn-gateway/) connecting your on-premises network to the Azure cloud. [Azure Bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) or [Azure Firewall](https://docs.microsoft.com/en-us/azure/firewall/overview) are also services that might reside in the hub network. Spoke networks (`avd-vnet`) contain isolated workloads using [network peerings](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) to connect to the hub.
+We'll deploy AADDS and AVD resources to separate virtual networks and resource groups. It is called a [hub-spoke network topology](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/hybrid-networking/hub-spoke), a typical approach to organize large-scale networks. The hub (`aadds-vnet`), the central connectivity point, typically contains other services besides AADDS. E.g., a [VPN gateway](https://azure.microsoft.com/en-us/services/vpn-gateway/) connecting your on-premises network to the Azure cloud. [Azure Bastion](https://docs.microsoft.com/en-us/azure/bastion/bastion-overview) or [Azure Firewall](https://docs.microsoft.com/en-us/azure/firewall/overview) are also services that might reside in the hub network. Spoke networks (`avd-vnet`) contain isolated workloads using [network peerings](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-peering-overview) to connect to the hub.
 
 <!--![Hub-spoke network diagram](hub-spoke-network.png)-->
 
@@ -159,7 +159,7 @@ resource "azurerm_virtual_desktop_workspace_application_group_association" "avd"
 }
 ```
 
-## Session Host VMs
+## Session Hosts
 
 Let's add two session hosts to the AVD host pool. To be able to adjust the amount of VMs inside the host pool later, we define a variable like this:
 
@@ -187,7 +187,7 @@ resource "azurerm_network_interface" "avd" {
 }
 ```
 
-After, we add the session host VMs like this:
+After, we add the session hosts like this:
 
 ```hcl
 resource "random_password" "avd_local_admin" {
@@ -220,11 +220,86 @@ resource "azurerm_windows_virtual_machine" "avd" {
 }
 ```
 
-[To ensure the session host VMs utilize the licensing benefits available with AVD](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/windows-desktop-multitenant-hosting-deployment#verify-your-vm-is-utilizing-the-licensing-benefit), we select `Windows_Client` as `license_type` value.
+[To ensure the session hosts utilize the licensing benefits available with AVD](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/windows-desktop-multitenant-hosting-deployment#verify-your-vm-is-utilizing-the-licensing-benefit), we select `Windows_Client` as `license_type` value.
+
+## Understanding the VM Extensions
+
+To figure out the required VM extension, I used the AVD wizard of the Azure Portal. During the _review + create_ step, I downloaded the ARM template and reverse-engineered them.
+
+Sometimes, creating complex deployments via Azure Portal look like black magic. Backtracking the generated ARM templates is something I like to do to get a deeper understanding of what's happening under the hood. It's usually my initial step when trying to terraformify something for the first time that I can't find good examples of elsewhere.
+
+You can find the AVD ARM templates on official Azure GitHub [github.com/Azure/RDS-Templates/ARM-wvd-templates](https://github.com/Azure/RDS-Templates/tree/master/ARM-wvd-templates). The VM templates reside in the `nestedtemplates` directory [containing the VM extension resources that we replicated with Terraform](https://github.com/Azure/RDS-Templates/blob/9a443a5d4e29304247ae8d9b1bcddd504f8bd72e/ARM-wvd-templates/nestedtemplates/managedDisks-galleryvm.json#L460-L533):
+
+```json
+    {
+      "apiVersion": "2018-10-01",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')), '/', 'Microsoft.PowerShell.DSC')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [ "rdsh-vm-loop" ],
+      "copy": {
+        "name": "rdsh-dsc-loop",
+        "count": "[parameters('rdshNumberOfInstances')]"
+      },
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.73",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "modulesUrl": "[parameters('artifactsLocation')]",
+          "configurationFunction": "Configuration.ps1\\AddSessionHost",
+          "properties": {
+            "hostPoolName": "[parameters('hostpoolName')]",
+            "registrationInfoToken": "[parameters('hostpoolToken')]",
+            "aadJoin": "[parameters('aadJoin')]",
+            "sessionHostConfigurationLastUpdateTime": "[parameters('SessionHostConfigurationVersion')]"
+          }
+        }
+      }
+    },
+    {
+      "condition": "[not(parameters('aadJoin'))]",
+      "apiVersion": "2018-10-01",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('rdshPrefix'), add(copyindex(), parameters('vmInitialNumber')), '/', 'joindomain')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [ "rdsh-dsc-loop" ],
+      "copy": {
+        "name": "rdsh-domain-join-loop",
+        "count": "[parameters('rdshNumberOfInstances')]"
+      },
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "JsonADDomainExtension",
+        "typeHandlerVersion": "1.3",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "name": "[variables('domain')]",
+          "ouPath": "[parameters('ouPath')]",
+          "user": "[parameters('administratorAccountUsername')]",
+          "restart": "true",
+          "options": "3"
+        },
+        "protectedSettings": {
+          "password": "[parameters('administratorAccountPassword')]"
+        }
+      }
+    },
+```
+
+However, the default parameters of the ARM templates downloaded from the Azure Portal differ from the values found on GitHub, e.g., `modulesParameter`:
+
+- GitHub: `https://raw.githubusercontent.com/Azure/RDS-Templates/master/ARM-wvd-templates/DSC/Configuration.zip`
+- Azure: `https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_01-20-2022.zip`
+
+It seems that Microsoft periodically releases the `Configuration.zip` to the `galleryartifacts` container of the `wvdportalstorageblob` storage account. [Have a look at all releases here.](https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts?restype=container&comp=list&prefix=Configuration)
+
+The URLs that the Azure Portal sometimes change. At the time of writing, it lags a bit behind. It uses the `Configuration_01-20-2022.zip` file despite `Configuration_02-23-2022.zip` being available.
 
 ## AADDS Domain-join the VMs
 
-We domain-join the session host VMs with a [VM extension](https://docs.microsoft.com/en-us/azure/virtual-machines/extensions/overview) called `JsonADDomainExtension`:
+We domain-join the session hosts with the `JsonADDomainExtension` VM extension:
 
 ```hcl
 resource "azurerm_virtual_machine_extension" "avd_aadds_domain_join" {
@@ -263,13 +338,24 @@ resource "azurerm_virtual_machine_extension" "avd_aadds_domain_join" {
 }
 ```
 
-We have to make sure the session host VMs have line of sight of the AADDS DCs. To do that, we add the network peering resources to the `depends_on` list of the VM extension.
+We have to ensure that the session hosts have line of sight to the AADDS DCs. To do that, we add the network peering resources to the `depends_on` list of the VM extension.
 
 The `join(",", formatlist("DC=%s", split(".", azurerm_active_directory_domain_service.aadds.domain_name)))` expression transforms a string like `aadds.example.com` to `DC=aadds,DC=example,DC=com`.
 
 After a VM has been domain-joined, it doesn't make sense to domain-join it again when the `settings` or `protected_settings` of the VM extension change, so we `ignore_changes` of these properties.
 
-## Add VMs to the Host Pool
+## Register VMs to the Host Pool
+
+First, let's add a variable containing the URL to the zip file containing the DSC configuration:
+
+```hcl
+variable "avd_add_session_host_dsc_modules_url" {
+  type    = string
+  default = "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_02-23-2022.zip"
+}
+```
+
+Then, we register the session hosts to the host pool with the `DSC` VM extension like this:
 
 ```hcl
 resource "azurerm_virtual_machine_extension" "avd_add_session_host" {
@@ -282,7 +368,7 @@ resource "azurerm_virtual_machine_extension" "avd_add_session_host" {
 
   settings = <<-SETTINGS
     {
-      "modulesUrl": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_3-10-2021.zip",
+      "modulesUrl": "${var.avd_add_session_host_dsc_modules_url}",
       "configurationFunction": "Configuration.ps1\\AddSessionHost",
       "properties": {
         "hostPoolName": "${azurerm_virtual_desktop_host_pool.avd.name}",
@@ -306,3 +392,5 @@ resource "azurerm_virtual_machine_extension" "avd_add_session_host" {
   depends_on = [azurerm_virtual_machine_extension.avd_aadds_domain_join]
 }
 ```
+
+We `ignore_changes` to the `settings` and `protected_settings` properties, analog to the AADDS domain-join VM extension.
