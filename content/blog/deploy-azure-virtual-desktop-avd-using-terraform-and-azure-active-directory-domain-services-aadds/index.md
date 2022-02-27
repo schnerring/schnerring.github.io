@@ -1,5 +1,5 @@
 ---
-title: "Deploy Azure Virtual Desktop (AVD) with FSLogix User Profiles Using Terraform and Azure Active Directory Domain Services (AADDS)"
+title: "Deploy Azure Virtual Desktop (AVD) Using Terraform and Azure Active Directory Domain Services (AADDS)"
 date: "2022-02-27T21:32:52+01:00"
 draft: true
 comments: true
@@ -13,13 +13,12 @@ tags:
   - Azure
   - Azure Active Directory Domain Services
   - Azure Virtual Desktop
-  - FSLogix
   - IaC
   - Infrastructure as Code
   - Terraform
 ---
 
-With [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/virtual-desktop/), you can deliver secure Windows 11 desktops and environments anywhere. It's pretty easy to deploy and scale. You can provide a coherent user experience from any end-user device and reduce costs by leveraging Windows 11 multi-session licensing. In this post, I'll walk you through setting up AVD with FSLogix profiles using Terraform.
+With [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/virtual-desktop/), you can deliver secure Windows 11 desktops and environments anywhere. It's pretty easy to deploy and scale. You can provide a coherent user experience from any end-user device and reduce costs by leveraging Windows 11 multi-session licensing. This tutorial will guide you through setting up AVD with AADDS using Terraform.
 
 <!--more-->
 
@@ -222,7 +221,7 @@ resource "azurerm_windows_virtual_machine" "avd" {
 
 [To ensure the session hosts utilize the licensing benefits available with AVD](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/windows-desktop-multitenant-hosting-deployment#verify-your-vm-is-utilizing-the-licensing-benefit), we select `Windows_Client` as `license_type` value.
 
-## Understanding the VM Extensions
+## Understanding VM Extensions
 
 To figure out the required VM extension, I used the AVD wizard of the Azure Portal. During the _review + create_ step, I downloaded the ARM template and reverse-engineered them.
 
