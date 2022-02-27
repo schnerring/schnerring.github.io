@@ -1,7 +1,7 @@
 ---
 title: "Deploy Azure Virtual Desktop (AVD) Using Terraform and Azure Active Directory Domain Services (AADDS)"
 date: "2022-02-27T21:32:52+01:00"
-draft: true
+draft: false
 comments: true
 socialShare: true
 toc: true
@@ -24,7 +24,7 @@ With [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/vi
 
 ## Prerequisites
 
-Besides an active Azure subscription and [Terraform](https://www.terraform.io/) configured on your workstation, [Azure Active Directory Domain Services (AADDS)](https://azure.microsoft.com/en-us/services/active-directory-ds/) are required. [Check out my previous post on setting up AADDS with Terraform if you haven't already!](/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated) Some Terraform resources in this guide, e.g., the network peerings and domain-join VM extension, depend on the AADDS resources in that post.
+Besides an active Azure subscription and [Terraform](https://www.terraform.io/) configured on your workstation, [Azure Active Directory Domain Services (AADDS)](https://azure.microsoft.com/en-us/services/active-directory-ds/) are required. [Check out my previous post on setting up AADDS with Terraform if you haven't already!](/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated) Some Terraform resources in this guide, e.g., the network peerings and AADDS domain-join (AADDS-join) VM extension, depend on the AADDS resources from that post.
 
 ## Do You Know What's Exciting?
 
@@ -223,11 +223,11 @@ resource "azurerm_windows_virtual_machine" "avd" {
 
 ## Understanding VM Extensions
 
-To figure out the required VM extension, I used the AVD wizard of the Azure Portal. During the _review + create_ step, I downloaded the ARM template and reverse-engineered them.
+To figure out the required VM extensions, I used the AVD wizard of the Azure Portal. During the _review + create_ step, I downloaded the ARM template and reverse-engineered it.
 
-Sometimes, creating complex deployments via Azure Portal look like black magic. Backtracking the generated ARM templates is something I like to do to get a deeper understanding of what's happening under the hood. It's usually my initial step when trying to terraformify something for the first time that I can't find good examples of elsewhere.
+Sometimes, creating complex deployments via Azure Portal feels like magic. Backtracking the generated ARM templates is something I like to do to get a deeper understanding of what's happening under the hood. It's usually my initial step when trying to terraformify something for the first time that I can't find good examples of elsewhere.
 
-You can find the AVD ARM templates on official Azure GitHub [github.com/Azure/RDS-Templates/ARM-wvd-templates](https://github.com/Azure/RDS-Templates/tree/master/ARM-wvd-templates). The VM templates reside in the `nestedtemplates` directory [containing the VM extension resources that we replicated with Terraform](https://github.com/Azure/RDS-Templates/blob/9a443a5d4e29304247ae8d9b1bcddd504f8bd72e/ARM-wvd-templates/nestedtemplates/managedDisks-galleryvm.json#L460-L533):
+You can find the AVD ARM templates on official Azure GitHub [github.com/Azure/RDS-Templates/ARM-wvd-templates](https://github.com/Azure/RDS-Templates/tree/master/ARM-wvd-templates). The VM templates reside in the `nestedtemplates` directory [containing the VM extension resources that we want to replicate with Terraform](https://github.com/Azure/RDS-Templates/blob/9a443a5d4e29304247ae8d9b1bcddd504f8bd72e/ARM-wvd-templates/nestedtemplates/managedDisks-galleryvm.json#L460-L533):
 
 ```json
     {
@@ -294,16 +294,16 @@ However, the default parameters of the ARM templates downloaded from the Azure P
 
 It seems that Microsoft periodically releases the `Configuration.zip` to the `galleryartifacts` container of the `wvdportalstorageblob` storage account. [Have a look at all releases here.](https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts?restype=container&comp=list&prefix=Configuration)
 
-The URLs that the Azure Portal sometimes change. At the time of writing, it lags a bit behind. It uses the `Configuration_01-20-2022.zip` file despite `Configuration_02-23-2022.zip` being available.
+The URLs that the Azure Portal uses sometimes change. At the time of writing, it uses the `Configuration_01-20-2022.zip` file despite `Configuration_02-23-2022.zip` being available.
 
-## AADDS Domain-join the VMs
+## AADDS-join the VMs
 
-We domain-join the session hosts with the `JsonADDomainExtension` VM extension:
+We AADDS-join the session hosts with the `JsonADDomainExtension` VM extension:
 
 ```hcl
-resource "azurerm_virtual_machine_extension" "avd_aadds_domain_join" {
+resource "azurerm_virtual_machine_extension" "avd_aadds_join" {
   count                      = length(azurerm_windows_virtual_machine.avd)
-  name                       = "aadds-domain-join-vmext"
+  name                       = "aadds-join-vmext"
   virtual_machine_id         = azurerm_windows_virtual_machine.avd[count.index].id
   publisher                  = "Microsoft.Compute"
   type                       = "JsonADDomainExtension"
@@ -341,11 +341,11 @@ We have to ensure that the session hosts have line of sight to the AADDS DCs. To
 
 The `join(",", formatlist("DC=%s", split(".", azurerm_active_directory_domain_service.aadds.domain_name)))` expression transforms a string like `aadds.example.com` to `DC=aadds,DC=example,DC=com`.
 
-After a VM has been domain-joined, it doesn't make sense to domain-join it again when the `settings` or `protected_settings` of the VM extension change, so we `ignore_changes` of these properties.
+After a VM has been AADDS-joined, it doesn't make sense to join it again when the `settings` or `protected_settings` of the VM extension change, so we `ignore_changes` of these properties.
 
 ## Register VMs to the Host Pool
 
-First, let's add a variable containing the URL to the zip file containing the DSC configuration:
+First, let's add a variable containing the URL to the zip file containing the DSC configuration, making it easier to update it in the future:
 
 ```hcl
 variable "avd_add_session_host_dsc_modules_url" {
@@ -357,9 +357,9 @@ variable "avd_add_session_host_dsc_modules_url" {
 Then, we register the session hosts to the host pool with the `DSC` VM extension like this:
 
 ```hcl
-resource "azurerm_virtual_machine_extension" "avd_add_session_host" {
+resource "azurerm_virtual_machine_extension" "avd_register_session_host" {
   count                = length(azurerm_windows_virtual_machine.avd)
-  name                 = "add-session-host-vmext"
+  name                 = "register-session-host-vmext"
   virtual_machine_id   = azurerm_windows_virtual_machine.avd[count.index].id
   publisher            = "Microsoft.Powershell"
   type                 = "DSC"
@@ -388,8 +388,34 @@ resource "azurerm_virtual_machine_extension" "avd_add_session_host" {
     ignore_changes = [settings, protected_settings]
   }
 
-  depends_on = [azurerm_virtual_machine_extension.avd_aadds_domain_join]
+  depends_on = [azurerm_virtual_machine_extension.avd_aadds_join]
 }
 ```
 
-We `ignore_changes` to the `settings` and `protected_settings` properties, analog to the AADDS domain-join VM extension.
+We `ignore_changes` to the `settings` and `protected_settings` properties, analog to the AADDS-join VM extension.
+
+## Schedule Auto-shutdown Of Session Hosts
+
+The final step is to auto-shutdown the session host VMs. We shut them down every day at 11 PM like this:
+
+```hcl
+resource "azurerm_dev_test_global_vm_shutdown_schedule" "avd" {
+  count              = length(azurerm_windows_virtual_machine.avd)
+  virtual_machine_id = azurerm_windows_virtual_machine.avd[count.index].id
+  location           = azurerm_resource_group.avd.location
+  enabled            = true
+
+  daily_recurrence_time = "2300"
+  timezone              = "W. Europe Standard Time"
+
+  notification_settings {
+    enabled = false
+  }
+}
+```
+
+## What's Next?
+
+Great! We successfully created an AVD environment with Terraform. [You can find the code on my GitHub.](https://github.com/schnerring/terraform-azurerm-avd/tree/v0.2.0)
+
+I'll write about creating custom AVD images with [Packer](https://www.packer.io/) next and follow it up by showing you how to configure [FSLogix user profiles](https://docs.microsoft.com/en-us/fslogix/overview) on your AADDS-joined AVD session hosts. Stay tuned!
