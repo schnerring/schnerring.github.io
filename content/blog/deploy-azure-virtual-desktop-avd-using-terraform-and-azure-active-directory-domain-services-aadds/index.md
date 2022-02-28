@@ -99,10 +99,9 @@ resource "azurerm_virtual_desktop_host_pool" "avd" {
   location            = local.avd_location
   resource_group_name = azurerm_resource_group.avd.name
 
-  type                = "Pooled"
-  load_balancer_type  = "BreadthFirst"
-  friendly_name       = "AVD Host Pool using AADDS"
-  start_vm_on_connect = true
+  type               = "Pooled"
+  load_balancer_type = "BreadthFirst"
+  friendly_name      = "AVD Host Pool using AADDS"
 }
 
 resource "time_rotating" "avd_registration_expiration" {
@@ -123,8 +122,6 @@ To get the latest supported regions, [re-register the AVD resource provider](htt
 1. Select your subscription under **Subscriptions** in the Azure Portal.
 2. Select the **Resource Provider** menu.
 3. **Re-register** `Microsoft.DesktopVirtualization`.
-
-We also enable `start_vm_on_connect`. I like this option for small-scale deployments that don't require daily access. The trade-off for reducing costs this way is that the first person connecting to the pool will have to wait for the session host to boot.
 
 ## Workspace and App Group
 
@@ -408,26 +405,6 @@ resource "azurerm_virtual_machine_extension" "avd_register_session_host" {
 ```
 
 Again, we `ignore_changes` to the `settings` and `protected_settings` properties.
-
-## Schedule Auto-shutdown of Session Hosts
-
-To auto-shutdown the session host VMs at 11 PM, we add the following:
-
-```hcl
-resource "azurerm_dev_test_global_vm_shutdown_schedule" "avd" {
-  count              = length(azurerm_windows_virtual_machine.avd)
-  virtual_machine_id = azurerm_windows_virtual_machine.avd[count.index].id
-  location           = azurerm_resource_group.avd.location
-  enabled            = true
-
-  daily_recurrence_time = "2300"
-  timezone              = "W. Europe Standard Time"
-
-  notification_settings {
-    enabled = false
-  }
-}
-```
 
 ## Role-based Access Control (RBAC)
 
