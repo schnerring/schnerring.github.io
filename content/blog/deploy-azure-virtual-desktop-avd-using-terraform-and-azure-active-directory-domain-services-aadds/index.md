@@ -186,7 +186,7 @@ resource "azurerm_network_interface" "avd" {
 }
 ```
 
-After, we add the session hosts like this:
+After, we add the session hosts:
 
 ```hcl
 resource "random_password" "avd_local_admin" {
@@ -305,7 +305,7 @@ The URLs that the Azure Portal uses sometimes change. At the time of writing, it
 
 ## AADDS-join the VMs
 
-When AADDS-joining a computer, it will be added to the built-in _AADDS Computers_ [Organizational Unit (OU)](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/create-ou) of the domain by default. To add the VM to a different OU, we can specify the _OU path_ during domain-join. Create the following optional variable:
+When AADDS-joining a computer, it will be added to the built-in _AADDS Computers_ [Organizational Unit (OU)](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/create-ou) of the domain by default. To add the VM to a different OU, we can optionally specify the _OU path_ during domain-join. Create the following optional variable:
 
 ```hcl
 variable "avd_ou_path" {
@@ -315,7 +315,7 @@ variable "avd_ou_path" {
 }
 ```
 
-We then AADDS-join the session hosts with the `JsonADDomainExtension` VM extension like this:
+We then AADDS-join the session hosts with the `JsonADDomainExtension` VM extension:
 
 ```hcl
 resource "azurerm_virtual_machine_extension" "avd_aadds_join" {
@@ -370,7 +370,7 @@ variable "avd_register_session_host_modules_url" {
 }
 ```
 
-Then, we register the session hosts to the host pool with the `DSC` VM extension like this:
+Then, we register the session hosts to the host pool with the `DSC` VM extension:
 
 ```hcl
 resource "azurerm_virtual_machine_extension" "avd_register_session_host" {
@@ -412,7 +412,7 @@ We `ignore_changes` to the `settings` and `protected_settings` properties, analo
 
 ## Schedule Auto-shutdown Of Session Hosts
 
-The final step is to auto-shutdown the session host VMs. We shut them down every day at 11 PM like this:
+To auto-shutdown the session host VMs at 11 PM, we add the following:
 
 ```hcl
 resource "azurerm_dev_test_global_vm_shutdown_schedule" "avd" {
@@ -427,6 +427,52 @@ resource "azurerm_dev_test_global_vm_shutdown_schedule" "avd" {
   notification_settings {
     enabled = false
   }
+}
+```
+
+## Role-based Access Control (RBAC)
+
+Let's create a group in AAD that authorizes its members to access the AVD application group we created earlier. To do so, we assign the AAD built-in `Desktop Virtualization User` role to the group:
+
+```hcl
+data "azurerm_role_definition" "desktop_virtualization_user" {
+  name = "Desktop Virtualization User"
+}
+
+resource "azuread_group" "avd_users" {
+  display_name     = "AVD Users"
+  security_enabled = true
+}
+
+resource "azurerm_role_assignment" "avd_users_desktop_virtualization_user" {
+  scope              = azurerm_virtual_desktop_application_group.avd.id
+  role_definition_id = data.azurerm_role_definition.desktop_virtualization_user.id
+  principal_id       = azuread_group.avd_users.id
+}
+```
+
+Assuming we want to authorize users that already exist within our AAD, we create a varible containing the UPNs of these users:
+
+```hcl
+variable "avd_user_upns" {
+  type        = list(string)
+  description = "List of user UPNs authorized to access AVD."
+  default     = []
+}
+```
+
+We are able then query those users with Terraform and add them to the group:
+
+```hcl
+data "azuread_user" "avd_users" {
+  for_each            = toset(var.avd_user_upns)
+  user_principal_name = each.key
+}
+
+resource "azuread_group_member" "avd_users" {
+  for_each         = data.azuread_user.avd_users
+  group_object_id  = azuread_group.avd_users.id
+  member_object_id = each.value.id
 }
 ```
 
