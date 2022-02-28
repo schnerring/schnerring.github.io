@@ -193,13 +193,18 @@ resource "random_password" "avd_local_admin" {
   length = 64
 }
 
+resource "random_id" "avd" {
+  count       = length(azurerm_network_interface.avd)
+  byte_length = 4
+}
+
 resource "azurerm_windows_virtual_machine" "avd" {
-  count               = length(azurerm_network_interface.avd)
-  name                = "avd-vm-${count.index}"
+  count               = length(random_id.avd)
+  name                = "avd-vm-${count.index}-${random_id.avd[count.index].hex}"
   location            = azurerm_resource_group.avd.location
   resource_group_name = azurerm_resource_group.avd.name
 
-  size                  = "Standard_D4s_v5"
+  size                  = "Standard_D4s_v4"
   license_type          = "Windows_Client"
   admin_username        = "avd-local-admin"
   admin_password        = random_password.avd_local_admin.result
@@ -220,6 +225,8 @@ resource "azurerm_windows_virtual_machine" "avd" {
 ```
 
 [To ensure the session hosts utilize the licensing benefits available with AVD](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/windows-desktop-multitenant-hosting-deployment#verify-your-vm-is-utilizing-the-licensing-benefit), we select `Windows_Client` as `license_type` value.
+
+The reason we append a random number to the VM name is [to prevent name conflicts with dangling host pool registrations](https://github.com/Azure/RDS-Templates/issues/662#issuecomment-1053648244).
 
 ## Understanding VM Extensions
 
@@ -298,7 +305,17 @@ The URLs that the Azure Portal uses sometimes change. At the time of writing, it
 
 ## AADDS-join the VMs
 
-We AADDS-join the session hosts with the `JsonADDomainExtension` VM extension:
+When AADDS-joining a computer, it will be added to the built-in _AADDS Computers_ [Organizational Unit (OU)](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/create-ou) of the domain by default. To add the VM to a different OU, we can specify the _OU path_ during domain-join. Create the following optional variable:
+
+```hcl
+variable "avd_ou_path" {
+  type        = string
+  description = "OU path used to AADDS domain-join AVD session hosts."
+  default     = ""
+}
+```
+
+We then AADDS-join the session hosts with the `JsonADDomainExtension` VM extension like this:
 
 ```hcl
 resource "azurerm_virtual_machine_extension" "avd_aadds_join" {
@@ -313,7 +330,7 @@ resource "azurerm_virtual_machine_extension" "avd_aadds_join" {
   settings = <<-SETTINGS
     {
       "Name": "${azurerm_active_directory_domain_service.aadds.domain_name}",
-      "OUPath": "${join(",", formatlist("DC=%s", split(".", azurerm_active_directory_domain_service.aadds.domain_name)))}",
+      "OUPath": "${var.avd_ou_path}",
       "User": "${azuread_user.dc_admin.user_principal_name}",
       "Restart": "true",
       "Options": "3"
@@ -339,8 +356,6 @@ resource "azurerm_virtual_machine_extension" "avd_aadds_join" {
 
 We have to ensure that the session hosts have line of sight to the AADDS DCs. To do that, we add the network peering resources to the `depends_on` list of the VM extension.
 
-The `join(",", formatlist("DC=%s", split(".", azurerm_active_directory_domain_service.aadds.domain_name)))` expression transforms a string like `aadds.example.com` to `DC=aadds,DC=example,DC=com`.
-
 After a VM has been AADDS-joined, it doesn't make sense to join it again when the `settings` or `protected_settings` of the VM extension change, so we `ignore_changes` of these properties.
 
 ## Register VMs to the Host Pool
@@ -348,9 +363,10 @@ After a VM has been AADDS-joined, it doesn't make sense to join it again when th
 First, let's add a variable containing the URL to the zip file containing the DSC configuration, making it easier to update it in the future:
 
 ```hcl
-variable "avd_add_session_host_dsc_modules_url" {
-  type    = string
-  default = "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_02-23-2022.zip"
+variable "avd_register_session_host_modules_url" {
+  type        = string
+  description = "URL to .zip file containing DSC configuration to register AVD session hosts to AVD host pool."
+  default     = "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_02-23-2022.zip"
 }
 ```
 
@@ -367,7 +383,7 @@ resource "azurerm_virtual_machine_extension" "avd_register_session_host" {
 
   settings = <<-SETTINGS
     {
-      "modulesUrl": "${var.avd_add_session_host_dsc_modules_url}",
+      "modulesUrl": "${var.avd_register_session_host_modules_url}",
       "configurationFunction": "Configuration.ps1\\AddSessionHost",
       "properties": {
         "hostPoolName": "${azurerm_virtual_desktop_host_pool.avd.name}",
