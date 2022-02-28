@@ -25,7 +25,7 @@
 <meta itemprop=name content="Deploy Azure Virtual Desktop (AVD) Using Terraform and Azure Active Directory Domain Services (AADDS)">
 <meta itemprop=description content="With Azure Virtual Desktop (AVD), you can deliver secure Windows 11 desktops and environments anywhere. It&rsquo;s pretty easy to deploy and scale. You can provide a coherent user experience from any end-user device and reduce costs by leveraging Windows 11 multi-session licensing. This tutorial will guide you through setting up AVD with AADDS using Terraform."><meta itemprop=datePublished content="2022-02-27T21:32:52+01:00">
 <meta itemprop=dateModified content="2022-02-27T21:32:52+01:00">
-<meta itemprop=wordCount content="1911"><meta itemprop=image content="https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/cover.jpg">
+<meta itemprop=wordCount content="1815"><meta itemprop=image content="https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/cover.jpg">
 <meta itemprop=keywords content="AADDS,AVD,Azure,Azure Active Directory Domain Services,Azure Virtual Desktop,IaC,Infrastructure as Code,Terraform,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>
@@ -211,10 +211,9 @@ Host Pool
   location            <span style=color:#f92672>=</span> <span style=color:#66d9ef>local</span>.<span style=color:#66d9ef>avd_location</span>
   resource_group_name <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>avd</span>.<span style=color:#66d9ef>name</span>
 
-  type                <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Pooled&#34;</span>
-  load_balancer_type  <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;BreadthFirst&#34;</span>
-  friendly_name       <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AVD Host Pool using AADDS&#34;</span>
-  start_vm_on_connect <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
+  type               <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Pooled&#34;</span>
+  load_balancer_type <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;BreadthFirst&#34;</span>
+  friendly_name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;AVD Host Pool using AADDS&#34;</span>
 }
 
 <span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;time_rotating&#34; &#34;avd_registration_expiration&#34;</span> {<span style=color:#75715e>
@@ -233,7 +232,6 @@ Host Pool
 <li>Select the <strong>Resource Provider</strong> menu.</li>
 <li><strong>Re-register</strong> <code>Microsoft.DesktopVirtualization</code>.</li>
 </ol>
-<p>We also enable <code>start_vm_on_connect</code>. I like this option for small-scale deployments that don&rsquo;t require daily access. The trade-off for reducing costs this way is that the first person connecting to the pool will have to wait for the session host to boot.</p>
 <h2 id=workspace-and-app-group>
 Workspace and App Group
 <a href=#workspace-and-app-group class=post-heading__anchor aria-hidden=true>#</a>
@@ -482,25 +480,7 @@ Register VMs to the Host Pool
   depends_on <span style=color:#f92672>=</span> [<span style=color:#66d9ef>azurerm_virtual_machine_extension</span>.<span style=color:#66d9ef>avd_aadds_join</span>]
 }
 </code></pre></div><p>Again, we <code>ignore_changes</code> to the <code>settings</code> and <code>protected_settings</code> properties.</p>
-<h2 id=schedule-auto-shutdown-of-session-hosts>
-Schedule Auto-shutdown of Session Hosts
-<a href=#schedule-auto-shutdown-of-session-hosts class=post-heading__anchor aria-hidden=true>#</a>
-</h2>
-<p>To auto-shutdown the session host VMs at 11 PM, we add the following:</p>
-<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-hcl data-lang=hcl><span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;azurerm_dev_test_global_vm_shutdown_schedule&#34; &#34;avd&#34;</span> {
-  count              <span style=color:#f92672>=</span> <span style=color:#66d9ef>length</span>(<span style=color:#66d9ef>azurerm_windows_virtual_machine</span>.<span style=color:#66d9ef>avd</span>)
-  virtual_machine_id <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_windows_virtual_machine</span>.<span style=color:#66d9ef>avd</span>[<span style=color:#66d9ef>count</span>.<span style=color:#66d9ef>index</span>].<span style=color:#66d9ef>id</span>
-  location           <span style=color:#f92672>=</span> <span style=color:#66d9ef>azurerm_resource_group</span>.<span style=color:#66d9ef>avd</span>.<span style=color:#66d9ef>location</span>
-  enabled            <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
-
-  daily_recurrence_time <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;2300&#34;</span>
-  timezone              <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;W. Europe Standard Time&#34;</span>
-
-  <span style=color:#66d9ef>notification_settings</span> {
-    enabled <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>
-  }
-}
-</code></pre></div><h2 id=role-based-access-control-rbac>
+<h2 id=role-based-access-control-rbac>
 Role-based Access Control (RBAC)
 <a href=#role-based-access-control-rbac class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
@@ -605,7 +585,6 @@ What&rsquo;s Next?
 <li><a href=#understanding-vm-extensions>Understanding VM Extensions</a></li>
 <li><a href=#aadds-join-the-vms>AADDS-join the VMs</a></li>
 <li><a href=#register-vms-to-the-host-pool>Register VMs to the Host Pool</a></li>
-<li><a href=#schedule-auto-shutdown-of-session-hosts>Schedule Auto-shutdown of Session Hosts</a></li>
 <li><a href=#role-based-access-control-rbac>Role-based Access Control (RBAC)</a></li>
 <li><a href=#whats-next>What&rsquo;s Next?</a></li>
 </ul>
@@ -672,7 +651,7 @@ What&rsquo;s Next?
 </div>
 </footer>
 <script type=text/javascript src=/js/main.4ff2f10f84f12edcd3384ac6f0e68ca3371accb50a70cf5cbee05b7624d88587a58830f04441b3e1d2311dcd379ee8e6f20a6c5b1124707e4007117247fe1b1d.js integrity="sha512-T/LxD4TxLtzTOErG8OaMozcazLUKcM9cvuBbdiTYhYeliDDwREGz4dIxHc03nujm8gpsWxEkcH5ABxFyR/4bHQ=="></script>
-<script type=text/javascript src=/js/flexsearch.f4cba8cad079262b52f6fcc089dbb8144333dcb6135998aa8b3960df39afd3c9308c372046a391290ca4dcd8dad478b13ffb54edfbc5f87481b1f00c5af85525.js integrity="sha512-9MuoytB5JitS9vzAidu4FEMz3LYTWZiqizlg3zmv08kwjDcgRqORKQyk3Nja1HixP/tU7fvF+HSBsfAMWvhVJQ=="></script>
+<script type=text/javascript src=/js/flexsearch.3de9887449afe1a1353cbd32aa2dccf81056df0f31ed219d32cb081aff7c2a04301d6e9b70764fbfaad83a93b006d594fcee26d135a4fe06221457d6789423fe.js integrity="sha512-PemIdEmv4aE1PL0yqi3M+BBW3w8x7SGdMssIGv98KgQwHW6bcHZPv6rYOpOwBtWU/O4m0TWk/gYiFFfWeJQj/g=="></script>
 </div>
 </body>
 </html>
