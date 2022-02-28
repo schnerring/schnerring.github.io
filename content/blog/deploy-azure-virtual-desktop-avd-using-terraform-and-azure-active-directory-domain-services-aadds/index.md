@@ -86,7 +86,7 @@ resource "azurerm_virtual_network_peering" "avd_to_aadds" {
 
 > A [host pool](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#host-pools) is a collection of Azure virtual machines that register to Azure Virtual Desktop as session hosts when you run the Azure Virtual Desktop agent. All session host virtual machines in a host pool should be sourced from the same image for a consistent user experience.
 
-We add the AVD host pool and the registration info. We'll later register the session hosts via VM extension to the host pool using a token from the registration info:
+We add the AVD host pool and the registration info. We'll later register the session hosts via VM extension to the host pool using the token from the registration info:
 
 ```hcl
 locals {
@@ -118,7 +118,7 @@ resource "azurerm_virtual_desktop_host_pool_registration_info" "avd" {
 
 I deploy my AADDS and AVD resources to the `Switzerland North` region. However, I have to deploy AVD _service_ resources to `West Europe` because [the AVD service isn't available in all regions](https://docs.microsoft.com/en-us/azure/virtual-desktop/data-locations).
 
-To get the latest supported regions, [re-register the AVD resource provider](https://docs.microsoft.com/en-us/azure/virtual-desktop/troubleshoot-set-up-issues#i-only-see-us-when-setting-the-location-for-my-service-objects) like this:
+To get the latest supported regions, [re-register the AVD resource provider](https://docs.microsoft.com/en-us/azure/virtual-desktop/troubleshoot-set-up-issues#i-only-see-us-when-setting-the-location-for-my-service-objects):
 
 1. Select your subscription under **Subscriptions** in the Azure Portal.
 2. Select the **Resource Provider** menu.
@@ -128,7 +128,7 @@ We also enable `start_vm_on_connect`. I like this option for small-scale deploym
 
 ## Workspace and App Group
 
-Next, we create a [workspace](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#workspaces) and add an [app group](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#app-groups) to it. Two types of app groups exist:
+Next, we create a [workspace](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#workspaces) and add an [app group](https://docs.microsoft.com/en-us/azure/virtual-desktop/environment-setup#app-groups). Two types of app groups exist:
 
 - `Desktop`: full desktop
 - `RemoteApp`: individual apps
@@ -147,9 +147,8 @@ resource "azurerm_virtual_desktop_application_group" "avd" {
   location            = local.avd_location
   resource_group_name = azurerm_resource_group.avd.name
 
-  type          = "Desktop"
-  host_pool_id  = azurerm_virtual_desktop_host_pool.avd.id
-  friendly_name = "Full Desktop"
+  type         = "Desktop"
+  host_pool_id = azurerm_virtual_desktop_host_pool.avd.id
 }
 
 resource "azurerm_virtual_desktop_workspace_application_group_association" "avd" {
@@ -160,7 +159,7 @@ resource "azurerm_virtual_desktop_workspace_application_group_association" "avd"
 
 ## Session Hosts
 
-Let's add two session hosts to the AVD host pool. To be able to adjust the amount of VMs inside the host pool later, we define a variable like this:
+Let's add two session hosts to the AVD host pool. To be able to adjust the amount of VMs inside the host pool later, we define a variable:
 
 ```hcl
 variable "avd_host_pool_size" {
@@ -294,18 +293,18 @@ You can find the AVD ARM templates on official Azure GitHub [github.com/Azure/RD
     },
 ```
 
-However, the default parameters of the ARM templates downloaded from the Azure Portal differ from the values found on GitHub, e.g., `modulesParameter`:
+However, the default parameters of the ARM template downloaded from the Azure Portal differ from the values found on GitHub, e.g., `modulesParameter`:
 
 - GitHub: `https://raw.githubusercontent.com/Azure/RDS-Templates/master/ARM-wvd-templates/DSC/Configuration.zip`
 - Azure: `https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_01-20-2022.zip`
 
-It seems that Microsoft periodically releases the `Configuration.zip` to the `galleryartifacts` container of the `wvdportalstorageblob` storage account. [Have a look at all releases here.](https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts?restype=container&comp=list&prefix=Configuration)
+It seems that Microsoft periodically releases the `Configuration.zip` to the `galleryartifacts` container of the `wvdportalstorageblob` storage account. [To peek inside the container, we can use the `List Blobs` operation of the Blob Service REST API.](https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts?restype=container&comp=list&prefix=Configuration)
 
 The URLs that the Azure Portal uses sometimes change. At the time of writing, it uses the `Configuration_01-20-2022.zip` file despite `Configuration_02-23-2022.zip` being available.
 
 ## AADDS-join the VMs
 
-When AADDS-joining a computer, it will be added to the built-in _AADDS Computers_ [Organizational Unit (OU)](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/create-ou) of the domain by default. To add the VM to a different OU, we can optionally specify the _OU path_ during domain-join. Create the following optional variable:
+When AADDS-joining a computer, it will be added to the built-in _AADDS Computers_ [Organizational Unit (OU)](https://docs.microsoft.com/en-us/azure/active-directory-domain-services/create-ou) of the domain by default. To add the VM to a different OU, we can optionally specify the _OU path_ during domain-join. Create an optional variable:
 
 ```hcl
 variable "avd_ou_path" {
@@ -408,9 +407,9 @@ resource "azurerm_virtual_machine_extension" "avd_register_session_host" {
 }
 ```
 
-We `ignore_changes` to the `settings` and `protected_settings` properties, analog to the AADDS-join VM extension.
+Again, we `ignore_changes` to the `settings` and `protected_settings` properties.
 
-## Schedule Auto-shutdown Of Session Hosts
+## Schedule Auto-shutdown of Session Hosts
 
 To auto-shutdown the session host VMs at 11 PM, we add the following:
 
@@ -432,7 +431,7 @@ resource "azurerm_dev_test_global_vm_shutdown_schedule" "avd" {
 
 ## Role-based Access Control (RBAC)
 
-Let's create a group in AAD that authorizes its members to access the AVD application group we created earlier. To do so, we assign the AAD built-in `Desktop Virtualization User` role to the group:
+Let's create a group in AAD that authorizes its members to access the AVD application group we created earlier. To do so, we create a group and assign the AAD built-in `Desktop Virtualization User` role to it:
 
 ```hcl
 data "azurerm_role_definition" "desktop_virtualization_user" {
@@ -451,7 +450,7 @@ resource "azurerm_role_assignment" "avd_users_desktop_virtualization_user" {
 }
 ```
 
-Assuming we want to authorize users that already exist within our AAD, we create a varible containing the UPNs of these users:
+Assuming that we want to authorize users that already exist within our AAD, we create a variable containing the UPNs of these users:
 
 ```hcl
 variable "avd_user_upns" {
@@ -461,7 +460,7 @@ variable "avd_user_upns" {
 }
 ```
 
-We are able then query those users with Terraform and add them to the group:
+We are able then query those users with Terraform and add them to the group like this:
 
 ```hcl
 data "azuread_user" "avd_users" {
@@ -478,6 +477,8 @@ resource "azuread_group_member" "avd_users" {
 
 ## What's Next?
 
-Great! We successfully created an AVD environment with Terraform. [You can find the code on my GitHub.](https://github.com/schnerring/terraform-azurerm-avd/tree/v0.2.0)
+Great! We successfully created an AVD environment with Terraform. Test it by logging into [one of the available AVD clients](https://docs.microsoft.com/en-us/azure/virtual-desktop/user-documentation/).
+
+[You can find the code on my GitHub.](https://github.com/schnerring/terraform-azurerm-avd/blob/v0.2.0/avd.tf)
 
 I'll write about creating custom AVD images with [Packer](https://www.packer.io/) next and follow it up by showing you how to configure [FSLogix user profiles](https://docs.microsoft.com/en-us/fslogix/overview) on your AADDS-joined AVD session hosts. Stay tuned!
