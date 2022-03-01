@@ -22,6 +22,8 @@ With [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/vi
 
 <!--more-->
 
+As always, [all the code is available on my GitHub](https://github.com/schnerring/terraform-azurerm-avd/blob/v0.2.0/avd.tf).
+
 ## Prerequisites
 
 Besides an active Azure subscription and [Terraform](https://www.terraform.io/) configured on your workstation, [Azure Active Directory Domain Services (AADDS)](https://azure.microsoft.com/en-us/services/active-directory-ds/) are required. [Check out my previous post on setting up AADDS with Terraform if you haven't already!](/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated) Some Terraform resources in this guide, e.g., the network peerings and AADDS domain-join (AADDS-join) VM extension, depend on the AADDS resources from that post.
@@ -455,7 +457,5 @@ resource "azuread_group_member" "avd_users" {
 ## What's Next?
 
 Great! We successfully created an AVD environment with Terraform. Test it by logging into [one of the available AVD clients](https://docs.microsoft.com/en-us/azure/virtual-desktop/user-documentation/).
-
-[You can find the code on my GitHub.](https://github.com/schnerring/terraform-azurerm-avd/blob/v0.2.0/avd.tf)
 
 I'll write about creating custom AVD images with [Packer](https://www.packer.io/) next and follow it up by showing you how to configure [FSLogix user profiles](https://docs.microsoft.com/en-us/fslogix/overview) on your AADDS-joined AVD session hosts. Stay tuned!
