@@ -25,7 +25,7 @@
 <meta itemprop=name content="Deploy Azure Virtual Desktop (AVD) Using Terraform and Azure Active Directory Domain Services (AADDS)">
 <meta itemprop=description content="With Azure Virtual Desktop (AVD), you can deliver secure Windows 11 desktops and environments anywhere. It&rsquo;s pretty easy to deploy and scale. You can provide a coherent user experience from any end-user device and reduce costs by leveraging Windows 11 multi-session licensing. This tutorial will guide you through setting up AVD with AADDS using Terraform."><meta itemprop=datePublished content="2022-02-27T21:32:52+01:00">
 <meta itemprop=dateModified content="2022-02-27T21:32:52+01:00">
-<meta itemprop=wordCount content="1815"><meta itemprop=image content="https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/cover.jpg">
+<meta itemprop=wordCount content="1817"><meta itemprop=image content="https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/cover.jpg">
 <meta itemprop=keywords content="AADDS,AVD,Azure,Azure Active Directory Domain Services,Azure Virtual Desktop,IaC,Infrastructure as Code,Terraform,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>
@@ -138,6 +138,7 @@
 </div>
 <div class=post-content>
 <p>With <a href=https://azure.microsoft.com/en-us/services/virtual-desktop/ class=link--external target=_blank rel=noreferrer>Azure Virtual Desktop (AVD)</a>, you can deliver secure Windows 11 desktops and environments anywhere. It&rsquo;s pretty easy to deploy and scale. You can provide a coherent user experience from any end-user device and reduce costs by leveraging Windows 11 multi-session licensing. This tutorial will guide you through setting up AVD with AADDS using Terraform.</p>
+<p>As always, <a href=https://github.com/schnerring/terraform-azurerm-avd/blob/v0.2.0/avd.tf class=link--external target=_blank rel=noreferrer>all the code is available on my GitHub</a>.</p>
 <h2 id=prerequisites>
 Prerequisites
 <a href=#prerequisites class=post-heading__anchor aria-hidden=true>#</a>
@@ -521,7 +522,6 @@ What&rsquo;s Next?
 <a href=#whats-next class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
 <p>Great! We successfully created an AVD environment with Terraform. Test it by logging into <a href=https://docs.microsoft.com/en-us/azure/virtual-desktop/user-documentation/ class=link--external target=_blank rel=noreferrer>one of the available AVD clients</a>.</p>
-<p><a href=https://github.com/schnerring/terraform-azurerm-avd/blob/v0.2.0/avd.tf class=link--external target=_blank rel=noreferrer>You can find the code on my GitHub.</a></p>
 <p>I&rsquo;ll write about creating custom AVD images with <a href=https://www.packer.io/ class=link--external target=_blank rel=noreferrer>Packer</a> next and follow it up by showing you how to configure <a href=https://docs.microsoft.com/en-us/fslogix/overview class=link--external target=_blank rel=noreferrer>FSLogix user profiles</a> on your AADDS-joined AVD session hosts. Stay tuned!</p>
 </div>
 <div class=social-share>
@@ -651,7 +651,7 @@ What&rsquo;s Next?
 </div>
 </footer>
 <script type=text/javascript src=/js/main.4ff2f10f84f12edcd3384ac6f0e68ca3371accb50a70cf5cbee05b7624d88587a58830f04441b3e1d2311dcd379ee8e6f20a6c5b1124707e4007117247fe1b1d.js integrity="sha512-T/LxD4TxLtzTOErG8OaMozcazLUKcM9cvuBbdiTYhYeliDDwREGz4dIxHc03nujm8gpsWxEkcH5ABxFyR/4bHQ=="></script>
-<script type=text/javascript src=/js/flexsearch.5d14f2c132273ad03d2609cfe6dfc374a3e78d9f544fb28395732026d40081c98f1c60f94e1b603df15ac3e2ee8722b01a76458f003cba99fe7311c2e2cf903f.js integrity="sha512-XRTywTInOtA9JgnP5t/DdKPnjZ9UT7KDlXMgJtQAgcmPHGD5ThtgPfFaw+LuhyKwGnZFjwA8upn+cxHC4s+QPw=="></script>
+<script type=text/javascript src=/js/flexsearch.58b862176b425692fc3bd0fef4bea70dc374681b54f4f185310331858553b2076ba0de35e01a57f7489d693824c1f8effcdc24a10c5bf7aa5f216f2853742035.js integrity="sha512-WLhiF2tCVpL8O9D+9L6nDcN0aBtU9PGFMQMxhYVTsgdroN414BpX90idaTgkwfjv/NwkoQxb96pfIW8oU3QgNQ=="></script>
 </div>
 </body>
 </html>
