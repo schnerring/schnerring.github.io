@@ -20,7 +20,7 @@ tags:
   - Terraform
 ---
 
-One important task of managing [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/virtual-desktop/) is keeping it up-to-date. One of many strategies is to periodically build a "golden" image and re-redeploy AVD session host VMs using the new image. In this post, I'll demonstrate using [Packer](https://www.packer.io/) and [GitHub Actions](https://github.com/features/actions) to automatically build up-to-date images and push them to Azure.
+One aspect of managing [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/virtual-desktop/) is keeping it up-to-date. One strategy is periodically building a "golden" image and re-deploying AVD session host VMs using the updated version. In this post, I'll demonstrate using [Packer](https://www.packer.io/) and [GitHub Actions](https://github.com/features/actions) to build images and push them to Azure.
 
 ```powershell
 Get-AzVMImage `
