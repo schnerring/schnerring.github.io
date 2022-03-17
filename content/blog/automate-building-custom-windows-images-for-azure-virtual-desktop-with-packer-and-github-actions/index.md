@@ -28,15 +28,15 @@ One aspect of managing [Azure Virtual Desktop (AVD)](https://azure.microsoft.com
 
 First, we'll use [Terraform](https://www.terraform.io/) to prepare some resources for Packer: a resource group for build artifacts and a [service principal (SP)](https://www.packer.io/plugins/builders/azure/arm#service-principal) for authentication. We'll also export the SP credentials as GitHub Actions secrets, making them available to our CI workflow.
 
-Then we'll build a customized Windows 11 image with Packer that can be used for software development. We'll use [Chocolatey](https://chocolatey.org/) to install some apps like [FSLogix](https://docs.microsoft.com/en-us/fslogix/overview) for user profile support and Visual Studio 2022 for .NET dvelopment. We'll also use a custom PowerShell script to install [Azure PowerShell](https://github.com/Azure/azure-powershell).
+Then we'll build a customized Windows 11 image with Packer suitable for software development workstations. We'll use [Chocolatey](https://chocolatey.org/) to install some apps like [FSLogix](https://docs.microsoft.com/en-us/fslogix/overview) for user profile support and Visual Studio 2022 for .NET development. We'll also use a custom PowerShell script to install [Azure PowerShell](https://github.com/Azure/azure-powershell).
 
-Finally, we'll [schedule a GitHub Actions workflow](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule) executing our Packer build. We'll query Azure daily for a new Windows release and create a new Packer image in case of a new release.
+Finally, we'll [schedule a GitHub Actions workflow](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule) that runs the Packer build. We'll query Azure daily for a new Windows release and create a Packer image if Microsoft published a new version.
 
 As usual, [all the code is available on GitHub](https://github.com/schnerring/packer-windows-avd).
 
 ## Prepare Packer Resources with Terraform
 
-Before being able to use Packer, we have to create some resources. To do so, we could use the Azure CLI or the Azure Portal. I like using Terraform.
+Before being able to use Packer, we have to create some resources. I like using Terraform, but you could also use the Azure CLI or the Azure Portal.
 
 ### Resource Groups
 
@@ -54,12 +54,12 @@ resource "azurerm_resource_group" "packer_build" {
 }
 ```
 
-[Packer's Azure ARM builder](https://www.packer.io/plugins/builders/azure/arm) uses the `packer-build-rg` resource group to provision the required build resources and should only contain resources during build time.
+Packer will use the `packer-build-rg` resource group for the required build resources. It should only contain resources during build time.
 Packer will publish the resulting [managed images](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/capture-image-resource) to the `packer-artifacts-rg` resource group.
 
 ### Authentication and Authorization
 
-We'll use SP authentication with Packer because it integrates well with GitHub Actions. We create it like this:
+We'll use SP authentication with Packer because it integrates well with GitHub Actions:
 
 ```hcl
 resource "azuread_application" "packer" {
@@ -75,7 +75,7 @@ resource "azuread_service_principal_password" "packer" {
 }
 ```
 
-To authorize the SP to manage resources inside the resource groups we created, we use [role-based access control (RBAC)](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) and assign the SP the `Contributor` role, scoped to the resource groups:
+To authorize the SP to manage resources inside the resource groups, we use [role-based access control (RBAC)](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) and assign the SP the `Contributor` role:
 
 ```hcl
 resource "azurerm_role_assignment" "packer_build_contributor" {
@@ -93,9 +93,11 @@ resource "azurerm_role_assignment" "packer_artifacts_contributor" {
 
 ### Export GitHub Actions Secrets
 
-To make the credentials accessible to GitHub Actions, we export them as secrets like this:
+To make the credentials accessible to GitHub Actions, we export them to GitHub as [encrypted secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) like this:
 
 ```hcl
+data "azurerm_subscription" "subscription" {}
+
 resource "github_actions_secret" "packer_client_id" {
   repository      = data.github_repository.packer_windows_11_avd.name
   secret_name     = "PACKER_CLIENT_ID"
@@ -121,7 +123,7 @@ resource "github_actions_secret" "packer_tenant_id" {
 }
 ```
 
-We'll also make use of the [Azure Login Action](https://github.com/Azure/login#configure-a-service-principal-with-a-secret) to dynamically query the latest Windows version available on Azure with the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/). It [expects credentials as JSON](https://github.com/Azure/login#configure-a-service-principal-with-a-secret):
+We'll also make use of the [Azure Login Action](https://github.com/Azure/login#configure-a-service-principal-with-a-secret) to dynamically query the latest Windows version available on Azure with the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/). [It expects the credentials in the following JSON format](https://github.com/Azure/login#configure-a-service-principal-with-a-secret):
 
 ```json
 {
@@ -131,6 +133,8 @@ We'll also make use of the [Azure Login Action](https://github.com/Azure/login#c
   "tenantId": "<GUID>"
 }
 ```
+
+Let's export another secret named `AZURE_CREDENTIALS` containing the credentials in the JSON format above using Terraform's `jsonencode` function:
 
 ```hcl
 resource "github_actions_secret" "github_actions_azure_credentials" {
@@ -148,7 +152,61 @@ resource "github_actions_secret" "github_actions_azure_credentials" {
 }
 ```
 
+We also export the names of the resource groups we created like this:
+
+```hcl
+resource "github_actions_secret" "packer_artifacts_resource_group" {
+  repository      = data.github_repository.packer_windows_11_avd.name
+  secret_name     = "PACKER_ARTIFACTS_RESOURCE_GROUP"
+  plaintext_value = azurerm_resource_group.packer_artifacts.name
+}
+
+resource "github_actions_secret" "packer_build_resource_group" {
+  repository      = data.github_repository.packer_windows_11_avd.name
+  secret_name     = "PACKER_BUILD_RESOURCE_GROUP"
+  plaintext_value = azurerm_resource_group.packer_build.name
+}
+```
+
+### Add Terraform Outputs
+
+To run Packer locally, we also need the credentials locally. To make them accessible, we define [output values in Terraform](https://www.terraform.io/language/values/outputs):
+
+```hcl
+output "packer_artifacts_resource_group" {
+  value     = azurerm_resource_group.packer_artifacts.name
+}
+
+output "packer_build_resource_group" {
+  value     = azurerm_resource_group.packer_build.name
+}
+
+output "packer_client_id" {
+  value     = azuread_application.packer.application_id
+  sensitive = true
+}
+
+output "packer_client_secret" {
+  value     = azuread_service_principal_password.packer.value
+  sensitive = true
+}
+
+output "packer_subscription_id" {
+  value     = data.azurerm_subscription.subscription.subscription_id
+  sensitive = true
+}
+
+output "packer_tenant_id" {
+  value     = data.azurerm_subscription.subscription.tenant_id
+  sensitive = true
+}
+```
+
+After running `terraform apply`, we can access output values like this: `terraform output packer_client_secret`.
+
 ## Get the Latest Windows 11 Version Available On Azure
+
+[Microsoft releases monthly quality updates for Windows](https://docs.microsoft.com/en-us/windows/deployment/update/quality-updates#quality-updates). Unofficially, that day is called _Patch Tuesday_, the second Tuesday of each month. However, if there's an exceptional need, like a critical security vulnerability, Microsoft can provide a release outside of the monthly schedule.
 
 We can use the Azure CLI to query the available Windows versions on Azure like this:
 
@@ -162,9 +220,27 @@ az vm image list \
 
 If you prefer using a Windows 11 base image without Office 365, use `--offer windows-11` and `--sku win11-21h2-avd` instead. You can discover more images using the Azure CLI commands `az vm image list-publishers`, `az vm image list-offers`, and `az vm image list-skus`.
 
-## Packer
+So, to specify an image, a value for _publisher_, _offer_, _SKU_, and _version_ is required. To get the _latest version_ available, use the follwing Bash snippet:
 
-Create a Packer template file named `windows.pkr.hcl` and add the following variables to it:
+```bash
+az vm image list \
+  --publisher "${IMAGE_PUBLISHER}" \
+  --offer "${IMAGE_OFFER}" \
+  --sku "${IMAGE_SKU}" \
+  --all \
+  --query "[*].version | sort(@)[-1:]" \
+  --out tsv
+```
+
+## Create the Packer Template
+
+Create a Packer template file named `windows.pkr.hcl`.
+
+### Input Variables
+
+[Input variables](https://www.packer.io/guides/hcl/variables) allow us to parameterize the Packer build. We can later set their values from a default value, environment, file, or CLI arguments.
+
+We need to add variables allowing us to pass the SP credentials and resource group names, as well as the image infos:
 
 ```hcl
 variable "client_id" {
@@ -222,8 +298,4 @@ variable "source_image_version" {
 }
 ```
 
-Besides the resource group names and SP credentials we created earlier with Terraform, we also define four additional variables allowing us to specify the base image we want to use.
-
 ## GitHub Actions
-
-[Microsoft releases monthly quality updates for Windows](https://docs.microsoft.com/en-us/windows/deployment/update/quality-updates#quality-updates). Unofficially that day is called _Patch Tuesday_, the second Tuesday of each month. However, if there's an exceptional need, like a critical security vulnerability, Microsoft can provide a release outside of the monthly schedule.
