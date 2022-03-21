@@ -298,4 +298,199 @@ variable "source_image_version" {
 }
 ```
 
+### Configure Azure ARM Builder
+
+Next, we configure [Packer's Azure Resource Manager (ARM) Builder](https://www.packer.io/plugins/builders/azure/arm). We start with the [`source`](https://www.packer.io/docs/templates/hcl_templates/blocks/source) block, representing reusable builder configuration blocks:
+
+```hcl
+source "azure-arm" "avd" {
+  # WinRM Communicator
+
+  communicator   = "winrm"
+  winrm_use_ssl  = true
+  winrm_insecure = true
+  winrm_timeout  = "5m"
+  winrm_username = "packer"
+
+  # Service Principal Authentication
+
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  subscription_id = var.subscription_id
+  tenant_id       = var.tenant_id
+
+  # Source Image
+
+  os_type         = "Windows"
+  image_publisher = var.source_image_publisher
+  image_offer     = var.source_image_offer
+  image_sku       = var.source_image_sku
+  image_version   = var.source_image_version
+
+  # Destination Image
+
+  managed_image_resource_group_name = var.artifacts_resource_group
+  managed_image_name                = "${var.source_image_sku}-${var.source_image_version}"
+
+  # Packer Computing Resources
+
+  build_resource_group_name = var.build_resource_group
+  vm_size                   = "Standard_D4ds_v4"
+}
+```
+
+The [WinRM communicator](https://www.packer.io/docs/communicators/winrm) is Packer's way of talking to Azure Windows VMs. We give the resulting image a unique name, a combination of the source image's SKU and version. The remaining options are self-explanatory that we already covered.
+
+To run the ARM builder, we define a `builder` block like this:
+
+```hcl
+build {
+  source "azure-arm.avd" {}
+
+  # Install Chocolatey: https://chocolatey.org/install#individual
+  provisioner "powershell" {
+    inline = ["Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))"]
+  }
+
+  # Install Chocolatey packages
+  provisioner "file" {
+    source      = "./packages.config"
+    destination = "D:/packages.config"
+  }
+
+  provisioner "powershell" {
+    inline = ["choco install --confirm D:/packages.config"]
+    # See https://docs.chocolatey.org/en-us/choco/commands/install#exit-codes
+    valid_exit_codes = [0, 3010]
+  }
+
+  provisioner "windows-restart" {}
+
+  # Azure PowerShell Modules
+  provisioner "powershell" {
+    script = "./install-azure-powershell.ps1"
+  }
+
+  # Generalize image using Sysprep
+  # See https://www.packer.io/docs/builders/azure/arm#windows
+  # See https://docs.microsoft.com/en-us/azure/virtual-machines/windows/build-image-with-packer#define-packer-template
+  provisioner "powershell" {
+    inline = [
+      "while ((Get-Service RdAgent).Status -ne 'Running') { Start-Sleep -s 5 }",
+      "while ((Get-Service WindowsAzureGuestAgent).Status -ne 'Running') { Start-Sleep -s 5 }",
+      "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
+      "while ($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
+    ]
+  }
+}
+```
+
+Let's look at what's happening here:
+
+- First, we reference the `source` block that we defined before.
+- We install Chocolatey using the [one-liner PowerShell command from the official docs](https://chocolatey.org/install#individual).
+- We copy the `packages.config` file, an XML manifest containing a list of apps for Chocolatey to install, to the [temporary disk `D:` of the VM](https://docs.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview#temporary-disk). Then we pass the manifest to the [`choco install`](https://docs.chocolatey.org/en-us/choco/commands/install) command. [When the command exits with the code `3010`, a reboot is required](https://docs.chocolatey.org/en-us/choco/commands/install#exit-codes). We make Packer aware of that by passing `3010` to the list of `valid_exit_codes`.
+- For good measure, we reboot the VM.
+- We run a custom PowerShell script to install the Azure PowerShell Modules.
+- [Finally, we generalize the image using Sysprep](https://www.packer.io/plugins/builders/azure/arm#windows)
+
+The `packages.config` file looks like this:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<packages>
+  <!-- FSLogix -->
+  <package id="fslogix" />
+
+  <!-- PowerShell -->
+  <!-- See https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.2#install-the-msi-package-from-the-command-line -->
+  <package id="powershell-core" installArguments="ADD_FILE_CONTEXT_MENU_RUNPOWERSHELL=1 ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1" />
+  <package id="openssh" />
+  <package id="curl" />
+  <package id="wget" />
+
+  <!-- Visual Studio 2022 Community -->
+  <!-- See https://docs.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022#layout-command-and-command-line-parameters -->
+  <!-- See https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-community?view=vs-2022 -->
+  <package id="visualstudio2022community" packageParameters="--locale en-US --add Microsoft.VisualStudio.Workload.Azure;includeRecommended --add Microsoft.VisualStudio.Workload.ManagedDesktop;includeRecommended --add Microsoft.VisualStudio.Workload.NetCrossPlat;includeRecommended --add Microsoft.VisualStudio.Workload.NetWeb;includeRecommended --add Microsoft.VisualStudio.Workload.Office;includeRecommended" />
+
+  <!-- Editors -->
+  <package id="notepadplusplus" />
+  <package id="vscode" />
+
+  <!-- System Administration -->
+  <package id="sysinternals" />
+  <package id="rsat" />
+
+  <!-- Developer Tools -->
+  <package id="azure-cli" />
+  <package id="filezilla" />
+  <package id="git" />
+  <package id="microsoftazurestorageexplorer" />
+  <package id="sql-server-management-studio" />
+  <package id="postman" />
+
+  <!-- Kubernetes -->
+  <package id="kubernetes-cli" />
+  <package id="kubernetes-helm" />
+
+  <!-- Hashicorp -->
+  <package id="packer" />
+  <package id="terraform" />
+  <package id="graphviz" />
+
+  <!-- Browsers -->
+  <package id="firefox" />
+  <package id="googlechrome" />
+
+  <!-- Common Apps -->
+  <package id="7zip" />
+  <package id="drawio" />
+  <package id="foxitreader" />
+  <package id="keepassxc" />
+</packages>
+```
+
+Note that installing Chocolatey packages like that is a pretty naive approach that I wouldn't recommend for production-level scenarios. [Using the Chocolatey community repository has limits in terms of reliability, control, and trust.](https://docs.chocolatey.org/en-us/community-repository/community-packages-disclaimer). Also, any failing package installation breaks the entire build, so pinning versions is a good idea.
+
+The `install-azure-powershell.ps1` script to install the Azure PowerShell modules looks like this:
+
+```powershell
+# See https://docs.microsoft.com/en-us/powershell/azure/install-az-ps-msi?view=azps-7.3.2#install-or-update-on-windows-using-the-msi-package
+
+$ErrorActionPreference = "Stop"
+
+$downloadUrl = "https://github.com/Azure/azure-powershell/releases/download/v7.3.2-March2022/Az-Cmdlets-7.3.2.35305-x64.msi"
+$outFile = "D:\az_pwsh.msi" # temporary disk
+
+Write-Host "Downloading $downloadUrl ..."
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-WebRequest -Uri $downloadUrl -OutFile $outFile
+
+Write-Host "Installing ..."
+Start-Process "msiexec.exe" -Wait -ArgumentList "/package $outFile"
+
+Write-Host "Done."
+```
+
+### Run Packer Locally
+
+To run Packer locally, we can use the following command (note the `.` at the very end):
+
+```bash
+packer build \
+  -var "artifacts_resource_group=$(terraform output -raw packer_artifacts_resource_group)" \
+  -var "build_resource_group=$(terraform output -raw packer_build_resource_group)" \
+  -var "client_id=$(terraform output -raw packer_client_id)" \
+  -var "client_secret=$(terraform output -raw packer_client_secret)" \
+  -var "subscription_id=$(terraform output -raw packer_subscription_id)" \
+  -var "tenant_id=$(terraform output -raw packer_tenant_id)" \
+  -var "source_image_publisher=MicrosoftWindowsDesktop" \
+  -var "source_image_offer=office-365" \
+  -var "source_image_sku=win11-21h2-avd-m365" \
+  -var "source_image_version=22000.556.220308" .
+```
+
+We pass the Terraform outputs that we configured earlier to Packer using command substitution.
+
 ## GitHub Actions
