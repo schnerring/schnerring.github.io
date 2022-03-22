@@ -22,7 +22,7 @@ tags:
   - Terraform
 ---
 
-One aspect of managing [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/virtual-desktop/) is keeping it up-to-date. One strategy is periodically building a "golden" image and re-deploying AVD session host VMs using the updated image. In this post, we'll use [Packer](https://www.packer.io/) and [GitHub Actions](https://github.com/features/actions) to build images and push them to Azure.
+One aspect of managing [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/virtual-desktop/) is keeping it up-to-date. One strategy is periodically building a "golden" image and re-deploying AVD session host VMs using the updated image. In this post, we'll use [Packer](https://www.packer.io/) and [GitHub Actions](https://github.com/features/actions) to build an image and push it to Azure.
 
 <!--more-->
 
@@ -206,7 +206,7 @@ After running `terraform apply`, we can access output values like this: `terrafo
 
 ## Get the Latest Windows 11 Version Available On Azure
 
-[Microsoft releases monthly quality updates for Windows](https://docs.microsoft.com/en-us/windows/deployment/update/quality-updates#quality-updates). Unofficially, that day is called _Patch Tuesday_, the second Tuesday of each month. However, if there's an exceptional need, like a critical security vulnerability, Microsoft can provide a release outside of the monthly schedule.
+[Microsoft releases monthly quality updates for Windows](https://docs.microsoft.com/en-us/windows/deployment/update/quality-updates#quality-updates), on _Patch Tuesday_, the second Tuesday of each month. Microsoft can provide a release outside of the monthly schedule in exceptional circumstances, e.g., to fix a critical security vulnerability.
 
 We can use the Azure CLI to query the available Windows versions on Azure like this:
 
@@ -339,7 +339,7 @@ source "azure-arm" "avd" {
 }
 ```
 
-The [WinRM communicator](https://www.packer.io/docs/communicators/winrm) is Packer's way of talking to Azure Windows VMs. We give the resulting image a unique name, a combination of the source image's SKU and version. The remaining options are self-explanatory that we already covered.
+The [WinRM communicator](https://www.packer.io/docs/communicators/winrm) is Packer's way of talking to Azure Windows VMs. We give the resulting image a unique name by combining the source image's SKU and version. The remaining options are self-explanatory.
 
 To run the ARM builder, we define a `builder` block like this:
 
