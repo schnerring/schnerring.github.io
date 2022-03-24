@@ -488,9 +488,12 @@ packer build \
   -var "source_image_publisher=MicrosoftWindowsDesktop" \
   -var "source_image_offer=office-365" \
   -var "source_image_sku=win11-21h2-avd-m365" \
-  -var "source_image_version=22000.556.220308" .
+  -var "source_image_version=22000.556.220308" \
+  .
 ```
 
 We pass the Terraform outputs that we configured earlier to Packer using command substitution.
 
 ## GitHub Actions
+
+Next, we tie everything together by automating everything using GitHub Actions.
