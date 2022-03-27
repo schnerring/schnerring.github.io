@@ -1,12 +1,12 @@
 ---
 title: Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions
-date: "2022-02-25T04:04:20+01:00"
-draft: true
+date: "2022-03-27T08:12:20+02:00"
+draft: false
 comments: true
 socialShare: true
 toc: true
-#cover:
-#  src: cover.png
+cover:
+  src: cover.jpg
 tags:
   - AVD
   - Azure
@@ -22,7 +22,7 @@ tags:
   - Terraform
 ---
 
-One aspect of managing [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/virtual-desktop/) is keeping it up-to-date. One strategy is periodically building a "golden" image and re-deploying AVD session host VMs using the updated image. In this post, we'll use [Packer](https://www.packer.io/) and [GitHub Actions](https://github.com/features/actions) to build an image and push it to Azure.
+One aspect of managing [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/virtual-desktop/) is keeping it up-to-date. One strategy is periodically building a "golden" image and re-deploying AVD session host VMs using the updated image. In this post, we'll use [Packer](https://www.packer.io/) and [GitHub Actions](https://github.com/features/actions) to build a Windows 11 image and push it to Azure.
 
 <!--more-->
 
