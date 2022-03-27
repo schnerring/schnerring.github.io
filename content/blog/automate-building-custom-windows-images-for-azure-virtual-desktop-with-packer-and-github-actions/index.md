@@ -104,26 +104,30 @@ resource "azurerm_role_assignment" "packer_artifacts_contributor" {
 To make the credentials accessible to GitHub Actions, we export them to GitHub as [encrypted secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) like this:
 
 ```hcl
+data "github_repository" "packer_windows_avd" {
+  full_name = "schnerring/packer-windows-avd"
+}
+
 resource "github_actions_secret" "packer_client_id" {
-  repository      = data.github_repository.packer_windows_11_avd.name
+  repository      = data.github_repository.packer_windows_avd.name
   secret_name     = "PACKER_CLIENT_ID"
   plaintext_value = azuread_application.packer.application_id
 }
 
 resource "github_actions_secret" "packer_client_secret" {
-  repository      = data.github_repository.packer_windows_11_avd.name
+  repository      = data.github_repository.packer_windows_avd.name
   secret_name     = "PACKER_CLIENT_SECRET"
   plaintext_value = azuread_service_principal_password.packer.value
 }
 
 resource "github_actions_secret" "packer_subscription_id" {
-  repository      = data.github_repository.packer_windows_11_avd.name
+  repository      = data.github_repository.packer_windows_avd.name
   secret_name     = "PACKER_SUBSCRIPTION_ID"
   plaintext_value = data.azurerm_subscription.subscription.subscription_id
 }
 
 resource "github_actions_secret" "packer_tenant_id" {
-  repository      = data.github_repository.packer_windows_11_avd.name
+  repository      = data.github_repository.packer_windows_avd.name
   secret_name     = "PACKER_TENANT_ID"
   plaintext_value = data.azurerm_subscription.subscription.tenant_id
 }
@@ -144,7 +148,7 @@ Let's export another secret named `AZURE_CREDENTIALS` containing the credentials
 
 ```hcl
 resource "github_actions_secret" "github_actions_azure_credentials" {
-  repository  = data.github_repository.packer_windows_11_avd.name
+  repository  = data.github_repository.packer_windows_avd.name
   secret_name = "AZURE_CREDENTIALS"
 
   plaintext_value = jsonencode(
@@ -162,13 +166,13 @@ Finally, we export the names of the resource groups we created like this:
 
 ```hcl
 resource "github_actions_secret" "packer_artifacts_resource_group" {
-  repository      = data.github_repository.packer_windows_11_avd.name
+  repository      = data.github_repository.packer_windows_avd.name
   secret_name     = "PACKER_ARTIFACTS_RESOURCE_GROUP"
   plaintext_value = azurerm_resource_group.packer_artifacts.name
 }
 
 resource "github_actions_secret" "packer_build_resource_group" {
-  repository      = data.github_repository.packer_windows_11_avd.name
+  repository      = data.github_repository.packer_windows_avd.name
   secret_name     = "PACKER_BUILD_RESOURCE_GROUP"
   plaintext_value = azurerm_resource_group.packer_build.name
 }
@@ -255,7 +259,7 @@ Create a Packer template file named `windows.pkr.hcl`.
 
 ### Input Variables
 
-[Input variables](https://www.packer.io/guides/hcl/variables) allow us to parameterize the Packer build. We can later set their values from a default value, environment, file, or CLI arguments.
+[Input variables](https://www.packer.io/guides/hcl/variables) allow us to parameterize the Packer build. We can later set their values from default values, environment, file, or CLI arguments.
 
 We need to add variables allowing us to pass the SP credentials and resource group names, as well as the image publisher, offer, SKU, and version:
 
@@ -411,7 +415,7 @@ Let's look at what's happening here:
 - We run a custom PowerShell script to install the [Azure PowerShell modules](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-7.3.2).
 - [Finally, we generalize the image using Sysprep](https://www.packer.io/plugins/builders/azure/arm#windows)
 
-The `packages.config` file looks like this:
+The `packages.config` manifest looks like this:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
