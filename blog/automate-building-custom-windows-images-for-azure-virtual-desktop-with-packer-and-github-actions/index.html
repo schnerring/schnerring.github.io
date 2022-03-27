@@ -25,7 +25,7 @@
 <meta itemprop=name content="Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions">
 <meta itemprop=description content="One aspect of managing Azure Virtual Desktop (AVD) is keeping it up-to-date. One strategy is periodically building a &ldquo;golden&rdquo; image and re-deploying AVD session host VMs using the updated image. In this post, we&rsquo;ll use Packer and GitHub Actions to build a Windows 11 image and push it to Azure."><meta itemprop=datePublished content="2022-03-27T08:12:20+02:00">
 <meta itemprop=dateModified content="2022-03-27T08:12:20+02:00">
-<meta itemprop=wordCount content="2623"><meta itemprop=image content="https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/cover.jpg">
+<meta itemprop=wordCount content="2636"><meta itemprop=image content="https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/cover.jpg">
 <meta itemprop=keywords content="AVD,Azure,Azure CLI,Azure Virtual Desktop,CI,Continuous Integration,DevOps,GitHub Actions,IaC,Infrastructure as Code,Packer,Terraform,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>
@@ -718,7 +718,14 @@ Job: <code>packer</code>
 What Do You Think?
 <a href=#what-do-you-think class=post-heading__anchor aria-hidden=true>#</a>
 </h2>
-<p>Phew! That was quite a bit of work. I especially like how the GitHub Actions part turned out. Leave a comment or at me on Twitter to let me know what you think about it!</p>
+<p>Phew! That was quite a bit of work. <a href=https://github.com/schnerring/packer-windows-avd/runs/5711503619 class=link--external target=_blank rel=noreferrer>Here&rsquo;s one of the workflow runs</a> that took around one hour to complete:</p>
+<p>
+<picture>
+<source srcset="/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/workflow-summary_hue9ec6db8cae1af9ff018d9ef8073fda5_16310_300x0_resize_q90_h2_box_3.webp 300w,/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/workflow-summary_hue9ec6db8cae1af9ff018d9ef8073fda5_16310_400x0_resize_q90_h2_box_3.webp 400w,/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/workflow-summary_hue9ec6db8cae1af9ff018d9ef8073fda5_16310_431x0_resize_q90_h2_box_3.webp 431w">
+<img src=/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/workflow-summary.PNG srcset="/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/workflow-summary_hue9ec6db8cae1af9ff018d9ef8073fda5_16310_300x0_resize_box_3.PNG 300w,/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/workflow-summary_hue9ec6db8cae1af9ff018d9ef8073fda5_16310_400x0_resize_box_3.PNG 400w,/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/workflow-summary_hue9ec6db8cae1af9ff018d9ef8073fda5_16310_431x0_resize_box_3.PNG 431w" alt="Sample workflow summary" loading=lazy width=431 height=424>
+</picture>
+</p>
+<p>I especially like how the GitHub Actions part turned out. Leave a comment or at me on Twitter to let me know what you think about it!</p>
 </div>
 <div class=social-share>
 <strong>Share this post: </strong>
@@ -859,7 +866,7 @@ What Do You Think?
 </div>
 </footer>
 <script type=text/javascript src=/js/main.81233fcff688533cf8d518d1b936362234344cb9514167a5f69f8f64af60d158ff0df519f16bb2bd1fe3112a1d3ac24ec29f0cde7f738f7a73e93d27feb7001b.js integrity="sha512-gSM/z/aIUzz41RjRuTY2IjQ0TLlRQWel9p+PZK9g0Vj/DfUZ8WuyvR/jESodOsJOwp8M3n9zj3pz6T0n/rcAGw=="></script>
-<script type=text/javascript src=/js/flexsearch.ff2b41338a9f424c6e19617d29233f711037e6f25b040151f804319bb3fb291db208e15e43883f586c1a1e076a21dd7016f39b239aecfb21ef083be9733e5c06.js integrity="sha512-/ytBM4qfQkxuGWF9KSM/cRA35vJbBAFR+AQxm7P7KR2yCOFeQ4g/WGwaHgdqId1wFvObI5rs+yHvCDvpcz5cBg=="></script>
+<script type=text/javascript src=/js/flexsearch.f7d2a33710bb5aac529aa025035590ae50a6532bce0d9db7a19e9f6544328626441d986bc6491fcc467316e6587de33aea69cbcf821130c7664a21d0e8563452.js integrity="sha512-99KjNxC7WqxSmqAlA1WQrlCmUyvODZ23oZ6fZUQyhiZEHZhrxkkfzEZzFuZYfeM66mnLz4IRMMdmSiHQ6FY0Ug=="></script>
 </div>
 </body>
 </html>
