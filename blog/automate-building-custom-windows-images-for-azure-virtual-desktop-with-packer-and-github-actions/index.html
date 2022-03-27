@@ -25,7 +25,7 @@
 <meta itemprop=name content="Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions">
 <meta itemprop=description content="One aspect of managing Azure Virtual Desktop (AVD) is keeping it up-to-date. One strategy is periodically building a &ldquo;golden&rdquo; image and re-deploying AVD session host VMs using the updated image. In this post, we&rsquo;ll use Packer and GitHub Actions to build a Windows 11 image and push it to Azure."><meta itemprop=datePublished content="2022-03-27T08:12:20+02:00">
 <meta itemprop=dateModified content="2022-03-27T08:12:20+02:00">
-<meta itemprop=wordCount content="2617"><meta itemprop=image content="https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/cover.jpg">
+<meta itemprop=wordCount content="2623"><meta itemprop=image content="https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/cover.jpg">
 <meta itemprop=keywords content="AVD,Azure,Azure CLI,Azure Virtual Desktop,CI,Continuous Integration,DevOps,GitHub Actions,IaC,Infrastructure as Code,Packer,Terraform,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>
@@ -144,7 +144,7 @@
 <p>One aspect of managing <a href=https://azure.microsoft.com/en-us/services/virtual-desktop/ class=link--external target=_blank rel=noreferrer>Azure Virtual Desktop (AVD)</a> is keeping it up-to-date. One strategy is periodically building a &ldquo;golden&rdquo; image and re-deploying AVD session host VMs using the updated image. In this post, we&rsquo;ll use <a href=https://www.packer.io/ class=link--external target=_blank rel=noreferrer>Packer</a> and <a href=https://github.com/features/actions class=link--external target=_blank rel=noreferrer>GitHub Actions</a> to build a Windows 11 image and push it to Azure.</p>
 <p>First, we&rsquo;ll use <a href=https://www.terraform.io/ class=link--external target=_blank rel=noreferrer>Terraform</a> to prepare some resources for Packer: a resource group for build artifacts and a <a href=https://www.packer.io/plugins/builders/azure/arm#service-principal class=link--external target=_blank rel=noreferrer>service principal (SP)</a> for authentication. We&rsquo;ll also export the SP credentials as GitHub Actions secrets, making them available to our CI workflow.</p>
 <p>Then we&rsquo;ll build a customized Windows 11 image with Packer suitable for software development workstations. We&rsquo;ll use <a href=https://chocolatey.org/ class=link--external target=_blank rel=noreferrer>Chocolatey</a> to install some apps like <a href=https://docs.microsoft.com/en-us/fslogix/overview class=link--external target=_blank rel=noreferrer>FSLogix</a> for user profile support and Visual Studio 2022 for .NET development. We&rsquo;ll also use a custom PowerShell script to install <a href=https://github.com/Azure/azure-powershell class=link--external target=_blank rel=noreferrer>Azure PowerShell</a>.</p>
-<p>Finally, we&rsquo;ll <a href=https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule class=link--external target=_blank rel=noreferrer>schedule a GitHub Actions workflow</a> that runs the Packer build. We&rsquo;ll query Azure daily for a new Windows release and run Packer if Microsoft published a new version.</p>
+<p>Finally, we&rsquo;ll <a href=https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule class=link--external target=_blank rel=noreferrer>schedule a GitHub Actions workflow</a> that runs the Packer build. We&rsquo;ll query Azure daily to check for new Windows releases and run Packer as soon as a new version is made available by Microsoft.</p>
 <p>As usual, <a href=https://github.com/schnerring/packer-windows-avd/tree/v0.1.0 class=link--external target=_blank rel=noreferrer>all the code is available on GitHub</a>.</p>
 <h2 id=get-the-latest-windows-11-version-available-on-azure>
 Get the Latest Windows 11 Version Available on Azure
@@ -859,7 +859,7 @@ What Do You Think?
 </div>
 </footer>
 <script type=text/javascript src=/js/main.81233fcff688533cf8d518d1b936362234344cb9514167a5f69f8f64af60d158ff0df519f16bb2bd1fe3112a1d3ac24ec29f0cde7f738f7a73e93d27feb7001b.js integrity="sha512-gSM/z/aIUzz41RjRuTY2IjQ0TLlRQWel9p+PZK9g0Vj/DfUZ8WuyvR/jESodOsJOwp8M3n9zj3pz6T0n/rcAGw=="></script>
-<script type=text/javascript src=/js/flexsearch.741484f6cd7bcedd596c5a6af65438b7442fca65b5c6a4957ad6cdaad20832bf1f6f8282cee775c5721cc54ca0549d86888ba6cd4fac34f9bbed8f124d3c4057.js integrity="sha512-dBSE9s17zt1ZbFpq9lQ4t0QvymW1xqSVetbNqtIIMr8fb4KCzud1xXIcxUygVJ2GiIumzU+sNPm77Y8STTxAVw=="></script>
+<script type=text/javascript src=/js/flexsearch.ff2b41338a9f424c6e19617d29233f711037e6f25b040151f804319bb3fb291db208e15e43883f586c1a1e076a21dd7016f39b239aecfb21ef083be9733e5c06.js integrity="sha512-/ytBM4qfQkxuGWF9KSM/cRA35vJbBAFR+AQxm7P7KR2yCOFeQ4g/WGwaHgdqId1wFvObI5rs+yHvCDvpcz5cBg=="></script>
 </div>
 </body>
 </html>

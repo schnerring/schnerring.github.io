@@ -2,7 +2,7 @@
 `,content:`One aspect of managing Azure Virtual Desktop (AVD) is keeping it up-to-date. One strategy is periodically building a &ldquo;golden&rdquo; image and re-deploying AVD session host VMs using the updated image. In this post, we&rsquo;ll use Packer and GitHub Actions to build a Windows 11 image and push it to Azure.
 First, we&rsquo;ll use Terraform to prepare some resources for Packer: a resource group for build artifacts and a service principal (SP) for authentication. We&rsquo;ll also export the SP credentials as GitHub Actions secrets, making them available to our CI workflow.
 Then we&rsquo;ll build a customized Windows 11 image with Packer suitable for software development workstations. We&rsquo;ll use Chocolatey to install some apps like FSLogix for user profile support and Visual Studio 2022 for .NET development. We&rsquo;ll also use a custom PowerShell script to install Azure PowerShell.
-Finally, we&rsquo;ll schedule a GitHub Actions workflow that runs the Packer build. We&rsquo;ll query Azure daily for a new Windows release and run Packer if Microsoft published a new version.
+Finally, we&rsquo;ll schedule a GitHub Actions workflow that runs the Packer build. We&rsquo;ll query Azure daily to check for new Windows releases and run Packer as soon as a new version is made available by Microsoft.
 As usual, all the code is available on GitHub.
 Get the Latest Windows 11 Version Available on Azure #  Microsoft releases monthly quality updates for Windows, on Patch Tuesday, the second Tuesday of each month. Microsoft can provide a release outside of the monthly schedule in exceptional circumstances, e.g., to fix a critical security vulnerability.
 We can use the Azure CLI to query the available Windows versions on Azure like this:
