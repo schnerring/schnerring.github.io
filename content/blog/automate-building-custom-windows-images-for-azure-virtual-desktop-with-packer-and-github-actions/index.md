@@ -687,4 +687,8 @@ packer:
 
 ## What Do You Think?
 
-Phew! That was quite a bit of work. I especially like how the GitHub Actions part turned out. Leave a comment or at me on Twitter to let me know what you think about it!
+Phew! That was quite a bit of work. [Here's one of the workflow runs](https://github.com/schnerring/packer-windows-avd/runs/5711503619) that took around one hour to complete:
+
+![Sample workflow summary](./workflow-summary.png)
+
+I especially like how the GitHub Actions part turned out. Leave a comment or at me on Twitter to let me know what you think about it!
