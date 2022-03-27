@@ -32,7 +32,46 @@ Then we'll build a customized Windows 11 image with Packer suitable for software
 
 Finally, we'll [schedule a GitHub Actions workflow](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule) that runs the Packer build. We'll query Azure daily for a new Windows release and run Packer if Microsoft published a new version.
 
-As usual, [all the code is available on GitHub](https://github.com/schnerring/packer-windows-avd).
+As usual, [all the code is available on GitHub](https://github.com/schnerring/packer-windows-avd/tree/v0.1.0).
+
+## Get the Latest Windows 11 Version Available on Azure
+
+[Microsoft releases monthly quality updates for Windows](https://docs.microsoft.com/en-us/windows/deployment/update/quality-updates#quality-updates), on _Patch Tuesday_, the second Tuesday of each month. Microsoft can provide a release outside of the monthly schedule in exceptional circumstances, e.g., to fix a critical security vulnerability.
+
+We can use the Azure CLI to query the available Windows versions on Azure like this:
+
+```bash
+az vm image list \
+  --publisher MicrosoftWindowsDesktop \
+  --offer office-365 \
+  --sku win11-21h2-avd-m365 \
+  --all
+```
+
+If you prefer using a Windows 11 base image without Office 365, use `--offer windows-11` and `--sku win11-21h2-avd` instead. You can discover more images using the Azure CLI commands `az vm image list-publishers`, `az vm image list-offers`, and `az vm image list-skus`.
+
+So, to specify an image, a value for _publisher_, _offer_, _SKU_, and _version_ is required. To get the _latest version number_ available, we use the follwing snippet:
+
+```bash
+az vm image list \
+  --publisher "${IMAGE_PUBLISHER}" \
+  --offer "${IMAGE_OFFER}" \
+  --sku "${IMAGE_SKU}" \
+  --all \
+  --query "[*].version | sort(@)[-1:]" \
+  --out tsv
+```
+
+The magic lies within the `--query` part. It contains a [JMESPath](https://jmespath.org/) expression and does the following:
+
+- `[*].version` flattens the command result to only contain a list of version numbers
+- `sort(@)[-1:]` selects the last element of the version number list to get the latest version
+
+The result of the command above looks like this:
+
+```text
+22000.556.220308
+```
 
 ## Prepare Packer Resources with Terraform
 
@@ -214,48 +253,9 @@ output "packer_tenant_id" {
 
 After running `terraform apply` to deploy everything, we can access output values like this: `terraform output packer_client_secret`.
 
-## Get the Latest Windows 11 Version Available On Azure
-
-[Microsoft releases monthly quality updates for Windows](https://docs.microsoft.com/en-us/windows/deployment/update/quality-updates#quality-updates), on _Patch Tuesday_, the second Tuesday of each month. Microsoft can provide a release outside of the monthly schedule in exceptional circumstances, e.g., to fix a critical security vulnerability.
-
-We can use the Azure CLI to query the available Windows versions on Azure like this:
-
-```bash
-az vm image list \
-  --publisher MicrosoftWindowsDesktop \
-  --offer office-365 \
-  --sku win11-21h2-avd-m365 \
-  --all
-```
-
-If you prefer using a Windows 11 base image without Office 365, use `--offer windows-11` and `--sku win11-21h2-avd` instead. You can discover more images using the Azure CLI commands `az vm image list-publishers`, `az vm image list-offers`, and `az vm image list-skus`.
-
-So, to specify an image, a value for _publisher_, _offer_, _SKU_, and _version_ is required. To get the _latest version number_ available, we use the follwing snippet:
-
-```bash
-az vm image list \
-  --publisher "${IMAGE_PUBLISHER}" \
-  --offer "${IMAGE_OFFER}" \
-  --sku "${IMAGE_SKU}" \
-  --all \
-  --query "[*].version | sort(@)[-1:]" \
-  --out tsv
-```
-
-The magic lies within the `--query` part. It contains a [JMESPath](https://jmespath.org/) expression and does the following:
-
-- `[*].version` flattens the command result to only contain a list of version numbers
-- `sort(@)[-1:]` selects the last element of the version number list to get the latest version
-
-The result of the command above looks like this:
-
-```text
-22000.556.220308
-```
-
 ## Create the Packer Template
 
-Create a Packer template file named `windows.pkr.hcl`.
+Let's add a Packer template file named `windows.pkr.hcl`.
 
 ### Input Variables
 
@@ -474,7 +474,7 @@ The `packages.config` manifest looks like this:
 
 Note that installing Chocolatey packages like that is a pretty naive approach that I wouldn't recommend for production-level scenarios. [Using the Chocolatey community repository has limits in terms of reliability, control, and trust.](https://docs.chocolatey.org/en-us/community-repository/community-packages-disclaimer). Also, any failing package installation breaks the entire build, so pinning versions is a good idea.
 
-The `install-azure-powershell.ps1` script to install the Azure PowerShell modules looks like this:
+The `install-azure-powershell.ps1` provisioning script to install the Azure PowerShell modules looks like this:
 
 ```powershell
 # See https://docs.microsoft.com/en-us/powershell/azure/install-az-ps-msi?view=azps-7.3.2#install-or-update-on-windows-using-the-msi-package
@@ -498,7 +498,7 @@ We only covered two methods for installing software into the golden image. Often
 
 ### Run Packer Locally
 
-To run Packer locally, we can use the following command (note the `.` at the very end):
+To run Packer locally, we use the following command (note the `.` at the very end):
 
 ```bash
 packer build \
@@ -515,8 +515,176 @@ packer build \
   .
 ```
 
-With the `-var` option we can set Packer variables. We pass the Terraform outputs that we configured earlier to Packer using command substitution.
+With the `-var` option, we can set Packer variables. We pass the Terraform outputs that we configured earlier to Packer using command substitution.
 
 ## GitHub Actions
 
-Next, we tie everything together by automating everything using GitHub Actions.
+Next, we tie everything together using GitHub Actions. Add a workflow by adding a file named `.github/workflows/packer.yml`. We name the workflow and specify the events that trigger it:
+
+```yml
+name: Packer Windows 11
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: 0 0 * * *
+```
+
+It's triggered whenever we push code to the `main` branch. We schedule to run the workflow daily at 0:00 UTC using the [POSIX cron syntax](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07).
+
+Using workflow-level environment variables, we specify the desired source image publisher, offer, and SKU :
+
+```yml
+env:
+  IMAGE_PUBLISHER: MicrosoftWindowsDesktop
+
+  # With Office 365
+  IMAGE_OFFER: office-365
+  IMAGE_SKU: win11-21h2-avd-m365
+
+  # Without Office 365
+  #IMAGE_OFFER: windows-11
+  #IMAGE_SKU: win11-21h2-avd
+```
+
+Here is a high-level overview of the workflow `jobs` where all the magic happens:
+
+```yml
+jobs:
+  latest_windows_version:
+    # Get latest Windows version from Azure
+
+  check_image_exists:
+    # Check if latest version has already been built
+
+  packer:
+    # Run Packer
+```
+
+Let's look into each job in detail next.
+
+### Job: `latest_windows_version`
+
+We use the `AZURE_CREDENTIALS` secret we defined earlier with Terraform to authenticate to Azure with the [Azure Login Action](https://github.com/Azure/login).
+
+After, we use the [Azure CLI Action](https://github.com/Azure/cli) to run [the snippet to calculate the latest available image version](#get-the-latest-windows-11-version-available-on-azure).
+
+To allow using the result from the other jobs, we define the `version` job output. It's set using the `echo "::set-output name=version::${latest_version}"` command.
+
+```yml
+latest_windows_version:
+  name: Get latest Windows version from Azure
+  runs-on: ubuntu-latest
+  outputs:
+    version: ${{ steps.get_latest_version.outputs.version }}
+  steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Get Latest Version
+      id: get_latest_version
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.34.1
+        inlineScript: |
+          latest_version=$(
+            az vm image list \
+              --publisher "${IMAGE_PUBLISHER}" \
+              --offer "${IMAGE_OFFER}" \
+              --sku "${IMAGE_SKU}" \
+              --all \
+              --query "[*].version | sort(@)[-1:]" \
+              --out tsv
+          )
+          echo "Publisher: ${IMAGE_PUBLISHER}"
+          echo "Offer:     ${IMAGE_OFFER}"
+          echo "SKU:       ${IMAGE_SKU}"
+          echo "Version:   ${latest_version}"
+          echo "::set-output name=version::${latest_version}"
+```
+
+### Job: `check_image_exists`
+
+This job `needs` the `latest_windows_version` job to finish first because it depends on its `version` output.
+
+Remember that we name our Packer images (`managed_image_name`) like `${sku}-${version}`. Using the `IMAGE_SKU` workflow environment variable and the `version` output from the `latest_windows_version` job, we can use the `az image show` command to check for existing images inside the Packer artifacts resource group.
+
+Depending on whether or not an image exists, we set the job output `exists` to `true` or `false`.
+
+```yml
+check_image_exists:
+  name: Check if latest version has already been built
+  runs-on: ubuntu-latest
+  needs: latest_windows_version
+  outputs:
+    exists: ${{ steps.get_image.outputs.exists }}
+  steps:
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Check If Image Exists
+      id: get_image
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.34.1
+        inlineScript: |
+          if az image show \
+            --resource-group "${{ secrets.PACKER_ARTIFACTS_RESOURCE_GROUP }}" \
+            --name "${IMAGE_SKU}-${{ needs.latest_windows_version.outputs.version }}"; then
+            image_exists=true
+          else
+            image_exists=false
+          fi
+          echo "Image Exists: ${image_exists}"
+          echo "::set-output name=exists::${image_exists}"
+```
+
+### Job: `packer`
+
+This job `needs` the outputs from both previous jobs. It only runs `if` the `exists` output of the `check_image_exists` job equals `false`. Otherwise, it's skipped.
+
+We use the [Checkout Action](https://github.com/actions/checkout) to make the code available to the workflow and validate the syntax of the Packer template by running `packer validate`.
+
+Finally, we run `packer build`. This time we use environment variables in the form of `PKR_VAR_*` to set the Packer inputs opposed to the `-var` CLI option we used earlier when running Packer locally.
+
+```yml
+packer:
+  name: Run Packer
+  runs-on: ubuntu-latest
+  needs: [latest_windows_version, check_image_exists]
+  if: needs.check_image_exists.outputs.exists == 'false'
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Validate Packer Template
+      uses: hashicorp/packer-github-actions@master
+      with:
+        command: validate
+        arguments: -syntax-only
+
+    - name: Build Packer Image
+      uses: hashicorp/packer-github-actions@master
+      with:
+        command: build
+        arguments: -color=false -on-error=abort
+      env:
+        PKR_VAR_client_id: ${{ secrets.PACKER_CLIENT_ID }}
+        PKR_VAR_client_secret: ${{ secrets.PACKER_CLIENT_SECRET }}
+        PKR_VAR_subscription_id: ${{ secrets.PACKER_SUBSCRIPTION_ID }}
+        PKR_VAR_tenant_id: ${{ secrets.PACKER_TENANT_ID }}
+        PKR_VAR_artifacts_resource_group: ${{ secrets.PACKER_ARTIFACTS_RESOURCE_GROUP }}
+        PKR_VAR_build_resource_group: ${{ secrets.PACKER_BUILD_RESOURCE_GROUP }}
+        PKR_VAR_source_image_publisher: ${{ env.IMAGE_PUBLISHER }}
+        PKR_VAR_source_image_offer: ${{ env.IMAGE_OFFER }}
+        PKR_VAR_source_image_sku: ${{ env.IMAGE_SKU }}
+        PKR_VAR_source_image_version: ${{ needs.latest_windows_version.outputs.version }}
+```
+
+## What Do You Think?
+
+Phew! That was quite a bit of work. I especially like how the GitHub Actions part turned out. Leave a comment or at me on Twitter to let me know what you think about it!
