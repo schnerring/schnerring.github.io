@@ -30,7 +30,7 @@ First, we'll use [Terraform](https://www.terraform.io/) to prepare some resource
 
 Then we'll build a customized Windows 11 image with Packer suitable for software development workstations. We'll use [Chocolatey](https://chocolatey.org/) to install some apps like [FSLogix](https://docs.microsoft.com/en-us/fslogix/overview) for user profile support and Visual Studio 2022 for .NET development. We'll also use a custom PowerShell script to install [Azure PowerShell](https://github.com/Azure/azure-powershell).
 
-Finally, we'll [schedule a GitHub Actions workflow](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule) that runs the Packer build. We'll query Azure daily for a new Windows release and run Packer if Microsoft published a new version.
+Finally, we'll [schedule a GitHub Actions workflow](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule) that runs the Packer build. We'll query Azure daily to check for new Windows releases and run Packer as soon as a new version is made available by Microsoft.
 
 As usual, [all the code is available on GitHub](https://github.com/schnerring/packer-windows-avd/tree/v0.1.0).
 
