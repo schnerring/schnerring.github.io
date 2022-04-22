@@ -497,7 +497,7 @@ resource "kubernetes_service" "hello" {
   }
 }
 
-resource "kubernetes_ingress" "hello" {
+resource "kubernetes_ingress_v1" "hello" {
   metadata {
     name      = "hello-ing"
     namespace = kubernetes_namespace.hello.metadata.0.name
@@ -516,8 +516,13 @@ resource "kubernetes_ingress" "hello" {
           path = "/"
 
           backend {
-            service_name = "hello-svc"
-            service_port = 80
+            service {
+              name = "hello-svc"
+
+              port {
+                number = 80
+              }
+            }
           }
         }
       }
@@ -566,4 +571,4 @@ I already mentioned this earlier. The need for the workaround above originates f
 
 Other than that, we created a pretty cool solution, fully managed by Terraform, did we not?
 
-You can find all the code on GitHub in my [schnerring/infrastructure-core repository](https://github.com/schnerring/infrastructure-core/blob/v0.4.0/k8s.tf), which is evolving continuously. After committing the code to the repo, I added the `v0.4.0` tag. This way, in the future, we can easily find the code depicted in this post.
+You can find all the code on GitHub in my [schnerring/infrastructure-core repository](https://github.com/schnerring/infrastructure-core/blob/v0.5.0/k8s.tf), which is evolving continuously. After committing the code to the repo, I added the `v0.4.0` tag. This way, in the future, we can easily find the code depicted in this post.

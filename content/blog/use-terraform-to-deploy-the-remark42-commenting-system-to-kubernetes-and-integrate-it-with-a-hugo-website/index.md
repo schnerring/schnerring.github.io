@@ -287,7 +287,7 @@ I use [Traefik 2](https://doc.traefik.io/traefik/) as [`Ingress Controller`](htt
 Let us add an [`Ingress`](https://kubernetes.io/docs/concepts/services-networking/ingress/) to the `remark42.tf` file, to expose our service to the world:
 
 ```hcl
-resource "kubernetes_ingress" "remark42" {
+resource "kubernetes_ingress_v1" "remark42" {
   metadata {
     name      = "remark42-ing"
     namespace = kubernetes_namespace.remark42.metadata.0.name
@@ -306,8 +306,13 @@ resource "kubernetes_ingress" "remark42" {
           path = "/"
 
           backend {
-            service_name = "remark42-svc"
-            service_port = 80
+            service {
+              name = "remark42-svc"
+
+              port {
+                number = 80
+              }
+            }
           }
         }
       }
@@ -385,13 +390,13 @@ The last thing we have to take care of is to also toggle the Remark42 theme, whe
 </script>
 ```
 
-Note that we wait 10 ms before reading from local storage to avoid race conditions. All we have to do now is to enable comments by setting `comments: true` via [Hugo Front Matter](https://gohugo.io/content-management/front-matter/).
+We wait 10 ms before reading from local storage to avoid race conditions. All we have to do now is to enable comments by setting `comments: true` via [Hugo Front Matter](https://gohugo.io/content-management/front-matter/).
 
 ## What Do You Think?
 
 You can find all the code on my GitHub. I also tagged the commits to make it easier to find the code for future reference:
 
-- [schnerring/infrastructure-core](https://github.com/schnerring/infrastructure-core/blob/v0.2.0/remark42.tf) (Terraform, tag `v0.2.0`)
+- [schnerring/infrastructure-core](https://github.com/schnerring/infrastructure-core/blob/v0.5.0/remark42.tf) (Terraform, tag `v0.5.0`)
 - [schnerring/schnerring.github.io](https://github.com/schnerring/schnerring.github.io/blob/v1.1.0/layouts/partials/comments.html) (Hugo, tag `v1.1.0`)
 
 Any feedback in the comments below is appreciated.

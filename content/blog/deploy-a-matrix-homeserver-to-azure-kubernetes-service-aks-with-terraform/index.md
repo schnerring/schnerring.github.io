@@ -47,7 +47,7 @@ resource "kubernetes_namespace" "matrix" {
   }
 }
 
-resource "kubernetes_ingress" "matrix" {
+resource "kubernetes_ingress_v1" "matrix" {
   metadata {
     name      = "matrix-ing"
     namespace = kubernetes_namespace.matrix.metadata.0.name
@@ -67,8 +67,13 @@ resource "kubernetes_ingress" "matrix" {
           path = "/_matrix"
 
           backend {
-            service_name = "matrix-svc"
-            service_port = 8008
+            service {
+              name = "matrix-svc"
+
+              port {
+                number = 8008
+              }
+            }
           }
         }
 
@@ -76,8 +81,13 @@ resource "kubernetes_ingress" "matrix" {
           path = "/_synapse/client"
 
           backend {
-            service_name = "matrix-svc"
-            service_port = 8008
+            service {
+              name = "matrix-svc"
+
+              port {
+                number = 8008
+              }
+            }
           }
         }
 
@@ -85,8 +95,13 @@ resource "kubernetes_ingress" "matrix" {
           path = "/"
 
           backend {
-            service_name = "matrix-admin-svc"
-            service_port = 8080
+            service {
+              name = "matrix-admin-svc"
+
+              port {
+                number = 8080
+              }
+            }
           }
         }
       }
