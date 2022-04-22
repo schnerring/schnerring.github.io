@@ -25,7 +25,7 @@
 <meta itemprop=name content="Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform">
 <meta itemprop=description content="Did you ever think about running a Matrix homeserver? In this post, we will set one up on the Azure Kubernetes Service (AKS). We will use the reference homeserver implementation, which is Synapse from the folks at matrix.org. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like federation, delegation and PostgreSQL are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the Synapse Admin UI deployment with secure access to the administration endpoints to make management of our homeserver easier."><meta itemprop=datePublished content="2021-05-14T01:13:33+02:00">
 <meta itemprop=dateModified content="2021-05-14T01:13:33+02:00">
-<meta itemprop=wordCount content="1906"><meta itemprop=image content="https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/cover.svg">
+<meta itemprop=wordCount content="1924"><meta itemprop=image content="https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/cover.svg">
 <meta itemprop=keywords content="AKS,Azure,Azure Kubernetes Service,Cloud,k8s,Kubernetes,Matrix,Self-host,Synapse,Terraform,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>
@@ -157,7 +157,7 @@ Ingress
   }
 }
 
-<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_ingress&#34; &#34;matrix&#34;</span> {
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_ingress_v1&#34; &#34;matrix&#34;</span> {
   <span style=color:#66d9ef>metadata</span> {
     name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-ing&#34;</span>
     namespace <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>matrix</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
@@ -177,8 +177,13 @@ Ingress
           path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/_matrix&#34;</span>
 
           <span style=color:#66d9ef>backend</span> {
-            service_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-svc&#34;</span>
-            service_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>8008</span>
+            <span style=color:#66d9ef>service</span> {
+              name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-svc&#34;</span>
+
+              <span style=color:#66d9ef>port</span> {
+                number <span style=color:#f92672>=</span> <span style=color:#ae81ff>8008</span>
+              }
+            }
           }
         }
 
@@ -186,8 +191,13 @@ Ingress
           path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/_synapse/client&#34;</span>
 
           <span style=color:#66d9ef>backend</span> {
-            service_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-svc&#34;</span>
-            service_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>8008</span>
+            <span style=color:#66d9ef>service</span> {
+              name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-svc&#34;</span>
+
+              <span style=color:#66d9ef>port</span> {
+                number <span style=color:#f92672>=</span> <span style=color:#ae81ff>8008</span>
+              }
+            }
           }
         }
 
@@ -195,8 +205,13 @@ Ingress
           path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/&#34;</span>
 
           <span style=color:#66d9ef>backend</span> {
-            service_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-admin-svc&#34;</span>
-            service_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>8080</span>
+            <span style=color:#66d9ef>service</span> {
+              name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;matrix-admin-svc&#34;</span>
+
+              <span style=color:#66d9ef>port</span> {
+                number <span style=color:#f92672>=</span> <span style=color:#ae81ff>8080</span>
+              }
+            }
           }
         }
       }
@@ -688,7 +703,7 @@ What&rsquo;s Next?
 </div>
 </footer>
 <script type=text/javascript src=/js/main.81233fcff688533cf8d518d1b936362234344cb9514167a5f69f8f64af60d158ff0df519f16bb2bd1fe3112a1d3ac24ec29f0cde7f738f7a73e93d27feb7001b.js integrity="sha512-gSM/z/aIUzz41RjRuTY2IjQ0TLlRQWel9p+PZK9g0Vj/DfUZ8WuyvR/jESodOsJOwp8M3n9zj3pz6T0n/rcAGw=="></script>
-<script type=text/javascript src=/js/flexsearch.f7d2a33710bb5aac529aa025035590ae50a6532bce0d9db7a19e9f6544328626441d986bc6491fcc467316e6587de33aea69cbcf821130c7664a21d0e8563452.js integrity="sha512-99KjNxC7WqxSmqAlA1WQrlCmUyvODZ23oZ6fZUQyhiZEHZhrxkkfzEZzFuZYfeM66mnLz4IRMMdmSiHQ6FY0Ug=="></script>
+<script type=text/javascript src=/js/flexsearch.72fa108c355afc2915cbb11c09a3000c2d82c0886e2bc57154349a6a4b5564505269f5b5a2299a8aa484c8490a13a91a151bab3bae61b558821cf4e0269afd1a.js integrity="sha512-cvoQjDVa/CkVy7EcCaMADC2CwIhuK8VxVDSaaktVZFBSafW1oimaiqSEyEkKE6kaFRurO65htViCHPTgJpr9Gg=="></script>
 </div>
 </body>
 </html>

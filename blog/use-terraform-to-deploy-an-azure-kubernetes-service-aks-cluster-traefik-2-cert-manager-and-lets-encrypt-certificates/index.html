@@ -25,7 +25,7 @@
 <meta itemprop=name content="Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates">
 <meta itemprop=description content="In this post, we will deploy a simple Azure Kubernetes Service (AKS) cluster from scratch. To expose our web services securely, we will install Traefik 2 and configure cert-manager to manage Let&rsquo;s Encrypt certificates. The best part about it: we will do everything with Terraform."><meta itemprop=datePublished content="2021-04-25T01:00:27+02:00">
 <meta itemprop=dateModified content="2021-04-25T01:00:27+02:00">
-<meta itemprop=wordCount content="2093"><meta itemprop=image content="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover.png">
+<meta itemprop=wordCount content="2099"><meta itemprop=image content="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/cover.png">
 <meta itemprop=keywords content="AKS,Azure,Azure Kubernetes Service,cert-manager,Cloud,DevOps,Helm,k8s,Kubernetes,Let's Encrypt,Network,Reverse Proxy,Self-host,Terraform,Traefik,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>
@@ -546,7 +546,7 @@ Step 6: Deploy a Demo Application
   }
 }
 
-<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_ingress&#34; &#34;hello&#34;</span> {
+<span style=color:#66d9ef>resource</span> <span style=color:#e6db74>&#34;kubernetes_ingress_v1&#34; &#34;hello&#34;</span> {
   <span style=color:#66d9ef>metadata</span> {
     name      <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;hello-ing&#34;</span>
     namespace <span style=color:#f92672>=</span> <span style=color:#66d9ef>kubernetes_namespace</span>.<span style=color:#66d9ef>hello</span>.<span style=color:#66d9ef>metadata</span>.<span style=color:#ae81ff>0</span>.<span style=color:#66d9ef>name</span>
@@ -565,8 +565,13 @@ Step 6: Deploy a Demo Application
           path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;/&#34;</span>
 
           <span style=color:#66d9ef>backend</span> {
-            service_name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;hello-svc&#34;</span>
-            service_port <span style=color:#f92672>=</span> <span style=color:#ae81ff>80</span>
+            <span style=color:#66d9ef>service</span> {
+              name <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;hello-svc&#34;</span>
+
+              <span style=color:#66d9ef>port</span> {
+                number <span style=color:#f92672>=</span> <span style=color:#ae81ff>80</span>
+              }
+            }
           }
         }
       }
@@ -606,7 +611,7 @@ terraform plan -out infrastructure.tfplan
 terraform apply infrastructure.tfplan
 </code></pre></div><p>I already mentioned this earlier. The need for the workaround above originates from stacking Kubernetes cluster infrastructure with Kubernetes resources which the <a href=https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources class=link--external target=_blank rel=noreferrer>official Kubernetes provider documentation discourages</a> recommend against that. Adhering to the docs and separating cluster and Kubernetes resources into different modules will probably save you a headache!</p>
 <p>Other than that, we created a pretty cool solution, fully managed by Terraform, did we not?</p>
-<p>You can find all the code on GitHub in my <a href=https://github.com/schnerring/infrastructure-core/blob/v0.4.0/k8s.tf class=link--external target=_blank rel=noreferrer>schnerring/infrastructure-core repository</a>, which is evolving continuously. After committing the code to the repo, I added the <code>v0.4.0</code> tag. This way, in the future, we can easily find the code depicted in this post.</p>
+<p>You can find all the code on GitHub in my <a href=https://github.com/schnerring/infrastructure-core/blob/v0.5.0/k8s.tf class=link--external target=_blank rel=noreferrer>schnerring/infrastructure-core repository</a>, which is evolving continuously. After committing the code to the repo, I added the <code>v0.4.0</code> tag. This way, in the future, we can easily find the code depicted in this post.</p>
 </div>
 <div class=social-share>
 <strong>Share this post: </strong>
@@ -713,7 +718,7 @@ terraform apply infrastructure.tfplan
 </div>
 </footer>
 <script type=text/javascript src=/js/main.81233fcff688533cf8d518d1b936362234344cb9514167a5f69f8f64af60d158ff0df519f16bb2bd1fe3112a1d3ac24ec29f0cde7f738f7a73e93d27feb7001b.js integrity="sha512-gSM/z/aIUzz41RjRuTY2IjQ0TLlRQWel9p+PZK9g0Vj/DfUZ8WuyvR/jESodOsJOwp8M3n9zj3pz6T0n/rcAGw=="></script>
-<script type=text/javascript src=/js/flexsearch.f7d2a33710bb5aac529aa025035590ae50a6532bce0d9db7a19e9f6544328626441d986bc6491fcc467316e6587de33aea69cbcf821130c7664a21d0e8563452.js integrity="sha512-99KjNxC7WqxSmqAlA1WQrlCmUyvODZ23oZ6fZUQyhiZEHZhrxkkfzEZzFuZYfeM66mnLz4IRMMdmSiHQ6FY0Ug=="></script>
+<script type=text/javascript src=/js/flexsearch.72fa108c355afc2915cbb11c09a3000c2d82c0886e2bc57154349a6a4b5564505269f5b5a2299a8aa484c8490a13a91a151bab3bae61b558821cf4e0269afd1a.js integrity="sha512-cvoQjDVa/CkVy7EcCaMADC2CwIhuK8VxVDSaaktVZFBSafW1oimaiqSEyEkKE6kaFRurO65htViCHPTgJpr9Gg=="></script>
 </div>
 </body>
 </html>
