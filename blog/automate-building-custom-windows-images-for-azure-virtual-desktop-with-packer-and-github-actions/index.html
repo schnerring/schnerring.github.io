@@ -25,7 +25,7 @@
 <meta itemprop=name content="Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions">
 <meta itemprop=description content="One aspect of managing Azure Virtual Desktop (AVD) is keeping it up-to-date. One strategy is periodically building a &ldquo;golden&rdquo; image and re-deploying AVD session host VMs using the updated image. In this post, we&rsquo;ll use Packer and GitHub Actions to build a Windows 11 image and push it to Azure."><meta itemprop=datePublished content="2022-03-27T08:12:20+02:00">
 <meta itemprop=dateModified content="2022-03-27T08:12:20+02:00">
-<meta itemprop=wordCount content="2630"><meta itemprop=image content="https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/cover.jpg">
+<meta itemprop=wordCount content="2756"><meta itemprop=image content="https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/cover.jpg">
 <meta itemprop=keywords content="AVD,Azure,Azure CLI,Azure Virtual Desktop,CI,Continuous Integration,DevOps,GitHub Actions,IaC,Infrastructure as Code,Packer,Terraform,">
 <script async defer data-domain=schnerring.net src=https://plausible.schnerring.net/js/plausible.js></script>
 <style>
@@ -620,6 +620,7 @@ Job: <code>latest_windows_version</code>
       <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>azure/login@v1</span>
       <span style=color:#f92672>with</span>:
         <span style=color:#f92672>creds</span>: <span style=color:#ae81ff>${{ secrets.AZURE_CREDENTIALS }}</span>
+
     - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Get Latest Version</span>
       <span style=color:#f92672>id</span>: <span style=color:#ae81ff>get_latest_version</span>
       <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>azure/CLI@v1</span>
@@ -658,6 +659,7 @@ Job: <code>check_image_exists</code>
       <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>azure/login@v1</span>
       <span style=color:#f92672>with</span>:
         <span style=color:#f92672>creds</span>: <span style=color:#ae81ff>${{ secrets.AZURE_CREDENTIALS }}</span>
+
     - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Check If Image Exists</span>
       <span style=color:#f92672>id</span>: <span style=color:#ae81ff>get_image</span>
       <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>azure/CLI@v1</span>
@@ -711,6 +713,34 @@ Job: <code>packer</code>
         <span style=color:#f92672>PKR_VAR_source_image_offer</span>: <span style=color:#ae81ff>${{ env.IMAGE_OFFER }}</span>
         <span style=color:#f92672>PKR_VAR_source_image_sku</span>: <span style=color:#ae81ff>${{ env.IMAGE_SKU }}</span>
         <span style=color:#f92672>PKR_VAR_source_image_version</span>: <span style=color:#ae81ff>${{ needs.latest_windows_version.outputs.version }}</span>
+</code></pre></div><h3 id=job-cleanup>
+Job: <code>cleanup</code>
+<a href=#job-cleanup class=post-heading__anchor aria-hidden=true>#</a>
+</h3>
+<p>If the pipeline crashes somewhere along the way, resources inside the <code>packer-build-rg</code> resource group may linger and incur costs. We want to define a job that purges everything from the resource group.</p>
+<p>One way to achieve this is by starting a deployment to the resource group using an empty ARM template. First, we add an empty <a href="https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep" class=link--external target=_blank rel=noreferrer>Bicep</a> named <code>cleanup-resource-group.bicep</code>. We can then deploy the template using <a href="https://docs.microsoft.com/en-us/cli/azure/deployment/group?view=azure-cli-latest#az-deployment-group-create" class=link--external target=_blank rel=noreferrer><code>az deployment group create</code></a>:</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yml data-lang=yml><span style=color:#f92672>cleanup</span>:
+  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Cleanup Packer Resources</span>
+  <span style=color:#f92672>runs-on</span>: <span style=color:#ae81ff>ubuntu-latest</span>
+  <span style=color:#f92672>needs</span>: <span style=color:#ae81ff>packer</span>
+  <span style=color:#f92672>steps</span>:
+    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Checkout Repository</span>
+      <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>actions/checkout@v2</span>
+
+    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Azure Login</span>
+      <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>azure/login@v1</span>
+      <span style=color:#f92672>with</span>:
+        <span style=color:#f92672>creds</span>: <span style=color:#ae81ff>${{ secrets.AZURE_CREDENTIALS }}</span>
+
+    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Cleanup Resource Group</span>
+      <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>azure/CLI@v1</span>
+      <span style=color:#f92672>with</span>:
+        <span style=color:#f92672>azcliversion</span>: <span style=color:#ae81ff>2.34.1</span>
+        <span style=color:#f92672>inlineScript</span>: |<span style=color:#e6db74>
+</span><span style=color:#e6db74>          az deployment group create \
+</span><span style=color:#e6db74>            --mode Complete \
+</span><span style=color:#e6db74>            --resource-group &#34;${{ secrets.PACKER_BUILD_RESOURCE_GROUP }}&#34; \
+</span><span style=color:#e6db74>            --template-file cleanup-resource-group.bicep</span>          
 </code></pre></div><h2 id=what-do-you-think>
 What Do You Think?
 <a href=#what-do-you-think class=post-heading__anchor aria-hidden=true>#</a>
@@ -796,6 +826,7 @@ What Do You Think?
 <li><a href=#job-latest_windows_version>Job: <code>latest_windows_version</code></a></li>
 <li><a href=#job-check_image_exists>Job: <code>check_image_exists</code></a></li>
 <li><a href=#job-packer>Job: <code>packer</code></a></li>
+<li><a href=#job-cleanup>Job: <code>cleanup</code></a></li>
 </ul>
 </li>
 <li><a href=#what-do-you-think>What Do You Think?</a></li>
@@ -863,7 +894,7 @@ What Do You Think?
 </div>
 </footer>
 <script type=text/javascript src=/js/main.81233fcff688533cf8d518d1b936362234344cb9514167a5f69f8f64af60d158ff0df519f16bb2bd1fe3112a1d3ac24ec29f0cde7f738f7a73e93d27feb7001b.js integrity="sha512-gSM/z/aIUzz41RjRuTY2IjQ0TLlRQWel9p+PZK9g0Vj/DfUZ8WuyvR/jESodOsJOwp8M3n9zj3pz6T0n/rcAGw=="></script>
-<script type=text/javascript src=/js/flexsearch.9c38983f4ace3c45f0d33fc222a38874a6e59bf5af6e79fed206dd0e1071a9654275d5f170f378888329c43b831c6086f3b1c574792246acceb3cd8058fec0ee.js integrity="sha512-nDiYP0rOPEXw0z/CIqOIdKblm/Wvbnn+0gbdDhBxqWVCddXxcPN4iIMpxDuDHGCG87HFdHkiRqzOs82AWP7A7g=="></script>
+<script type=text/javascript src=/js/flexsearch.2de5a94b91d0399b6d218d388f1932ebcfc348dacd80bc5a10757f9469e90ab17e77a8e40222fd4f3acdab916acc8647bef80dc339a3762205736813e3d76122.js integrity="sha512-LeWpS5HQOZttIY04jxky68/DSNrNgLxaEHV/lGnpCrF+d6jkAiL9TzrNq5FqzIZHvvgNwzmjdiIFc2gT49dhIg=="></script>
 </div>
 </body>
 </html>
