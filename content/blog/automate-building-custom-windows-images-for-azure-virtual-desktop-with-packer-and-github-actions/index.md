@@ -581,6 +581,7 @@ latest_windows_version:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - name: Get Latest Version
       id: get_latest_version
       uses: azure/CLI@v1
@@ -623,6 +624,7 @@ check_image_exists:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
     - name: Check If Image Exists
       id: get_image
       uses: azure/CLI@v1
@@ -680,6 +682,37 @@ packer:
         PKR_VAR_source_image_offer: ${{ env.IMAGE_OFFER }}
         PKR_VAR_source_image_sku: ${{ env.IMAGE_SKU }}
         PKR_VAR_source_image_version: ${{ needs.latest_windows_version.outputs.version }}
+```
+
+### Job: `cleanup`
+
+If the pipeline crashes somewhere along the way, resources inside the `packer-build-rg` resource group may linger and incur costs. We want to define a job that purges everything from the resource group.
+
+One way to achieve this is by starting a deployment to the resource group using an empty ARM template. First, we add an empty [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep) named `cleanup-resource-group.bicep`. We can then deploy the template using [`az deployment group create`](https://docs.microsoft.com/en-us/cli/azure/deployment/group?view=azure-cli-latest#az-deployment-group-create):
+
+```yml
+cleanup:
+  name: Cleanup Packer Resources
+  runs-on: ubuntu-latest
+  needs: packer
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Cleanup Resource Group
+      uses: azure/CLI@v1
+      with:
+        azcliversion: 2.34.1
+        inlineScript: |
+          az deployment group create \
+            --mode Complete \
+            --resource-group "${{ secrets.PACKER_BUILD_RESOURCE_GROUP }}" \
+            --template-file cleanup-resource-group.bicep
 ```
 
 ## What Do You Think?
