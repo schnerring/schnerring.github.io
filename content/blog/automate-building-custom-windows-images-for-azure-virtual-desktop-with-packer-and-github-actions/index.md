@@ -28,7 +28,7 @@ One aspect of managing [Azure Virtual Desktop (AVD)](https://azure.microsoft.com
 
 First, we'll use [Terraform](https://www.terraform.io/) to prepare some resources for Packer: a resource group for build artifacts and a [service principal (SP)](https://www.packer.io/plugins/builders/azure/arm#service-principal) for authentication. We'll also export the SP credentials as GitHub Actions secrets, making them available to our CI workflow.
 
-Then we'll build a customized Windows 11 image with Packer suitable for software development workstations. We'll use [Chocolatey](https://chocolatey.org/) to install some apps like [FSLogix](https://docs.microsoft.com/en-us/fslogix/overview) for user profile support and Visual Studio 2022 for .NET development. We'll also use a custom PowerShell script to install [Azure PowerShell](https://github.com/Azure/azure-powershell).
+Then we'll build a customized Windows 11 image with Packer suitable for software development workstations. We'll use [Chocolatey](https://chocolatey.org/) to install some apps like Visual Studio 2022 for .NET development, 7zip, the Kubernetes CLI and more. We'll also use a custom PowerShell script to install [Azure PowerShell](https://github.com/Azure/azure-powershell).
 
 Finally, we'll [schedule a GitHub Actions workflow](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule) that runs the Packer build. We'll query Azure daily to check for new Windows releases and run Packer as soon as a new version is made available by Microsoft.
 
@@ -420,9 +420,6 @@ The `packages.config` manifest looks like this:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <packages>
-  <!-- FSLogix -->
-  <package id="fslogix" />
-
   <!-- PowerShell -->
   <!-- See https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.2#install-the-msi-package-from-the-command-line -->
   <package id="powershell-core" installArguments="ADD_FILE_CONTEXT_MENU_RUNPOWERSHELL=1 ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1" />
