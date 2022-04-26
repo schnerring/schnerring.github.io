@@ -15,7 +15,7 @@ tags:
   - PowerShell
 ---
 
-Over the weekend, I was on a quest to find the cheapest available Azure Virtual Machine to house my Kubernetes cluster. I previously wrote about [optimizing storage cost with Azure Kubernetes Service (AKS)](/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform), where I talk about the importance of selecting VMs that support [ephemeral OS disks](https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks). But what VM type and region should I choose? Searching through reservation offers in the Azure Portal turned out to be tedious. This time, I'll demonstrate how to find the best offers using PowerShell and export the results to a CSV file.
+Over the weekend, I was on a quest to find the cheapest available Azure Virtual Machine to house my Azure Kubernetes Service cluster. I previously wrote about [optimizing storage cost with Azure Kubernetes Service (AKS)](/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform), where I talk about the importance of selecting VMs that support [ephemeral OS disks](https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks). But what VM type and region should I choose? Searching through reservation offers in the Azure Portal turned out to be tedious. This time, I'll demonstrate how to find the best offers using PowerShell and export the results to a CSV file.
 
 <!--more-->
 

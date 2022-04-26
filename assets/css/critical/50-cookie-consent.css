@@ -1,9 +1,10 @@
 #cookie-consent {
   animation: 0.75s fadeIn;
-  background: var(--bg);
+  background: var(--fg0);
   border-radius: 0.2rem;
   bottom: 1rem;
   box-shadow: 0 -0.5rem 1rem var(--bg1);
+  color: var(--bg1);
   font-family: var(--font-monospace);
   left: 1rem;
   padding: 1rem;
@@ -18,13 +19,13 @@
   & button {
     background: none;
     border: none;
-    color: var(--primary-alt);
+    color: var(--primary);
     font-size: 1.125rem;
     margin: 0 1rem;
     white-space: nowrap;
 
     &:hover {
-      color: var(--primary);
+      color: var(--primary-alt);
       cursor: pointer;
     }
   }
