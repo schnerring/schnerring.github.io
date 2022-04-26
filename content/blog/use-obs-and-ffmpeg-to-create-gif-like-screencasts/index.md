@@ -15,7 +15,7 @@ tags:
   - WebM
 ---
 
-In this post, I'll share how I use [OBS Studio](https://obsproject.com/) and [ffmpeg](https://ffmpeg.org/) to create short video snippets for my blog posts. Using the `<video>` tag with the `autoplay` and `loop` attributes makes them look like GIFs. However, [modern video formats result in much smaller file sizes](https://techstacker.com/why-webm-is-superior-to-gif-video-comparison/FR6xLr2zHn9uSTTsH/).
+In this post, I'll share how I use [OBS Studio](https://obsproject.com/) and [ffmpeg](https://ffmpeg.org/) to create short MP4/WebM video snippets for my blog posts. Using the `<video>` tag with the `autoplay` and `loop` attributes makes them look like GIFs. However, [modern video formats result in much smaller file sizes](https://techstacker.com/why-webm-is-superior-to-gif-video-comparison/FR6xLr2zHn9uSTTsH/).
 
 <!--more-->
 
