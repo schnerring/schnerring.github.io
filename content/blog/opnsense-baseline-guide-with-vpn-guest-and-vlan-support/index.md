@@ -510,7 +510,7 @@ Navigate to {{< breadcrumb "System" "Gateways" "Group" >}} and click `Add`.
 | WAN_VPN1      | `Tier 2` (failover)           |
 | Trigger Level | `Packet Loss or High Latency` |
 
-It's also possible to configure failover or both.
+It's also possible to configure load balancing by putting multiple interfaces into the same tier.
 
 ### Static Routes (Optional)
 
