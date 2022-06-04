@@ -221,35 +221,35 @@ Navigate to {{< breadcrumb "Interfaces" "Other Types" "VLAN" >}} and add the VLA
 
 #### Management VLAN
 
-|                  |                 |
-| ---------------- | --------------- |
-| Parent Interface | `igb0`          |
-| VLAN tag         | `10`            |
-| Description      | `VLAN10_MANAGE` |
+|             |                 |
+| ----------- | --------------- |
+| Parent      | `igb0`          |
+| VLAN tag    | `10`            |
+| Description | `VLAN10_MANAGE` |
 
 #### VPN VLAN
 
-|                  |              |
-| ---------------- | ------------ |
-| Parent Interface | `igb0`       |
-| VLAN tag         | `20`         |
-| Description      | `VLAN20_VPN` |
+|             |              |
+| ----------- | ------------ |
+| Parent      | `igb0`       |
+| VLAN tag    | `20`         |
+| Description | `VLAN20_VPN` |
 
 #### Clear VLAN
 
-|                  |                |
-| ---------------- | -------------- |
-| Parent Interface | `igb0`         |
-| VLAN tag         | `30`           |
-| Description      | `VLAN30_CLEAR` |
+|             |                |
+| ----------- | -------------- |
+| Parent      | `igb0`         |
+| VLAN tag    | `30`           |
+| Description | `VLAN30_CLEAR` |
 
 #### Guest VLAN
 
-|                  |                |
-| ---------------- | -------------- |
-| Parent Interface | `igb0`         |
-| VLAN tag         | `40`           |
-| Description      | `VLAN40_GUEST` |
+|             |                |
+| ----------- | -------------- |
+| Parent      | `igb0`         |
+| VLAN tag    | `40`           |
+| Description | `VLAN40_GUEST` |
 
 ### VLAN Interfaces
 
@@ -376,7 +376,7 @@ Select the **Endpoints** tab and click **Add**. Here is the configuration for th
 |                  |                                                |
 | ---------------- | ---------------------------------------------- |
 | Name             | `mullvad-ch5-wireguard`                        |
-| Public key       | `/iivwlyqWqxQ0BVWmJRhcXIFdJeo0WbHQ/hZwuXaN3g=` |
+| Public Key       | `/iivwlyqWqxQ0BVWmJRhcXIFdJeo0WbHQ/hZwuXaN3g=` |
 | Allowed IPs      | `0.0.0.0/0`                                    |
 | Endpoint Address | `193.32.127.66`                                |
 | Endpoint Port    | `51820`                                        |

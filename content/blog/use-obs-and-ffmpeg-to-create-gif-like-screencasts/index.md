@@ -48,7 +48,7 @@ Under {{< breadcrumb "Settings" "Output" "Recording" >}}:
 - Set **Encoder** to `x264`
 - I chose `CRF` **Rate Control** on `23` for simplicity. Try lower values to increase quality.
 - The CPU Usage Preset `placebo` will slow down encoding significantly and murder your CPU. But it will result in better compression.
-- I usually use **Tune** `stillimage` because the picture in many of my videos don't change much in-between frames
+- I usually use **Tune** `stillimage` because the picture in many of my videos doesn't change a lot in-between frames
 
 ![OBS Output Settings](obs-settings-output.jpg)
 
