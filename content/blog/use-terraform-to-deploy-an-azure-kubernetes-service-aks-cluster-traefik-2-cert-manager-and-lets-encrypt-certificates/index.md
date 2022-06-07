@@ -428,7 +428,9 @@ How awesome is that?
 
 ## Step 6: Deploy a Demo Application
 
-We are almost at the finish line. All that is missing is reaping the fruit of our hard labor. To create a simple demo, we will use the [nginxdemos/hello](https://hub.docker.com/r/nginxdemos/hello/) image and make it available at [https://hello.k8s.schnerring.net/](https://hello.k8s.schnerring.net/).
+We are almost at the finish line. All that is missing is reaping the fruit of our hard labor. To create a simple demo, we will use the [nginxdemos/hello](https://hub.docker.com/r/nginxdemos/hello/) image and make it available at `https://hello.k8s.schnerring.net/`.
+
+> I moved the demo to [https://hello.schnerring.net](https://hello.schnerring.net). I put my AKS cluster behind Cloudflare and the free universal SSL certificate only supports subdomains (`sub.schnerring.net`) but not subsubdomains (`sub.sub.schnerring.net`).
 
 To make it happen, we add a `kubernetes_namespace`, `kubernetes_deployment`, `kubernetes_service`, and `kubernetes_ingress` resource to a new `hello.tf` file:
 
@@ -536,7 +538,7 @@ resource "kubernetes_ingress_v1" "hello" {
 }
 ```
 
-After running `terraform apply` again, we should be able to visit the demo site [https://hello.k8s.schnerring.net/](https://hello.k8s.schnerring.net/):
+After running `terraform apply` again, we should be able to visit the demo site `https://hello.k8s.schnerring.net/`:
 
 ![nginx Demo](nginx-demo.png)
 
