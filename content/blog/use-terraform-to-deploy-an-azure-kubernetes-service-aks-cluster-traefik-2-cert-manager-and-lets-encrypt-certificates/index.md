@@ -569,7 +569,7 @@ terraform plan -out infrastructure.tfplan
 terraform apply infrastructure.tfplan
 ```
 
-I already mentioned this earlier. The need for the workaround above originates from stacking Kubernetes cluster infrastructure with Kubernetes resources which the [official Kubernetes provider documentation discourages](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources) recommend against that. Adhering to the docs and separating cluster and Kubernetes resources into different modules will probably save you a headache!
+I already mentioned this earlier. The need for the workaround above originates from stacking Kubernetes cluster infrastructure with Kubernetes resources which the [official Kubernetes provider documentation discourages](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#stacking-with-managed-kubernetes-cluster-resources). Adhering to the docs and separating cluster and Kubernetes resources into different modules will probably save you a headache!
 
 Other than that, we created a pretty cool solution, fully managed by Terraform, did we not?
 
