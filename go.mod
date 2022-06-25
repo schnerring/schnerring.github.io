@@ -2,4 +2,4 @@ module github.com/schnerring/schnerring.github.io
 
 go 1.15
 
-require github.com/schnerring/hugo-theme-gruvbox v0.0.0-20220426190033-d80a7c85eca8 // indirect
+require github.com/schnerring/hugo-theme-gruvbox v0.0.0-20220625145242-7d52aaeec25e // indirect
