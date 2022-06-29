@@ -346,7 +346,7 @@ Navigate to `http://<jail IP>:8686` in your browser to use Lidarr.
 
 ```bash
 # Create jail
-iocage create --name radarr --release 12.2-RELEASE dhcp=1 boot=1
+iocage create --name radarr --release 12.2-RELEASE dhcp=1 boot=1 allow_mlock=1
 # Mount jail config dataset
 iocage exec radarr mkdir /mnt/config
 iocage fstab --add radarr /mnt/vault0/apps/radarr /mnt/config nullfs rw 0 0
