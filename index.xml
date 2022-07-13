@@ -155,5 +155,4 @@ Gruvbox Theme # I am the author of the Hugo theme you see.</description></item><
 Education # Certificates # Skills # Windows Desktop Applications (Master)
 C#, .NET, WPF, ASP.NET Languages # German — Fluent English — Proficient Projects # Author 2021-06-01 - present Hugo Gruvbox Theme — A retro-looking Hugo theme inspired by gruvbox to build secure, fast, and SEO-ready websites.</description></item><item><title>Plausible Analytics</title><link>https://schnerring.net/stats/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://schnerring.net/stats/</guid><description>I self-host Plausible Analytics, an open-source, privacy-respecting, and lightweight website analytics tool. I use Terraform and Azure Kubernetes Service (AKS) to host it. Check my Terraform configuration for Plausible on GitHub if you want to learn how.
 Plausible doesn&amp;rsquo;t collect personal data. It doesn&amp;rsquo;t require cookies and is fully compliant with the GDPR, CCPA, and PECR.
-A standalone public dashboard is also available.
-function setPlausibleTheme(theme) { const dashboard = document.</description></item></channel></rss>
+A standalone public dashboard is also available.</description></item></channel></rss>
