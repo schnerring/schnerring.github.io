@@ -32,7 +32,7 @@ Then we'll build a customized Windows 11 image with Packer suitable for software
 
 Finally, we'll [schedule a GitHub Actions workflow](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule) that runs the Packer build. We'll query Azure daily to check for new Windows releases and run Packer as soon as a new version is made available by Microsoft.
 
-As usual, [all the code is available on GitHub](https://github.com/schnerring/packer-windows-avd/tree/v0.2.0).
+As usual, [all the code is available on GitHub](https://github.com/schnerring/packer-windows-avd/tree/v0.3.0).
 
 ## Get the Latest Windows 11 Version Available on Azure
 
@@ -399,7 +399,7 @@ build {
     inline = [
       "while ((Get-Service RdAgent).Status -ne 'Running') { Start-Sleep -s 5 }",
       "while ((Get-Service WindowsAzureGuestAgent).Status -ne 'Running') { Start-Sleep -s 5 }",
-      "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit",
+      "& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /quiet /quit /mode:vm",
       "while ($true) { $imageState = Get-ItemProperty HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup\\State | Select ImageState; if($imageState.ImageState -ne 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { Write-Output $imageState.ImageState; Start-Sleep -s 10  } else { break } }"
     ]
   }
