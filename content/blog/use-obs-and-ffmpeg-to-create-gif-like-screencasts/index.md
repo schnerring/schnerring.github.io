@@ -6,7 +6,7 @@ comments: true
 socialShare: true
 toc: false
 cover:
-  src: cover.jpg
+  src: powershell-matrix-effect.jpg
 tags:
   - OBS Studio
   - ffmpeg
