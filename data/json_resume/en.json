@@ -15,20 +15,16 @@
         "url": "https://github.com/schnerring"
       },
       {
-        "network": "LinkedIn",
-        "url": "https://www.linkedin.com/in/schnerring"
-      },
-      {
         "network": "Twitter",
         "url": "https://twitter.com/schnerringo"
       },
       {
-        "network": "Matrix",
-        "url": "https://matrix.to/#/@michael:schnerring.net"
+        "network": "Mastodon",
+        "url": "https://hachyderm.io/@schnerring"
       },
       {
-        "network": "StackOverflow",
-        "url": "https://stackoverflow.com/users/1154965/michael-schnerring"
+        "network": "LinkedIn",
+        "url": "https://www.linkedin.com/in/schnerring"
       },
       {
         "network": "RSS",
