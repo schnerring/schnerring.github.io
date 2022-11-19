@@ -50,22 +50,14 @@ az vm image list \
 
 If you prefer using a Windows 11 base image without Office 365, use `--offer windows-11` and `--sku win11-21h2-avd` instead. You can discover more images using the Azure CLI commands `az vm image list-publishers`, `az vm image list-offers`, and `az vm image list-skus`.
 
-So, to specify an image, a value for _publisher_, _offer_, _SKU_, and _version_ is required. To get the _latest version number_ available, we use the follwing snippet:
+So, to specify an image, a value for _publisher_, _offer_, _SKU_, and _version_ is required. To get the _latest version number_ available, we use the follwing snippet (thanks [pc-dok](https://github.com/pc-dok) for commenting and providing a more elegant query):
 
 ```bash
-az vm image list \
-  --publisher "${IMAGE_PUBLISHER}" \
-  --offer "${IMAGE_OFFER}" \
-  --sku "${IMAGE_SKU}" \
-  --all \
-  --query "[*].version | sort(@)[-1:]" \
+az vm image show \
+  --urn "${IMAGE_PUBLISHER}:${IMAGE_OFFER}:${IMAGE_SKU}:latest" \
+  --query name \
   --out tsv
 ```
-
-The magic lies within the `--query` part. It contains a [JMESPath](https://jmespath.org/) expression and does the following:
-
-- `[*].version` flattens the command result to only contain a list of version numbers
-- `sort(@)[-1:]` selects the last element of the version number list to get the latest version
 
 The result of the command above looks like this:
 
@@ -568,7 +560,7 @@ We use the `AZURE_CREDENTIALS` secret we defined earlier with Terraform to authe
 
 After, we use the [Azure CLI Action](https://github.com/Azure/cli) to run [the snippet to calculate the latest available image version](#get-the-latest-windows-11-version-available-on-azure).
 
-To allow using the result from the other jobs, we define the `version` job output. It's set using the `echo "::set-output name=version::${latest_version}"` command.
+To allow using the result from the other jobs, we define the `version` job output. It's set using the `echo "version=${latest_version}" >> $GITHUB_OUTPUT` command.
 
 ```yml
 latest_windows_version:
@@ -589,19 +581,16 @@ latest_windows_version:
         azcliversion: 2.34.1
         inlineScript: |
           latest_version=$(
-            az vm image list \
-              --publisher "${IMAGE_PUBLISHER}" \
-              --offer "${IMAGE_OFFER}" \
-              --sku "${IMAGE_SKU}" \
-              --all \
-              --query "[*].version | sort(@)[-1:]" \
+            az vm image show \
+              --urn "${IMAGE_PUBLISHER}:${IMAGE_OFFER}:${IMAGE_SKU}:latest" \
+              --query name \
               --out tsv
           )
           echo "Publisher: ${IMAGE_PUBLISHER}"
           echo "Offer:     ${IMAGE_OFFER}"
           echo "SKU:       ${IMAGE_SKU}"
           echo "Version:   ${latest_version}"
-          echo "::set-output name=version::${latest_version}"
+          echo "version=${latest_version}" >> $GITHUB_OUTPUT
 ```
 
 ### Job: `check_image_exists`
@@ -639,7 +628,7 @@ check_image_exists:
             image_exists=false
           fi
           echo "Image Exists: ${image_exists}"
-          echo "::set-output name=exists::${image_exists}"
+          echo "exists=${image_exists}" >> $GITHUB_OUTPUT
 ```
 
 ### Job: `packer`
