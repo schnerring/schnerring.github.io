@@ -898,6 +898,7 @@ Select **IG_LOCAL** and add the following rule.
 | TCP/IP Version | `IPv4+IPv6`                          |
 | Protocol       | `any`                                |
 | Source         | `IG_LOCAL net`                       |
+| Destination    | `IG_LOCAL net`                       |
 | Log            | `checked`                            |
 | Description    | `Reject intranet traffic by default` |
 
