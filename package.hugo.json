@@ -7,13 +7,9 @@
   "bugs": {
     "url": "https://github.com/schnerring/schnerring.github.io/issues"
   },
-  "description": "A retro-looking Hugo theme inspired by gruvbox. The pastel colors are high contrast, easily distinguishable, pleasing to the eye, and feature light and dark color palettes.",
+  "description": "My personal website, schnerring.net.",
   "homepage": "https://github.com/schnerring/schnerring.github.io#readme",
-  "keywords": [
-    "hugo",
-    "gruvbox",
-    "theme"
-  ],
+  "keywords": ["hugo", "gruvbox", "theme"],
   "license": "MIT",
   "lint-staged": {
     "*.css": "stylelint --fix --allow-empty-input",
