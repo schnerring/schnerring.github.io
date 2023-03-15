@@ -22,7 +22,7 @@ With [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/vi
 
 <!--more-->
 
-As always, [all the code is available on my GitHub](https://github.com/schnerring/terraform-azurerm-avd/blob/v0.2.0/avd.tf).
+As always, [all the code is available on my GitHub](https://github.com/schnerring/terraform-azurerm-avd/blob/v0.2.1/avd.tf).
 
 ## Prerequisites
 
