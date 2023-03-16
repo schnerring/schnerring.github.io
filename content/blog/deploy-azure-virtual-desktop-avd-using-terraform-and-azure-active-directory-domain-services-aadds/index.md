@@ -192,12 +192,12 @@ resource "random_password" "avd_local_admin" {
 }
 
 resource "random_id" "avd" {
-  count       = length(azurerm_network_interface.avd)
+  count       = var.avd_host_pool_size
   byte_length = 4
 }
 
 resource "azurerm_windows_virtual_machine" "avd" {
-  count               = length(random_id.avd)
+  count               = var.avd_host_pool_size
   name                = "avd-vm-${count.index}-${random_id.avd[count.index].hex}"
   location            = azurerm_resource_group.avd.location
   resource_group_name = azurerm_resource_group.avd.name
@@ -317,7 +317,7 @@ We then AADDS-join the session hosts with the `JsonADDomainExtension` VM extensi
 
 ```hcl
 resource "azurerm_virtual_machine_extension" "avd_aadds_join" {
-  count                      = length(azurerm_windows_virtual_machine.avd)
+  count                      = var.avd_host_pool_size
   name                       = "aadds-join-vmext"
   virtual_machine_id         = azurerm_windows_virtual_machine.avd[count.index].id
   publisher                  = "Microsoft.Compute"
@@ -372,7 +372,7 @@ Then, we register the session hosts to the host pool with the `DSC` VM extension
 
 ```hcl
 resource "azurerm_virtual_machine_extension" "avd_register_session_host" {
-  count                = length(azurerm_windows_virtual_machine.avd)
+  count                = var.avd_host_pool_size
   name                 = "register-session-host-vmext"
   virtual_machine_id   = azurerm_windows_virtual_machine.avd[count.index].id
   publisher            = "Microsoft.Powershell"
