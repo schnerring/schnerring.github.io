@@ -1,5 +1,5 @@
 baseURL = "http://localhost"
-copyright = "© 2020 Michael Schnerring"
+copyright = "© 2020 - 2023 Michael Schnerring"
 title = "Michael Schnerring"
 #paginate = 10
 enableRobotsTXT = true
