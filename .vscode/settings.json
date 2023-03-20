@@ -11,5 +11,11 @@
   },
   "emmet.includeLanguages": {
     "postcss": "css"
-  }
+  },
+  "grammarly.selectors": [
+    {
+      "language": "markdown",
+      "pattern": "content/**/*.md"
+    }
+  ]
 }
