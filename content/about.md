@@ -3,29 +3,35 @@ title: "About"
 draft: false
 ---
 
-I'm passionate about almost everything in the computer world. That world is an infinitely deep rabbit hole teaching me new things every day. I love building things and solving problems. On this website, I share my thoughts and notes about things that interest me. And maybe my content even helps you.
+When I was a first grader in the mid-90s, I got my first Windows 95 computer as a gift from my dad. Since then, I've always been fascinated by computers and the Internet, giving me access to an ever-expanding universe. Experiencing the dawn of the digital age until today, I'm still amazed by how technology is shaping our world ever faster, for better and for worse.
 
-Found an error? Don't hesitate and contact me. Any feedback is greatly appreciated.
+With infinite amounts of information at my fingertips, I love discovering and learning new things every day. I enjoy building (and breaking) tech to efficiently solve real-world problems. When I'm on my own time, I sometimes like over-engineering things just because I can. 🚀
 
-## Gruvbox Theme
+However, few soulless corporations control the Web. I actively contribute to and sponsor open-source projects to make the WWW a more human and independent place again. I strive to regain as much of my digital privacy as possible and educate others by documenting my journey. But it's tough — a constant balancing act between convenience and nuisance, between being an advisor and being a preacher, between being a cypherpunk and being a hypocrite.
 
-I am the author of the Hugo theme you see. It uses the [gruvbox](https://github.com/schnerring/hugo-theme-gruvbox) color palette. If you like it, you're free to use it, too. [The code is available on GitHub](https://github.com/schnerring/hugo-theme-gruvbox) and licensed under MIT. [Have a look at the demo site](https://hugo-theme-gruvbox.schnerring.net) to explore its features.
+On this website, I share my thoughts and notes about things that I'm excited about and working on, and hope to connect with people having a similar mindset. I'd love to hear from you!
 
-## Analytics
+## Privacy
 
-I self-host [Plausible Analytics](https://plausible.io/), an open-source, privacy-respecting, and lightweight website analytics tool.
+**I respect your privacy.**
 
-I don't collect any personal data. [All analytics data is publicly accessible on the stats page](/stats).
+I use [Plausible Analytics](https://plausible.io/) to collect anonymous web analytics data to get insights into what content people enjoy and how they discover it. [All analytics data I collect is publicly accessible on the stats page](/stats).
 
-## Legal
+When you leave a comment on my blog, the [Remark42 commenting engine](https://remark42.com/) generally only stores the user ID, username and avatar link. It requests and stores the minimum possible scope from third-party authentication providers. Users may request and download all their data from Remark42 and purge it completely by submitting a "Delete Me" request.
 
-The [source code](https://github.com/schnerring/schnerring.github.io) is licensed under the [MIT license](https://github.com/schnerring/schnerring.github.io/blob/main/LICENSE) and [content](https://github.com/schnerring/schnerring.github.io/tree/main/content) is licensed under the [Creative Commons Attribution 4.0 International license](https://github.com/schnerring/schnerring.github.io/blob/main/content/LICENSE). Both, source code and content of this site, is [available on GitHub](https://github.com/schnerring/schnerring.github.io).
+## Sponsoring
 
-All trademarks are the property of their respective owners.
+**I do not offer advertisements or sponsorships** for any form of payment. I author all the content on this blog and offer it for free as in free beer. All recommendations I make are independent and unbiased.
+
+**I do not use affiliate links for anything I recommend**. Affiliate links are specific web links that reward the advertiser with commissions for visits, signups, or sales through that link.
+
+**I do not accept guest posts or sponsored content in any form.** I ignore all such requests, so please don't contact me about that.
 
 ## Thanks ❤️
 
-Without the contributors of the open-source community, this website probably wouldn't exist. It uses the following tech:
+Thank you, dear reader! Thank you for taking the time to read my blog. And thank you to everyone contributing to the open-source community. If it wasn't for you, this website wouldn't exist.
+
+These are the building blocks I built this website on:
 
 <!-- markdownlint-disable MD033 -->
 
@@ -40,3 +46,7 @@ Without the contributors of the open-source community, this website probably wou
 | Graphics Editing  | [draw.io](https://draw.io/)<br>[Paint.NET](https://www.getpaint.net/)<br>[Inkscape](https://duckduckgo.com/?t=ffab&q=inkscap&ia=web)    |
 
 <!-- markdownlint-enable MD033 -->
+
+## Legal
+
+The [source code](https://github.com/schnerring/schnerring.github.io) is licensed under the [MIT license](https://github.com/schnerring/schnerring.github.io/blob/main/LICENSE) and the [content](https://github.com/schnerring/schnerring.github.io/tree/main/content) is licensed under the [Creative Commons Attribution 4.0 International license](https://github.com/schnerring/schnerring.github.io/blob/main/content/LICENSE). Both, the source code and content of this site, are [available on GitHub](https://github.com/schnerring/schnerring.github.io).
