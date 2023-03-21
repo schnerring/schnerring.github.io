@@ -94,6 +94,11 @@ enableRobotsTXT = true
     name = "Blog"
     url = "/blog"
     weight = 10
+  [[menu.main]]
+    identifier = "projects"
+    name = "Projects"
+    url = "/projects"
+    weight = 20
   #[[menu.main]]
   #  identifier = "cv"
   #  name = "CV"
