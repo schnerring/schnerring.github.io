@@ -61,14 +61,14 @@ jobs:
         with:
           node-version: "18"
 
-      - name: Install npm packages
-        run: npm ci
-
       - name: Install Hugo
         uses: peaceiris/actions-hugo@v2
         with:
           hugo-version: "0.111.3"
           extended: true
+
+      - name: Install npm Packages
+        run: npm ci
 
       - name: Build Hugo
         run: hugo --minify
