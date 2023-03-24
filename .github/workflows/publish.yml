@@ -48,7 +48,7 @@ jobs:
 
   publish:
     name: Publish Hugo Site
-    needs: update_hugo_dependencies
+    needs: update_hugo_npm_dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository and update Hugo themes
