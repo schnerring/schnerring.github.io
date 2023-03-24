@@ -1,6 +1,42 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:base"
+  "extends": ["config:base"],
+  "rebaseWhen": "behind-base-branch",
+  "npm": {
+    "fileMatch": ["(^|/)package\\.hugo\\.json$"],
+    "rangeStrategy": "bump",
+    "updateLockFiles": false,
+    "ignorePaths": [
+      "package.json",
+
+      "**/node_modules/**",
+      "**/bower_components/**",
+      "**/vendor/**",
+      "**/examples/**",
+      "**/__tests__/**",
+      "**/test/**",
+      "**/tests/**",
+      "**/__fixtures__/**"
+    ]
+  },
+  "gomod": {
+    "fileMatch": ["(^|/)go\\.mod$"],
+    "rangeStrategy": "bump"
+  },
+  "packageRules": [
+    {
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["indirect"],
+      "enabled": true,
+      "groupName": "Hugo Modules"
+    },
+    {
+      "extends": "packages:linters",
+      "groupName": "linters"
+    },
+    {
+      "extends": "packages:postcss",
+      "groupName": "postcss packages"
+    }
   ]
 }
