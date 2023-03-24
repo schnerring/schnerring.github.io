@@ -10,6 +10,7 @@ on:
 
 jobs:
   build:
+    needs: update_package_json
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository and update Hugo themes
