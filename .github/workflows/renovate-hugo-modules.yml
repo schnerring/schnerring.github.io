@@ -5,6 +5,8 @@ jobs:
     name: Renovate Hugo Modules
     if: startsWith(github.head_ref, 'renovate/hugo-modules')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout Pull Request HEAD Commit
         uses: actions/checkout@v3
