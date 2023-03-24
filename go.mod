@@ -1,6 +1,6 @@
 module github.com/schnerring/schnerring.github.io
 
-go 1.15
+go 1.20
 
 require (
 	github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20230309145837-5324bd7703fa // indirect
