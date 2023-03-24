@@ -1,4 +1,4 @@
-name: Hugo
+name: Publish
 
 on:
   push:
@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  update_hugo_dependencies:
-    name: Update Hugo Dependencies
+  update_hugo_npm_dependencies:
+    name: Update Hugo npm Dependencies
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -42,7 +42,7 @@ jobs:
       - name: Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Update Hugo Dependencies
+          commit_message: Update Hugo npm Dependencies
 
   publish:
     name: Publish Hugo Site
