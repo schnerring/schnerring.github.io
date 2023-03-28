@@ -1,12 +1,7 @@
-name: Publish
-
 on:
   push:
     branches:
       - main
-
-  # Allows to run workflow manually from Actions tab
-  workflow_dispatch:
 
 jobs:
   update_hugo_npm_dependencies:
@@ -14,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    outputs:
+      commit_hash: ${{ steps.commit_changes.outputs.commit_hash }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -29,9 +26,6 @@ jobs:
           hugo-version: "0.111.3"
           extended: true
 
-      - name: Tidy Hugo Modules
-        run: hugo mod tidy
-
       - name: Write composite package.json
         run: hugo mod npm pack
 
@@ -42,6 +36,7 @@ jobs:
         run: git status
 
       - name: Commit Changes
+        id: commit_changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update Hugo npm Dependencies
@@ -53,10 +48,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Checkout repository and update Hugo themes
+      - name: Checkout Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
+          ref: ${{needs.update_hugo_npm_dependencies.outputs.commit_hash}}
 
       - name: Install Node
         uses: actions/setup-node@v3
