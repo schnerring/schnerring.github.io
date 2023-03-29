@@ -3,6 +3,7 @@ copyright = "© 2020 - 2023 Michael Schnerring"
 title = "Michael Schnerring"
 #paginate = 10
 enableRobotsTXT = true
+enableGitInfo = true
 
 [markup]
   [markup.goldmark]
