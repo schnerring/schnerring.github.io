@@ -1,27 +1,23 @@
 {
+  "name": "schnerring.github.io",
+  "version": "1.0.0",
+  "description": "My personal website, schnerring.net.",
+  "license": "MIT",
+  "main": "index.js",
+  "homepage": "https://github.com/schnerring/schnerring.github.io#readme",
   "author": {
     "email": "3743342+schnerring@users.noreply.github.com",
     "name": "Michael Schnerring",
     "url": "https://schnerring.net"
   },
-  "bugs": {
-    "url": "https://github.com/schnerring/schnerring.github.io/issues"
-  },
-  "description": "My personal website, schnerring.net.",
-  "homepage": "https://github.com/schnerring/schnerring.github.io#readme",
-  "keywords": ["hugo", "gruvbox", "theme"],
-  "license": "MIT",
-  "lint-staged": {
-    "*.css": "stylelint --fix --allow-empty-input",
-    "*.js": "eslint --cache --fix",
-    "*.md": "markdownlint --fix"
-  },
-  "main": "index.js",
-  "name": "schnerring.github.io",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/schnerring/schnerring.github.io.git"
   },
+  "bugs": {
+    "url": "https://github.com/schnerring/schnerring.github.io/issues"
+  },
+  "keywords": ["Michael Schnerring", "website", "blog"],
   "scripts": {
     "lint": "npm run lint:css && npm run lint:js && npm run lint:md",
     "lint:css": "stylelint --fix **/*.css",
@@ -29,5 +25,9 @@
     "lint:md": "markdownlint --fix **/*.md",
     "prepare": "husky install"
   },
-  "version": "1.0.0"
+  "lint-staged": {
+    "*.css": "stylelint --fix --allow-empty-input",
+    "*.js": "eslint --cache --fix",
+    "*.md": "markdownlint --fix"
+  }
 }

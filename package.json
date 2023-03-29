@@ -74,9 +74,9 @@
   },
   "homepage": "https://github.com/schnerring/schnerring.github.io#readme",
   "keywords": [
-    "hugo",
-    "gruvbox",
-    "theme"
+    "Michael Schnerring",
+    "website",
+    "blog"
   ],
   "license": "MIT",
   "lint-staged": {
