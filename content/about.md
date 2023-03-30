@@ -22,7 +22,7 @@ act between convenience and nuisance, between being an advisor and being a
 preacher, between being a cypherpunk and being a hypocrite.
 
 On this website, I share my thoughts and notes about things that I'm excited
-about and working on, and hope to connect with people having a similar mindset.
+about and working on and hope to connect with people having a similar mindset.
 I'd love to hear from you!
 
 ## Privacy
@@ -40,6 +40,17 @@ user ID, username and avatar link. It requests and stores the minimum possible
 scope from third-party authentication providers. Users may request and download
 all their data from Remark42 and purge it completely by submitting a "Delete Me"
 request.
+
+## Get in Touch
+
+Connect with me! Stay up-to-date with what I'm sharing and working on:
+
+- Twitter: <https://twitter.com/schnerringo>
+- Mastodon: <https://hachyderm.io/@schnerring>
+- LinkedIn: <https://www.linkedin.com/in/schnerring>
+- GitHub: <https://github.com/schnerring>
+- StackOverflow: <https://stackoverflow.com/users/1154965/michael-schnerring>
+- RSS Feed: <https://schnerring.net/index.xml>
 
 ## Sponsoring
 
