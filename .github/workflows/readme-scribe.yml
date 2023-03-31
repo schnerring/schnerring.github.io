@@ -1,0 +1,29 @@
+name: Update Projects Page
+
+on:
+  push:
+    paths:
+      - templates/projects.tpl.md
+  schedule:
+    - cron: 0 */1 * * *
+
+jobs:
+  markscribe:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: muesli/readme-scribe@v0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+        with:
+          template: templates/projects.tpl.md
+          writeTo: content/projects.md
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          commit_message: Update PR list on projects page
+          branch: main
