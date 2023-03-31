@@ -1,7 +1,17 @@
+name: Publish Hugo Site
+
 on:
   push:
     branches:
       - main
+    paths-ignore:
+      # Update Projects Page will trigger the workflow instead
+      - templates/projects.tpl.md
+
+  workflow_run:
+    workflows: ["Update Projects Page"]
+    types:
+      - completed
 
 jobs:
   update_hugo_npm_dependencies:
