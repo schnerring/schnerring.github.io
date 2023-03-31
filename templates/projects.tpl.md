@@ -61,7 +61,7 @@ high-quality code and documentation. Getting positive feedback or grateful
 comments motivates me, and knowing that my contributions will help others down
 the line is very rewarding.
 
-Here are my most recent code contributions, if you're interested:
+These are my most recent code contributions, if you're interested:
 
 {{ range recentPullRequests 10 }}
 - [{{ .Title }}]({{ .URL }}) on [{{ .Repo.Name }}]({{ .Repo.URL }}) ({{ humanize .CreatedAt }})
