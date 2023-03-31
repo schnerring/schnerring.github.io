@@ -28,7 +28,7 @@ ASP.NET, and WPF, to name a few.
 But in recent years, things changed with the rise of the cloud. The demand for
 modern cloud applications is constantly rising, and I find myself working more
 than ever with Microsoft Azure, Docker, Azure DevOps, Microsoft 365, and all the
-tools surrounding these technologies, which excites me.
+tools surrounding these technologies, which is exciting.
 
 My passion for the .NET ecosystem has only grown stronger over the years. I am
 so happy with the way it has evolved and see myself working with it for many
@@ -50,7 +50,7 @@ I just love to contribute to open-source projects,
 [mostly on GitHub](https://github.com/schnerring/).
 
 It's different in so many ways from the everyday job hustle: no obligations to
-be productive, no deadlines, no priorities. I can work on whatever I want to
+be productive, no deadlines, no priorities. I can work on whatever I want to,
 whenever I want to. Getting into a flow where I go from working on one thing to
 working on the next just because I feel like it is liberating and provides me a
 kind of creative outlet that an actual job can't offer.
@@ -84,3 +84,4 @@ consider the project a great success. I achieved all the goals in terms of
 appearance, functionality, and performance. I also learned a lot about the web
 world, such as the Node ecosystem, linters, PostCSS, minification, image
 optimization, and more.
+[I'm proud that the project has a fair amount of stargazers. 🤩](https://github.com/schnerring/hugo-theme-gruvbox/stargazers)
