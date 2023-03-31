@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths-ignore:
-      # Update Projects Page will trigger the workflow instead
+      # readme-scribe workflow will trigger the workflow instead
       - templates/projects.tpl.md
 
   workflow_run:

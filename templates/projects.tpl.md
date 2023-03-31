@@ -1,6 +1,7 @@
 ---
 title: "Projects"
 draft: false
+slug: projects
 ---
 
 Here's what I'm up to right now.
