@@ -1,9 +1,9 @@
-name: Update Projects Page
+name: Update Auto-Generated Content
 
 on:
   push:
     paths:
-      - templates/projects.tpl.md
+      - templates/**
   schedule:
     - cron: 0 6 * * *
 
@@ -25,5 +25,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          commit_message: Update PR list on projects page
+          commit_message: Update auto-generated content
           branch: main

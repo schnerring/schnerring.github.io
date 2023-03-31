@@ -6,7 +6,7 @@ on:
       - main
     paths-ignore:
       # readme-scribe workflow will trigger the workflow instead
-      - templates/projects.tpl.md
+      - templates/**
 
   workflow_run:
     workflows: ["Update Projects Page"]
