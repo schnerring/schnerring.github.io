@@ -61,7 +61,7 @@ high-quality code and documentation. Getting positive feedback or grateful
 comments motivates me, and knowing that my contributions will help others down
 the line is very rewarding.
 
-Here are my most recent code contributions, if you're interested:
+These are my most recent code contributions, if you're interested:
 
 
 - [Add tool: GitHub Profile Summary Cards](https://github.com/abhisheknaiidu/awesome-github-profile-readme/pull/1012) on [abhisheknaiidu/awesome-github-profile-readme](https://github.com/abhisheknaiidu/awesome-github-profile-readme) (6 days ago)
