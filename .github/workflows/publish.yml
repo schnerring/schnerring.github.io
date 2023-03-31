@@ -5,8 +5,13 @@ on:
     branches:
       - main
     paths-ignore:
-      # readme-scribe workflow will trigger the workflow instead
+      # Update Projects Page will trigger the workflow instead
       - templates/projects.tpl.md
+
+  workflow_run:
+    workflows: ["Update Projects Page"]
+    types:
+      - completed
 
 jobs:
   update_hugo_npm_dependencies:
