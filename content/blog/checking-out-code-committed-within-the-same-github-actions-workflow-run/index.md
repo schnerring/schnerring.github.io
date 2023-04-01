@@ -62,8 +62,8 @@ If you wanna know how it works and how I got there, continue reading!
 
 ## The Issue
 
-I recently had to do just that, and here's the simplified version of what I
-initially tried:
+When recently trying to implement this, I came up with the following
+(simplified) solution:
 
 ```yml
 # BAD CODE: DON'T USE!
