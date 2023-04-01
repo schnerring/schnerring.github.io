@@ -45,6 +45,27 @@ I’d love to hear from you!
 
 Stay tuned!
 
+## Gruvbox Theme for Hugo
+
+I am the author of the [Hugo](https://gohugo.io) theme you see on this website.
+[The theme's code is available on GitHub](https://github.com/schnerring/hugo-theme-gruvbox)
+and licensed under MIT. If you like it, feel free to use it, too.
+[Have a look at the demo site](https://hugo-theme-gruvbox.schnerring.net) to
+explore its features.
+
+When I first started blogging, I used a pre-made theme to familiarize myself
+with Hugo. But it wasn't long before I wanted something custom and unique. I
+decided to build a theme from scratch that looks a bit like a text editor and
+shares similar properties: performance, simplicity, great code highlighting,
+beautiful color scheme, built with the latest tools available.
+
+Bearing in mind that I didn't have much experience with web development, I
+consider the project a great success. I achieved all the goals in terms of
+appearance, functionality, and performance. I also learned a lot about the web
+world, such as the Node ecosystem, linters, PostCSS, minification, image
+optimization, and more.
+[I'm proud that the project has a fair amount of stargazers. 🤩](https://github.com/schnerring/hugo-theme-gruvbox/stargazers)
+
 ## Open-Source Contributions
 
 I just love to contribute to open-source projects,
@@ -73,24 +94,3 @@ These are my most recent code contributions, if you're interested:
 
 <!-- markdownlint-enable MD013 MD032 -->
 <!-- prettier-ignore-end -->
-
-## Gruvbox Theme for Hugo
-
-I am the author of the [Hugo](https://gohugo.io) theme you see on this website.
-[The theme's code is available on GitHub](https://github.com/schnerring/hugo-theme-gruvbox)
-and licensed under MIT. If you like it, feel free to use it, too.
-[Have a look at the demo site](https://hugo-theme-gruvbox.schnerring.net) to
-explore its features.
-
-When I first started blogging, I used a pre-made theme to familiarize myself
-with Hugo. But it wasn't long before I wanted something custom and unique. I
-decided to build a theme from scratch that looks a bit like a text editor and
-shares similar properties: performance, simplicity, great code highlighting,
-beautiful color scheme, built with the latest tools available.
-
-Bearing in mind that I didn't have much experience with web development, I
-consider the project a great success. I achieved all the goals in terms of
-appearance, functionality, and performance. I also learned a lot about the web
-world, such as the Node ecosystem, linters, PostCSS, minification, image
-optimization, and more.
-[I'm proud that the project has a fair amount of stargazers. 🤩](https://github.com/schnerring/hugo-theme-gruvbox/stargazers)
