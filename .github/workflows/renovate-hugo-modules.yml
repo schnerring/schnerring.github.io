@@ -33,6 +33,7 @@ jobs:
       - name: Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Renovate Hugo Modules
-          commit_user_name: Michael Schnerring
-          commit_user_email: 3743342+schnerring@users.noreply.github.com
+          commit_message: |
+            Renovate Hugo Modules
+
+            Co-authored-by: Michael Schnerring <3743342+schnerring@users.noreply.github.com>
