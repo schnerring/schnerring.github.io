@@ -4,7 +4,7 @@ date: "2023-03-30T19:43:55+02:00"
 draft: true
 comments: true
 socialShare: true
-toc: false
+toc: true
 cover:
   src: roman-synkevych-wX2L8L-fGeA-unsplash.jpg
   caption: Photo by [Roman Synkevych 🇺🇦](https://unsplash.com/@synkevych)
@@ -62,8 +62,8 @@ If you wanna know how it works and how I got there, continue reading!
 
 ## The Issue
 
-When recently trying to implement this, I came up with the following
-(simplified) solution:
+When I recently tried to implement this, I came up with the following (example)
+solution:
 
 ```yml
 # BAD CODE: DON'T USE!
@@ -105,9 +105,8 @@ the
 [`stefanzweifel/git-auto-commit-action`](https://github.com/stefanzweifel/git-auto-commit-action)
 action to commit and push the code to the repository.
 
-In the `publish` job that follows, we check out the code again and inspect the
-contents of our changelog file, only to find out that the changes we made are
-missing.
+In the `publish` job that follows, I check out the code again to inspect the
+contents of our changelog file, only to find out that the changes are missing.
 
 It's not the first time that I have fallen into this trap, and since you are
 reading this, likely you have too. We are not alone! I came across a
@@ -173,14 +172,14 @@ publish:
         # The changes are here 🎉
 ```
 
-This looks innocent enough, right? After checking out the code, we simply pull
-the changes using `git pull`. Before we discuss why this might be a bad idea,
-let's look at the second dirty fix that "kinda works".
+This looks innocent enough, right? After checking out the code, we simply get
+the changes that we made by using `git pull`. Before we discuss why this might
+be a bad idea, let's look at the second dirty fix that "kinda works".
 
 ## Dirty Fix #2: Use `ref: main`
 
-Another recommendation I found in the linked issue is to explicitly specify the
-branch to checkout inside the `ref` parameter as follows:
+Another recommendation from the linked issue is to explicitly specify the branch
+to checkout inside the `ref` parameter as follows:
 
 ```yml
 # DIRTY CODE: KINDA WORKS!
@@ -228,3 +227,68 @@ _right between_ the execution of the `update-changelog` and `publish` jobs. We
 could end up with a discrepancy between the changelog and what is being
 published. While this is more unlikely to happen when working solo, it can
 certainly occur on busy branches.
+
+## The Solution
+
+To mitigate this issue, we have to make sure that the `publish` job checks out
+exactly the commit that was pushed by the `update-changelog` job.
+
+To do that, we first define a `commit_hash` output on the `update-changelog`
+job. It contains the value of the
+[`commit_hash` output of the `stefanzweifel/git-auto-commit-action`](https://github.com/stefanzweifel/git-auto-commit-action/tree/v4.16.0#outputs):
+
+```yml
+update-changelog:
+  runs-on: ubuntu-latest
+  outputs:
+    commit_hash: ${{ steps.commit-and-push.outputs.commit_hash }}
+  steps:
+    - name: Check Out the Repo
+      uses: actions/checkout@v3
+
+    - name: Update CHANGELOG.md
+      run: echo "Added changes on $(date)" >> CHANGELOG.md
+
+    - name: Commit and Push Changes
+      id: commit-and-push
+      uses: stefanzweifel/git-auto-commit-action@v4
+```
+
+I recommend using the `stefanzweifel/git-auto-commit-action`, but if you want to
+do things manually, the `Commit and Push Changes` step would look similar to
+this:
+
+```yml
+- name: Commit and Push Changes
+  id: commit-and-push
+  run: |
+    git add CHANGELOG.md
+    git commit -m "Update changelog"
+    git push
+    echo "commit_hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+```
+
+In the following `publish` step, we can reference the `commit_hash` output like
+this:
+
+```yml
+publish:
+  needs: update-changelog
+  runs-on: ubuntu-latest
+  steps:
+    - name: Check Out the Repo Again
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ needs.update-changelog.outputs.commit_hash }}
+
+    - name: Display CHANGELOG.md
+      run: |
+        cat CHANGELOG.md
+        # The changes are here 🎉🎉🎉
+```
+
+This makes sure that we check out exactly what we committed and pushed in the
+`update-changelog` job.
+
+One final thing to note is that this puts the repository in a `detached HEAD`
+state.
