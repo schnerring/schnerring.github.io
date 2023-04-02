@@ -168,8 +168,8 @@ publish:
       uses: actions/checkout@v3
 
     - name: Pull Changes
-      uses: git pull origin main
-      # OR  git pull origin ${{ github.ref_name }}
+      run: git pull origin main
+      # OR git pull origin ${{ github.ref_name }}
 
     - name: Display CHANGELOG.md
       run: |
