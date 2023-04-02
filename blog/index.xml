@@ -1,4 +1,14 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogs on Michael Schnerring</title><link>https://schnerring.net/blog/</link><description>Recent content in Blogs on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Tue, 26 Apr 2022 22:30:46 +0200</lastBuildDate><atom:link href="https://schnerring.net/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>Use OBS and ffmpeg to Create Modern GIF-like Screencasts</title><link>https://schnerring.net/blog/use-obs-and-ffmpeg-to-create-gif-like-screencasts/</link><pubDate>Tue, 26 Apr 2022 22:30:46 +0200</pubDate><guid>https://schnerring.net/blog/use-obs-and-ffmpeg-to-create-gif-like-screencasts/</guid><description>&lt;p>In this post, I&amp;rsquo;ll share how I use &lt;a
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blogs on Michael Schnerring</title><link>https://schnerring.net/blog/</link><description>Recent content in Blogs on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 02 Apr 2023 05:30:00 +0200</lastBuildDate><atom:link href="https://schnerring.net/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>Checking Out Code Committed Within the Same GitHub Actions Workflow Run</title><link>https://schnerring.net/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/</link><pubDate>Sun, 02 Apr 2023 05:30:00 +0200</pubDate><guid>https://schnerring.net/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/</guid><description>&lt;p>When using &lt;a
+href="https://docs.github.com/en/actions"
+class="link--external" target="_blank" rel="noreferrer"
+>GitHub Actions&lt;/a>, we often
+include steps that use Git to check out the code of the repository, make some
+changes to the code, and then commit these changes back to the repo. Additional
+steps subsequently act upon these changes within the same workflow run. For
+example, appending auto-generated release notes to a &lt;code>CHANGELOG.md&lt;/code> file and
+committing it to the repo, to later bundle the changelog with release artifacts.
+Another example is using a workflow that periodically uses a linter to clean up
+the code base. Simple enough, right?&lt;/p></description></item><item><title>Use OBS and ffmpeg to Create Modern GIF-like Screencasts</title><link>https://schnerring.net/blog/use-obs-and-ffmpeg-to-create-gif-like-screencasts/</link><pubDate>Tue, 26 Apr 2022 22:30:46 +0200</pubDate><guid>https://schnerring.net/blog/use-obs-and-ffmpeg-to-create-gif-like-screencasts/</guid><description>&lt;p>In this post, I&amp;rsquo;ll share how I use &lt;a
 href="https://obsproject.com/"
 class="link--external" target="_blank" rel="noreferrer"
 >OBS Studio&lt;/a> and &lt;a
