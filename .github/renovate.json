@@ -1,10 +1,10 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:base"],
-  "rebaseWhen": "behind-base-branch",
   "npm": {
     "fileMatch": ["(^|/)package\\.hugo\\.json$"],
     "rangeStrategy": "bump",
+    "rebaseWhen": "behind-base-branch",
     "updateLockFiles": false,
     "ignorePaths": [
       "package.json",
