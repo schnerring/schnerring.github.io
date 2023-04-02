@@ -23,13 +23,13 @@ hats at once. I was able to acquire a very broad range of skills, especially
 with Microsoft technologies.
 
 For the first half of my career, I primarily developed solutions for
-Microsoft-only environments, using technologies such as IIS, SQL Server,
-ASP.NET, and WPF, to name a few.
+Microsoft-only environments, using technologies such as WPF, ASP.NET, SQL
+Server, and IIS, to name a few.
 
-But in recent years, things changed with the rise of the cloud. The demand for
-modern cloud applications is constantly rising, and I find myself working more
-than ever with Microsoft Azure, Docker, Azure DevOps, Microsoft 365, and all the
-tools surrounding these technologies, which is exciting.
+However, with the rise of the cloud in recent years, things have changed. The
+demand for modern cloud applications is constantly rising, and I find myself
+working more than ever with Microsoft Azure, Docker, Azure DevOps, Microsoft
+365, and all the tools surrounding these technologies, which is exciting.
 
 My passion for the .NET ecosystem has only grown stronger over the years. I am
 so happy with the way it has evolved and see myself working with it for many
