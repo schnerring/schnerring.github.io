@@ -268,6 +268,8 @@ this:
   id: commit-and-push
   run: |
     git add CHANGELOG.md
+    git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    git config --local user.name "github-actions[bot]"
     git commit -m "Update changelog"
     git push
     echo "commit_hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
