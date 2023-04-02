@@ -203,4 +203,28 @@ publish:
 
 This forces the action to check out the latest available commit on the branch
 specified in the `ref` parameter. The result is effectively the same as with
-[Dirty Fix #1](#dirty-fix-1-git-pull).
+Dirty Fix #1.
+
+## Why Is This a Bad Idea?
+
+```goat
+                               2. OOPSIE 🏇
+                                     |
+                                      '-------.
+                                               |
+                                               v
+
+     *--------------------*--------------------*  main
+
+     ^                    ^                    ^
+     |                    |                    |
+     |                    |                    |
+github.sha      1. update-changelog       3. publish
+```
+
+The diagram illustrates a possible race condition that can occur when using the
+dirty fixes above. In this context, an `OOPSIE` is another commit being pushed
+_right between_ the execution of the `update-changelog` and `publish` jobs. We
+could end up with a discrepancy between the changelog and what is being
+published. While this is more unlikely to happen when working solo, it can
+certainly occur on busy branches.
