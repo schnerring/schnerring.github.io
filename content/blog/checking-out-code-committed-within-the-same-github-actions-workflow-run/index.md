@@ -5,7 +5,7 @@ comments: true
 socialShare: true
 toc: true
 cover:
-  src: roman-synkevych-wX2L8L-fGeA-unsplash.jpg
+  src: cover-roman-synkevych-wX2L8L-fGeA-unsplash.jpg
   caption: Photo by [Roman Synkevych 🇺🇦](https://unsplash.com/@synkevych)
 tags:
   - CI

@@ -2,7 +2,8 @@
 title: "Create a Modern CSS-only Fold-Out Burger Menu"
 date: 2021-08-03T03:30:10+02:00
 cover:
-  src: www.pexels.comphotoham-burger-with-vegetables-1639557.webp
+  src: cover-pexels-valeria-boltneva-1639557.webp
+  caption: Photo by [Valeria Boltneva](https://www.pexels.com/@valeriya/)
 draft: false
 comments: true
 socialShare: true
@@ -12,7 +13,15 @@ aliases:
   - /posts/create-a-modern-css-only-fold-out-burger-menu
 ---
 
-For the last couple of months, I have been working on a custom Hugo theme in my free time. Most recently, I implemented a CSS-only burger fold-out menu to increase its responsiveness. I based the implementation on [Erik Terwan's](https://twitter.com/erikterwan) nifty [pure CSS Hamburger fold-out menu](https://codepen.io/erikterwan/pen/EVzeRP) which is pretty popular on CodePen. I modernized it by utilizing SVG and newer CSS selectors to make the code more declarative and scalable. It comes with the price of not supporting as many browsers, but honestly, who cares about Internet Explorer users?
+For the last couple of months, I have been working on a custom Hugo theme in my
+free time. Most recently, I implemented a CSS-only burger fold-out menu to
+increase its responsiveness. I based the implementation on
+[Erik Terwan's](https://twitter.com/erikterwan) nifty
+[pure CSS Hamburger fold-out menu](https://codepen.io/erikterwan/pen/EVzeRP)
+which is pretty popular on CodePen. I modernized it by utilizing SVG and newer
+CSS selectors to make the code more declarative and scalable. It comes with the
+price of not supporting as many browsers, but honestly, who cares about Internet
+Explorer users?
 
 <!--more-->
 
@@ -136,7 +145,8 @@ All of the illustrating examples use the following basic styling:
 
 ## Burger Anatomy
 
-As a starting point, I chose the `menu-2` icon of the excellent, MIT-licensed [Tabler Icon suite](https://tablericons.com/):
+As a starting point, I chose the `menu-2` icon of the excellent, MIT-licensed
+[Tabler Icon suite](https://tablericons.com/):
 
 ```xml
 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-menu-2" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -158,7 +168,8 @@ The icon looks like this:
 </svg>
 <!-- markdownlint-enable MD033 -->
 
-Here is a breakdown of the arrangement of the burger's three `<line />` elements inside the SVG:
+Here is a breakdown of the arrangement of the burger's three `<line />` elements
+inside the SVG:
 
 ![anatomy](./anatomy.png)
 
@@ -192,7 +203,10 @@ When we later animate the lines, this will be important to know.
 </div>
 ```
 
-The menu contains the burger and a list of menu items inside `.menu-burger__item-list`, which initially is not displayed. The `<input type="checkbox" />` is used as an invisible, "CSS-only click handler" indicating the menu state. Let's add some initial CSS next:
+The menu contains the burger and a list of menu items inside
+`.menu-burger__item-list`, which initially is not displayed. The
+`<input type="checkbox" />` is used as an invisible, "CSS-only click handler"
+indicating the menu state. Let's add some initial CSS next:
 
 ```css
 .menu-burger > * {
@@ -239,12 +253,22 @@ input:checked ~ .menu-burger__item-list {
 The most important things going on here are:
 
 - Any direct descendant of `.menu-burger` is positioned `absolute`ly
-- `menu-burger__item-list`, `svg`, and checkbox `input` are stacked on top of each other, ordered by `z-index`
+- `menu-burger__item-list`, `svg`, and checkbox `input` are stacked on top of
+  each other, ordered by `z-index`
 - The dimensions of the `input` checkbox and `svg` exactly match
 - To initially hide `menu-burger__item-list`, it's `translate`d out of view
-- A `transition` animation with a custom [`cubic-bezier` easing-function](https://www.w3schools.com/CSSref/func_cubic-bezier.asp) is added to the `transform` property, so the fold-out of the menu looks nice. You can play with it on [cubic-bezier.com](https://cubic-bezier.com/#.9,0,.1,1).
-- The "click handler" CSS magic is happening in `input:checked ~ .menu-burger__item-list`. `~` is the [subsequent-sibling combinator](https://www.w3.org/TR/selectors-3/#general-sibling-combinators). In this case it matches `.menu-burger__item-list` siblings of a `:checked` `input` checkbox and undoes the initial hiding `transition`.
-- The same "click handler" logic is used to change the colors of the `line` elements from dark to light
+- A `transition` animation with a custom
+  [`cubic-bezier` easing-function](https://www.w3schools.com/CSSref/func_cubic-bezier.asp)
+  is added to the `transform` property, so the fold-out of the menu looks nice.
+  You can play with it on
+  [cubic-bezier.com](https://cubic-bezier.com/#.9,0,.1,1).
+- The "click handler" CSS magic is happening in
+  `input:checked ~ .menu-burger__item-list`. `~` is the
+  [subsequent-sibling combinator](https://www.w3.org/TR/selectors-3/#general-sibling-combinators).
+  In this case it matches `.menu-burger__item-list` siblings of a `:checked`
+  `input` checkbox and undoes the initial hiding `transition`.
+- The same "click handler" logic is used to change the colors of the `line`
+  elements from dark to light
 
 The rest is self-explanatory, generic CSS styling. Here is what we have so far:
 
@@ -308,7 +332,8 @@ Now that we finished building the foundation, we can continue with the fun part!
 
 ## Animate the Burger
 
-First, we style each `<line />` by using declarative [`nth-of-type` CSS selectors](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type):
+First, we style each `<line />` by using declarative
+[`nth-of-type` CSS selectors](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type):
 
 ```css
 .collapsible__menu svg line:nth-of-type(1) {
@@ -350,14 +375,24 @@ This styles the first, second and third `line` of `svg` like so:
 
 Let's take a step back and think about what the animation should do:
 
-1. Fade out the middle `line` by [scaling](<https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/scale()>) it down and changing its `opacity` to 0
-2. Rotate the top and bottom lines to form an **X**. One way to do this is to vertically center both lines and rotate them by 45 degrees in opposing directions around their center.
+1. Fade out the middle `line` by
+   [scaling](<https://developer.mozilla.org/en-US/docs/Web/CSS/transform-function/scale()>)
+   it down and changing its `opacity` to 0
+2. Rotate the top and bottom lines to form an **X**. One way to do this is to
+   vertically center both lines and rotate them by 45 degrees in opposing
+   directions around their center.
 
-Before we get started, we have to understand [how transformation origins work](https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin) in CSS:
+Before we get started, we have to understand
+[how transformation origins work](https://developer.mozilla.org/en-US/docs/Web/CSS/transform-origin)
+in CSS:
 
-> The transform origin is the point around which a transformation is applied. For example, the transform origin of the `rotate()` function is the center of rotation.
+> The transform origin is the point around which a transformation is applied.
+> For example, the transform origin of the `rotate()` function is the center of
+> rotation.
 
-In our case, the default transform-origin is `(0,0)`. So before we apply transformations, we have to move the transform-origins of every `line` to their respective center:
+In our case, the default transform-origin is `(0,0)`. So before we apply
+transformations, we have to move the transform-origins of every `line` to their
+respective center:
 
 ![transform-origin](./transform-origin.png)
 
@@ -375,7 +410,8 @@ In our case, the default transform-origin is `(0,0)`. So before we apply transfo
 }
 ```
 
-Next, use the `cubic-bezier` function again and apply it to every `line` property to be animated:
+Next, use the `cubic-bezier` function again and apply it to every `line`
+property to be animated:
 
 ```css
 .menu-burger svg line {
@@ -410,7 +446,8 @@ Finally, we vertically center and then rotate the top and bottom `line`s:
 
 What do you think? Let me know in the comments or at me on Twitter.
 
-[I created a JSFiddle](https://jsfiddle.net/dxLb79pu/3/) for you to play around with the code. Here is the entire CSS for reference:
+[I created a JSFiddle](https://jsfiddle.net/dxLb79pu/3/) for you to play around
+with the code. Here is the entire CSS for reference:
 
 ```css
 .example {
