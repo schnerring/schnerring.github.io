@@ -28,8 +28,8 @@ the code base. Simple enough, right?
 
 ## TL;DR
 
-If you're just interested in the solution, I recommend using the following
-snippet:
+If you're just interested in **the best™** solution, I recommend using the
+following snippet:
 
 ```yml
 jobs:
