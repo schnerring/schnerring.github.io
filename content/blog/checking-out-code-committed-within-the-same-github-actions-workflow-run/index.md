@@ -54,8 +54,8 @@ jobs:
 
       - name: Display CHANGELOG.md
         run: |
-          # The changes are here 🎉
           cat CHANGELOG.md
+          # The changes are here 🎉🎉🎉
 ```
 
 If you wanna know how it works and how I got there, continue reading!
@@ -90,8 +90,8 @@ jobs:
 
       - name: Display CHANGELOG.md
         run: |
-          # The changes are missing 😕
           cat CHANGELOG.md
+          # The changes are missing 😕
 ```
 
 As you can see, there are two jobs: `update-changelog` and `publish`. By
@@ -133,9 +133,9 @@ So if the `ref` parameter is left unspecified, the action will use the
 You can find the code for this logic in
 [input-helper.ts](https://github.com/actions/checkout/blob/v3.5.0/src/input-helper.ts#L60-L79).
 
-| `github.sha`                                                                                                                     | `github.ref`                                                                                                                                                             |
-| -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| The commit SHA that triggered the workflow. The value of this commit SHA depends on the event that triggered the workflow. [...] | The fully-formed ref of the _**branch or tag that triggered the workflow run**_. For workflows triggered by `push`, this is the branch or tag ref that was pushed. [...] |
+| `github.sha`                                      | `github.ref`                                                                                                                                                 |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| The commit SHA that triggered the workflow. [...] | The fully-formed ref of the branch [...] that triggered the workflow run. For workflows triggered by `push`, this is the branch [...] that was pushed. [...] |
 
 Taking a look at the
 [git-source-provider.ts](https://github.com/actions/checkout/blob/v3.5.0/src/git-source-provider.ts#L154-L197)
@@ -147,3 +147,60 @@ shows that `actions/checkout` ensures that _exactly_ the commit specified in the
 So now we know! Across the lifetime of a workflow run, `github.sha` never
 changes. So by default, `actions/checkout` always checks out the commit that
 triggered the workflow.
+
+## Dirty Fix #1: `git pull`
+
+One suggestion from the GitHub issue I linked to earlier is to perform a
+`git pull` after checking out the repository like this:
+
+```yml
+# DIRTY CODE: KINDA WORKS!
+
+publish:
+  needs: update-changelog
+  runs-on: ubuntu-latest
+  steps:
+    - name: Check Out the Repo Again
+      uses: actions/checkout@v3
+
+    - name: Pull Changes
+      uses: git pull origin main
+      # OR  git pull origin ${{ github.ref_name }}
+
+    - name: Display CHANGELOG.md
+      run: |
+        cat CHANGELOG.md
+        # The changes are here 🎉
+```
+
+This looks innocent enough, right? After checking out the code, we simply pull
+the changes using `git pull`. Before we discuss why this might be a bad idea,
+let's look at the second dirty fix that "kinda works".
+
+## Dirty Fix #2: Use `ref: main`
+
+Another recommendation I found in the linked issue is to explicitly specify the
+branch to checkout inside the `ref` parameter as follows:
+
+```yml
+# DIRTY CODE: KINDA WORKS!
+
+publish:
+  needs: update-changelog
+  runs-on: ubuntu-latest
+  steps:
+    - name: Check Out the Repo Again
+      uses: actions/checkout@v3
+      with:
+        ref: main
+        # OR ${{ github.ref }}
+
+    - name: Display CHANGELOG.md
+      run: |
+        cat CHANGELOG.md
+        # The changes are here 🎉
+```
+
+This forces the action to check out the latest available commit on the branch
+specified in the `ref` parameter. The result is effectively the same as with
+[Dirty Fix #1](#dirty-fix-1-git-pull).
