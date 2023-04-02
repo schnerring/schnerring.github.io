@@ -1,13 +1,18 @@
 ---
 title: Checking Out Code Committed Within the Same GitHub Actions Workflow Run
-date: "2023-03-30T19:43:55+02:00"
-draft: true
+date: "2023-04-02T05:30:00+02:00"
 comments: true
 socialShare: true
 toc: true
 cover:
   src: roman-synkevych-wX2L8L-fGeA-unsplash.jpg
   caption: Photo by [Roman Synkevych 🇺🇦](https://unsplash.com/@synkevych)
+tags:
+  - CI
+  - Continuous Integration
+  - DevOps
+  - Git
+  - GitHub Actions
 ---
 
 When using [GitHub Actions](https://docs.github.com/en/actions), we often
@@ -172,14 +177,14 @@ publish:
         # The changes are here 🎉
 ```
 
-This looks innocent enough, right? After checking out the code, we simply get
-the changes that we made by using `git pull`. Before we discuss why this might
-be a bad idea, let's look at the second dirty fix that "kinda works".
+This looks harmless enough, right? After checking out the code, we simply get
+the changes we made by running `git pull`. Before we discuss why this might be a
+bad idea, let's look at the second dirty fix that "kinda works".
 
 ## Dirty Fix #2: Use `ref: main`
 
-Another recommendation from the linked issue is to explicitly specify the branch
-to checkout inside the `ref` parameter as follows:
+Another recommendation given in the linked issue is to explicitly specify the
+branch to check out via the `ref` parameter as follows:
 
 ```yml
 # DIRTY CODE: KINDA WORKS!
@@ -200,9 +205,9 @@ publish:
         # The changes are here 🎉
 ```
 
-This forces the action to check out the latest available commit on the branch
-specified in the `ref` parameter. The result is effectively the same as with
-Dirty Fix #1.
+Instead of checking out an exact commit, the action now checks out the latest
+available commit on the branch specified in the `ref` parameter. The resulting
+behavior is effectively identical to [Dirty Fix #1](#dirty-fix-1-git-pull).
 
 ## Why Is This a Bad Idea?
 
@@ -223,10 +228,10 @@ github.sha      1. update-changelog       3. publish
 
 The diagram illustrates a possible race condition that can occur when using the
 dirty fixes above. In this context, an `OOPSIE` is another commit being pushed
-_right between_ the execution of the `update-changelog` and `publish` jobs. We
-could end up with a discrepancy between the changelog and what is being
-published. While this is more unlikely to happen when working solo, it can
-certainly occur on busy branches.
+_right between_ the execution of the `update-changelog` and `publish` jobs. This
+means, that we could end up with a discrepancy between the changelog and what is
+published. While this is more unlikely to happen when working on your own, it
+can certainly happen on busy branches.
 
 ## The Solution
 
@@ -291,4 +296,7 @@ This makes sure that we check out exactly what we committed and pushed in the
 `update-changelog` job.
 
 One final thing to note is that this puts the repository in a `detached HEAD`
-state.
+state (not a bad thing).
+
+I hope you enjoyed this article and that I could clear up a bit of the confusion
+surrounding this topic. I would love to know what you think!
