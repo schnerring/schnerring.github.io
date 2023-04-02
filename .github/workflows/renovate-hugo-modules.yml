@@ -37,5 +37,6 @@ jobs:
             Renovate Hugo Modules
 
             Co-authored-by: Michael Schnerring <3743342+schnerring@users.noreply.github.com>
-          commit_author:
-            renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+          commit_user_name: renovate[bot]
+          commit_user_email: renovate[bot]@users.noreply.github.com
+          commit_author: renovate[bot] <renovate[bot]@users.noreply.github.com>
