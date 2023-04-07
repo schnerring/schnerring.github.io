@@ -424,7 +424,7 @@ Testing Both APIs# For testing, we&rsquo;ll be using the official WireGuard clie
 The tunnel will initially look like this:
 Copy the public key and execute the following to request our Mullvad IPs:
 curl https://api.mullvad.net/wg/ -d account=YOURMULLVADACCOUNTNUMBER --data-urlencode pubkey=YOURPUBLICKEY The response will return an IPv4 and IPv6 address. Add the following to the configuration file:
-[Interface] PrivateKey = &lt;PRIVATE KEY&gt; Address = &lt;IPv4 ADRESS&gt; DNS = 9.9.9.9 [Peer] PublicKey = 9hIGjit4ApkNGuEWYBLpahxokEoP0cT9CMZ+ELEygzo= AllowedIPs = 0.0.0.0/0 Endpoint = 194.36.25.18:51820 We use the de24-wireguard Mullvad server as peer and Quad9 as DNS server.
+[Interface] PrivateKey = &lt;PRIVATE KEY&gt; Address = &lt;IPv4 ADRESS&gt; DNS = 9.9.9.9 [Peer] PublicKey = bmy9vGzMqc0yS3IiMMyOONyXRwPCMiyhR/bnNQ2LsCE= AllowedIPs = 0.0.0.0/0 Endpoint = 31.7.59.250:51820 We use the ch2-wireguard Mullvad server as peer and Quad9 as DNS server.
 Let&rsquo;s activate the tunnel and browse to Mullvad&rsquo;s connection check:
 As expected, the Quad9 DNS server is not leaking through because Mullvad hijacks our DNS requests and redirects them to their DNS servers.
 Next, we use the API the app uses to request the Mullvad IPs. We expect to get a different IP for which DNS hijacking is disabled. Before we can do this, we need to revoke the WireGuard key on the Mullvad website because we already requested an IP for this public key:
