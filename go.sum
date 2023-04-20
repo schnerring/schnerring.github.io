@@ -4,3 +4,4 @@ github.com/schnerring/hugo-mod-json-resume v0.0.0-20230410211029-fd70aad29e45 h1
 github.com/schnerring/hugo-mod-json-resume v0.0.0-20230410211029-fd70aad29e45/go.mod h1:LU9A5Os43gWPvu7OcSmbhn8bbOiBiFW6t/uSCt5zHaM=
 github.com/schnerring/hugo-theme-gruvbox v0.0.0-20230416151312-4787e090f51b h1:sqWN6HXExkYFE42rm6PBE8J9u7VkKWke68ddFllA4Is=
 github.com/schnerring/hugo-theme-gruvbox v0.0.0-20230416151312-4787e090f51b/go.mod h1:oAQ0sPR28jK88K5w81PExNhd/kqyuBn30JRMr0tAm6Q=
+github.com/schnerring/hugo-theme-gruvbox v0.0.0-20230420112155-aaa1e0fdc229/go.mod h1:oAQ0sPR28jK88K5w81PExNhd/kqyuBn30JRMr0tAm6Q=
