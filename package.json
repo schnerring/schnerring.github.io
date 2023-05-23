@@ -41,12 +41,12 @@
     }
   },
   "dependencies": {
-    "@tabler/icons": "^2.18.0",
+    "@tabler/icons": "^2.20.0",
     "flexsearch": "^0.7.31",
     "normalize.css": "^8.0.1",
     "prism-themes": "^1.9.0",
     "prismjs": "^1.29.0",
-    "simple-icons": "^8.13.0",
+    "simple-icons": "^8.15.0",
     "typeface-fira-code": "^1.1.13",
     "typeface-roboto-slab": "^1.1.13"
   },
@@ -54,7 +54,7 @@
   "devDependencies": {
     "@fullhuman/postcss-purgecss": "^5.0.0",
     "cssnano": "^6.0.1",
-    "eslint": "^8.40.0",
+    "eslint": "^8.41.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.3",
@@ -65,11 +65,11 @@
     "postcss-custom-media": "^9.1.3",
     "postcss-import": "^15.1.0",
     "postcss-nesting": "^11.2.2",
-    "postcss-preset-env": "^8.3.2",
+    "postcss-preset-env": "^8.4.1",
     "postcss-url": "^10.1.3",
     "prettier": "^2.8.8",
     "prettier-plugin-go-template": "^0.0.13",
-    "stylelint": "^15.6.1",
+    "stylelint": "^15.6.2",
     "stylelint-prettier": "^3.0.0"
   },
   "homepage": "https://github.com/schnerring/schnerring.github.io#readme",
