@@ -3,7 +3,7 @@ module github.com/schnerring/schnerring.github.io
 go 1.20
 
 require (
-	github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20230502154340-f58c3c7c1e58 // indirect
-	github.com/schnerring/hugo-mod-json-resume v0.0.0-20230522231344-31e7f134d609 // indirect
-	github.com/schnerring/hugo-theme-gruvbox v0.0.0-20230523105626-421120a3113c // indirect
+	github.com/schnerring/hugo-mod-github-readme-stats v0.0.0-20230606005730-aa81cfa01027 // indirect
+	github.com/schnerring/hugo-mod-json-resume v0.0.0-20230606005848-896cf7b4b5ca // indirect
+	github.com/schnerring/hugo-theme-gruvbox v0.0.0-20230606083142-e63cd3de9494 // indirect
 )
