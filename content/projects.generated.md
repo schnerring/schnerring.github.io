@@ -98,7 +98,7 @@ These are my most recent code contributions, if you're interested:
 - [Add support for STJ-native polymorphic `JsonDerivedType` and `JsonPolymorphic` attributes to C# client/schema generator](https://github.com/RicoSuter/NJsonSchema/pull/1595) on [RicoSuter/NJsonSchema](https://github.com/RicoSuter/NJsonSchema) (1 month ago)
 - [Fix broken markdown link in Schema Feature Extensions docs](https://github.com/JasperFx/marten/pull/2584) on [JasperFx/marten](https://github.com/JasperFx/marten) (1 month ago)
 - [Fix broken links in docs to Lamar, Marten, and Oakton](https://github.com/JasperFx/wolverine/pull/355) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (1 month ago)
-- [Add article: Checking Out Code Committed Within the Same GitHub Actions Workflow Run](https://github.com/schnerring/schnerring.github.io/pull/33) on [schnerring/schnerring.github.io](https://github.com/schnerring/schnerring.github.io) (2 months ago)
+- [Add article: Checking Out Code Committed Within the Same GitHub Actions Workflow Run](https://github.com/schnerring/schnerring.github.io/pull/33) on [schnerring/schnerring.github.io](https://github.com/schnerring/schnerring.github.io) (3 months ago)
 
 
 
