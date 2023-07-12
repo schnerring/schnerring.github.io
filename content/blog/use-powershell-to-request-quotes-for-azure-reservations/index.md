@@ -15,7 +15,15 @@ tags:
   - PowerShell
 ---
 
-Over the weekend, I was on a quest to find the cheapest available Azure Virtual Machine to house my Azure Kubernetes Service cluster. I previously wrote about [optimizing storage cost with Azure Kubernetes Service (AKS)](/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform), where I talk about the importance of selecting VMs that support [ephemeral OS disks](https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks). But what VM type and region should I choose? Searching through reservation offers in the Azure Portal turned out to be tedious. This time, I'll demonstrate how to find the best offers using PowerShell and export the results to a CSV file.
+Over the weekend, I was on a quest to find the cheapest available Azure Virtual
+Machine to house my Azure Kubernetes Service cluster. I previously wrote about
+[optimizing storage cost with Azure Kubernetes Service (AKS)](/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform),
+where I talk about the importance of selecting VMs that support
+[ephemeral OS disks](https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks).
+But what VM type and region should I choose? Searching through reservation
+offers in the Azure Portal turned out to be tedious. This time, I'll demonstrate
+how to find the best offers using PowerShell and export the results to a CSV
+file.
 
 <!--more-->
 
@@ -23,7 +31,12 @@ Over the weekend, I was on a quest to find the cheapest available Azure Virtual 
 
 ## So Many Choices
 
-My AKS cluster hosts a handful of services and doesn't need a lot of resources. Two vCPUs, eight gigs of RAM, and [Premium Storage](https://docs.microsoft.com/en-us/azure/virtual-machines/premium-storage-performance) are sufficient. The [analytics data](/stats/) suggests that most of my readers are from the US and Europe, so any region between the eastern US and western Europe will do:
+My AKS cluster hosts a handful of services and doesn't need a lot of resources.
+Two vCPUs, eight gigs of RAM, and
+[Premium Storage](https://docs.microsoft.com/en-us/azure/virtual-machines/premium-storage-performance)
+are sufficient. The [analytics data](/stats/) suggests that most of my readers
+are from the US and Europe, so any region between the eastern US and western
+Europe will do:
 
 ```text
 canadaeast
@@ -41,11 +54,17 @@ norwayeast
 swedencentral
 ```
 
-We can browse offers in the Azure Portal under {{< breadcrumb "Reservations" "Add" "Virtual machine" >}}. However, we can only request one quote for a reservation at a time.
+We can browse offers in the Azure Portal under
+{{< breadcrumb "Reservations" "Add" "Virtual machine" >}}. However, we can only
+request one quote for a reservation at a time.
 
 {{< video src="./browse-azure-reservations" autoplay="true" controls="false" loop="true" >}}
 
-Clicking through the VMs for each region would take a long time. 😴 It certainly would have been faster than writing this blog article. But hacking together a PowerShell script was way more fun! I used a bunch of heuristics that "just work", so it's not perfect and causes some **400 Bad Request** responses. But it gets the job done.
+Clicking through the VMs for each region would take a long time. 😴 It certainly
+would have been faster than writing this blog article. But hacking together a
+PowerShell script was way more fun! I used a bunch of heuristics that "just
+work", so it's not perfect and causes some **400 Bad Request** responses. But it
+gets the job done.
 
 ## Requirements
 
@@ -57,7 +76,8 @@ We'll need the following things to get started:
 
 ## Parameters and Helper Functions
 
-Let's create a file named `Get-VmReservationQuotes.ps1` and add the following parameters to it:
+Let's create a file named `Get-VmReservationQuotes.ps1` and add the following
+parameters to it:
 
 ```powershell
 param (
@@ -118,7 +138,10 @@ function Test-VmCapability ($vmSize, $capabilityName, $capabilityValue) {
 }
 ```
 
-`Get-VmLocation` extracts the location from a VM object returned by the [`Get-AzComputeResourceSku`](https://docs.microsoft.com/en-us/powershell/module/az.compute/get-azcomputeresourcesku?view=azps-7.4.0) cmdlet. With `Test-VmCapability`, we can check whether the VM supports a specific feature like ephemeral OS disks:
+`Get-VmLocation` extracts the location from a VM object returned by the
+[`Get-AzComputeResourceSku`](https://docs.microsoft.com/en-us/powershell/module/az.compute/get-azcomputeresourcesku?view=azps-7.4.0)
+cmdlet. With `Test-VmCapability`, we can check whether the VM supports a
+specific feature like ephemeral OS disks:
 
 ```powershell
 Test-VmCapability $vmSize "EphemeralOSDiskSupported" "True"
@@ -126,7 +149,8 @@ Test-VmCapability $vmSize "EphemeralOSDiskSupported" "True"
 
 ## Query and Filter Available VM Types
 
-Using `Get-AzComputeResourceSku` and our helper functions, we query Azure for all the available VM types and apply our filter heuristics:
+Using `Get-AzComputeResourceSku` and our helper functions, we query Azure for
+all the available VM types and apply our filter heuristics:
 
 ```powershell
 $vmSizes = @()
@@ -182,7 +206,10 @@ Pretty straightforward, right?
 
 ## Request Quotes
 
-Now we put the filtered `$vmSizes` through another loop and query Azure for quotes using [`Get-AzReservationQuote`](https://docs.microsoft.com/en-us/powershell/module/az.reservations/get-azreservationquote?view=azps-7.4.0). After, we calculate the monthly price and export the results as CSV.
+Now we put the filtered `$vmSizes` through another loop and query Azure for
+quotes using
+[`Get-AzReservationQuote`](https://docs.microsoft.com/en-us/powershell/module/az.reservations/get-azreservationquote?view=azps-7.4.0).
+After, we calculate the monthly price and export the results as CSV.
 
 ```powershell
 $i = 0
@@ -205,14 +232,15 @@ foreach ($vmSize in $vmSizes) {
     -AppliedScopeType Shared `
     -DisplayName "$displayName"
 
-  # BillingCurrencyTotal is a multi-line string, e.g.:
-  #
-  #   CurrencyCode: CHF
-  #   Amount: 1013
-  #
-  # Extract Amout value `1013` with regex
-  $quote.BillingCurrencyTotal -match "Amount: (\d+)" | Out-Null
-  $termPrice = $Matches[1]
+  # BillingCurrencyTotal is a JSON string, e.g.:
+  # {
+  #   "currencyCode": "CHF",
+  #   "amount": 1130
+  # }
+
+  # Extract amount value `1130` from JSON
+  $billingCurrencyTotal = $quote.BillingCurrencyTotal | ConvertFrom-Json
+  $termPrice = $billingCurrencyTotal.amount
 
   @{
     Name = $vmSize.Name;
@@ -222,7 +250,8 @@ foreach ($vmSize in $vmSizes) {
 }
 ```
 
-Besides the progress bar, the trickiest part is extracting the price from the `BillingCurrencyTotal` multi-string field via regular expression.
+Besides the progress bar, the trickiest part is extracting the price from the
+`BillingCurrencyTotal` multi-string field via regular expression.
 
 ## And The Winner Is 🥁
 
@@ -236,4 +265,5 @@ Besides the progress bar, the trickiest part is extracting the price from the `B
 
 <!-- markdownlint-enable MD033 -->
 
-Pretty cool, eh? Do you have any thoughts or questions? Let me know in the comments or on Twitter. Feedback is always welcome!
+Pretty cool, eh? Do you have any thoughts or questions? Let me know in the
+comments or on Twitter. Feedback is always welcome!
