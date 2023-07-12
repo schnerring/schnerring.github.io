@@ -1,7 +1,8 @@
 {
   "recommendations": [
-    "editorconfig.editorconfig",
     "davidanson.vscode-markdownlint",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
     "omartawfik.github-actions-vscode",
     "timonwong.shellcheck",
     "znck.grammarly"
