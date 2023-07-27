@@ -361,9 +361,7 @@ I decided to go with [WireGuard](https://www.wireguard.com/) because I'm fine ri
 
 Please note that the FreeBSD kernel does not (yet) natively support WireGuard, so you must install it as a plugin. Possibly, this doesn't meet your stability, security, or performance requirements.
 
-By default, the OPNsense plugin uses the Go implementation of WireGuard. But I couldn't get multi-WAN working with it. However, with the experimental WireGuard kernel module `wireguard-kmod`, it works. I only managed to get failover working, though. Load balancing doesn't seem to be supported yet.
-
-Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wireguard`. Refresh the browser and navigate to {{< breadcrumb "VPN" "WireGuard" >}}. Then SSH into OPNsense, run `pkg install wireguard-kmod`, and reboot.
+Navigate to {{< breadcrumb "System" "Firmware" "Plugins" >}} and install `os-wireguard`. Refresh the browser and navigate to {{< breadcrumb "VPN" "WireGuard" >}}.
 
 ### Remote Peers
 
