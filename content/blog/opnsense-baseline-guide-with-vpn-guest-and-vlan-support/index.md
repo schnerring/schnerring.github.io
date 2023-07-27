@@ -1426,7 +1426,7 @@ So what's next?
 
 Let's Encrypt certificates and [HAProxy](https://docs.opnsense.org/manual/how-tos/haproxy.html) to secure self-hosted services. I imagine configuring it should be pretty straightforward.
 
-Me and possibly others want to be able to access my home network from the outside via WireGuard. I have a dynamic IP, so I thought I'd have to resort to [Dynamic DNS](https://docs.opnsense.org/manual/dynamic_dns.html). But I think [port forwarding with Mullvad](https://mullvad.net/en/help/port-forwarding-and-mullvad/) is the better solution and doesn't require me to associate my public IP address with a public DNS record.
+Me and possibly others want to be able to access my home network from the outside via WireGuard. I have a dynamic IP, so I thought I'd have to resort to [Dynamic DNS](https://docs.opnsense.org/manual/dynamic_dns.html). ~~But I think [port forwarding with Mullvad](https://mullvad.net/en/help/port-forwarding-and-mullvad/) is the better solution and doesn't require me to associate my public IP address with a public DNS record.~~
 
 [Traffic shaping](https://docs.opnsense.org/manual/shaping.html) and [intrusion prevention](https://docs.opnsense.org/manual/ips.html) is something I want to look into, too.
 
