@@ -795,6 +795,16 @@ Content:
 - `993`: IMAPS
 - `49152:65535` ephemeral ports
 
+<!-- TODO put the following into a warning box as soon as the theme supports it -->
+
+##### A Fair Warning about Egress Filtering
+
+As you add applications, you will be constantly amending the `PORTS_OUT_WAN` list. Depending on the application, the required ports may be poorly documented, so you'll have to figure them out by inspecting the firewall logs. As other users have mentioned in the comments, blocking all egress traffic for all VLANs by default is probably not worth the hassle. Personally, I've given up on egress filtering altogether because of the administrative overhead that comes with it.
+
+It is useful for high-security VLANs connecting devices such as cash registers in a retail store. Another example is VLANs with many untrusted IoT devices that have noisy telemetry. Putting them into a VLAN with egress filtering prevents them from "calling home".
+
+If you create the alias `ALL_PORTS` = `1:65535` and add it to the **Content** field of the `PORTS_OUT_WAN` alias, you can disable all egress filtering with the option of re-enabling it again later.
+
 ### NAT
 
 Network Address Translation (NAT) is required to translate private to public IP addresses. We have the following requirements.
