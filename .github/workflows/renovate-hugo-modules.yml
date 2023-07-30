@@ -33,9 +33,6 @@ jobs:
       - name: Commit Changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: |
-            Renovate Hugo Modules
-
-            Co-authored-by: Michael Schnerring <3743342+schnerring@users.noreply.github.com>
+          commit_message: Renovate Hugo Modules
           commit_author:
             renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
