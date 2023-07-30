@@ -511,7 +511,7 @@ Next, run the following shell command to get a Mullvad access token:
 access_token=$( \
   curl -X 'POST' 'https://api.mullvad.net/auth/v1/token' \
     -H 'accept: application/json' -H 'content-type: application/json' \
-    -d '{ "account_number": "YOUR_MULLVAD_ACCOUNT_NUMBER" }' \
+    -d '{ "account_number": "YOUR MULLVAD ACCOUNT NUMBER" }' \
   | jq -r .access_token)
 ```
 
@@ -520,8 +520,7 @@ disabled:
 
 ```shell
 curl -X POST https://api.mullvad.net/accounts/v1/devices \
-  -H "Authorization: Bearer $access_token" \
-  -H 'content-type: application/json' \
+  -H "Authorization: Bearer $access_token" -H 'content-type: application/json' \
   -d '{"pubkey":"YOUR PUBLIC KEY","hijack_dns":false}'
 ```
 

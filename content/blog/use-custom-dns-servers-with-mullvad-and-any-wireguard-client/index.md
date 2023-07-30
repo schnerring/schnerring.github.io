@@ -27,10 +27,17 @@ the tunnel there.
 Use the following shell command to request an IP with no DNS hijacking:
 
 ```shell
-curl -sSL https://api.mullvad.net/app/v1/wireguard-keys \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Token YOURMULLVADACCOUNTNUMBER" \
-  -d '{"pubkey":"YOURWIREGUARDPUBLICKEY"}'
+# Authenticate to Mullvad and store the returned access token
+access_token=$( \
+  curl -X 'POST' 'https://api.mullvad.net/auth/v1/token' \
+    -H 'accept: application/json' -H 'content-type: application/json' \
+    -d '{ "account_number": "YOUR MULLVAD ACCOUNT NUMBER" }' \
+  | jq -r .access_token)
+
+# Create a new Mullvad Device with DNS hijacking disabled
+curl -X POST https://api.mullvad.net/accounts/v1/devices \
+  -H "Authorization: Bearer $access_token" -H 'content-type: application/json' \
+  -d '{"pubkey":"YOUR WIREGUARD PUBLIC KEY","hijack_dns":false}'
 ```
 
 ## Mullvad Hijacks DNS Queries Over WireGuard Tunnels
@@ -60,7 +67,9 @@ It also works for WireGuard, so what's the secret?
 ## Reverse-engineering the Mullvad App
 
 Searching through the docs, I found the
-[WireGuard on a router article explaining how to get an IP to use with Mullvad via API](https://mullvad.net/es/help/running-wireguard-router/):
+[WireGuard on a router article explaining how to get an IP to use with Mullvad via API](https://mullvad.net/es/help/running-wireguard-router/)
+(note that
+[this snippet is outdated](https://github.com/mullvad/mullvadvpn-app/issues/473#issuecomment-1500461798)):
 
 ```shell
 curl https://api.mullvad.net/wg/ -d account=YOURMULLVADACCOUNTNUMBER --data-urlencode pubkey=YOURPUBLICKEY
@@ -68,9 +77,9 @@ curl https://api.mullvad.net/wg/ -d account=YOURMULLVADACCOUNTNUMBER --data-urle
 
 Next, let's look at how the app requests IPs.
 [Fortunately it's open-source and available on GitHub](https://github.com/mullvad/mullvadvpn-app/issues/473#issuecomment-852064948),
-so the only reverse-engineering we're going to be doing is reading some code.
-[It turns out that the app uses a different API to request IPs, found in the `push_wg_key` function](https://github.com/mullvad/mullvadvpn-app/blob/b214ba74cafc18b6a13ee5678055355302386cde/mullvad-rpc/src/lib.rs):
-`https://api.mullvad.net/app/v1/wireguard-keys`.
+so the only reverse-engineering we're going to be doing is reading some code. It
+turns out that
+[the app uses the `https://api.mullvad.net/app/v1/devices` endpoint to create a _Mullvad Device_ with DNS hijacking disabled](https://github.com/mullvad/mullvadvpn-app/blob/f300cda8767f3e07b62471677c5ea729d8a0dff0/mullvad-api/src/device.rs#L58-L66).
 
 ## Testing Both APIs
 
@@ -84,7 +93,8 @@ The tunnel will initially look like this:
 
 ![Screenshot of initial tunnel configuration](wireguard-initial-tunnel-configuration.png)
 
-Copy the public key and execute the following to request our Mullvad IPs:
+Copy the public key and execute the following to request our Mullvad IPs
+(because the snippet is outdated, this might not work in the future):
 
 ```shell
 curl https://api.mullvad.net/wg/ -d account=YOURMULLVADACCOUNTNUMBER --data-urlencode pubkey=YOURPUBLICKEY
@@ -116,22 +126,30 @@ Let's activate the tunnel and browse to
 As expected, the Quad9 DNS server is not leaking through because Mullvad hijacks
 our DNS requests and redirects them to their DNS servers.
 
-Next, we use the API the app uses to request the Mullvad IPs. We expect to get a
-different IP for which DNS hijacking is disabled. Before we can do this, we need
-to
-[revoke the WireGuard key on the Mullvad website](https://mullvad.net/en/account/#/ports)
-because we already requested an IP for this public key:
+Next, we use the API the app uses to request the Mullvad IPs. Before we can do
+this, we create a new public key with the WireGuard client because Mullvad
+doesn't allow using the same public key more than once.
 
-![Screenshot of "Manage ports and WireGuard key" page on Mullvad webiste](mullvad-revoke-key.png)
-
-After revoking the key, we run the following command:
+Then we authenticate to Mullvad and store the returned access token:
 
 ```shell
-curl -sSL https://api.mullvad.net/app/v1/wireguard-keys -H "Content-Type: application/json" -H "Authorization: Token YOURMULLVADACCOUNTNUMBER" -d '{"pubkey":"YOURPUBLICKEY"}'
+access_token=$( \
+  curl -X 'POST' 'https://api.mullvad.net/auth/v1/token' \
+    -H 'accept: application/json' -H 'content-type: application/json' \
+    -d '{ "account_number": "YOUR MULLVAD ACCOUNT NUMBER" }' \
+  | jq -r .access_token)
+```
+
+Next, we create a new _Mullvad Device_ with DNS hijacking disabled:
+
+```shell
+curl -X POST https://api.mullvad.net/accounts/v1/devices \
+  -H "Authorization: Bearer $access_token" -H 'content-type: application/json' \
+  -d '{"pubkey":"YOUR NEW WIREGUARD PUBLIC KEY","hijack_dns":false}'
 ```
 
 Next, we replace the IP in `Address` field of the WireGuard config with the new
-IP we received. Then we re-activate the tunnel and visit
+IP we received. Then we activate the tunnel and visit
 [Mullvad's connection check](https://mullvad.net/en/check):
 
 ![Screenshot of Mullvad connection check with leak](mullvad-connection-check-leak.png)
