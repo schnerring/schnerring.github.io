@@ -503,32 +503,48 @@ Select the **Local** tab, click `Add`, and enable the `advanced mode`.
 | Gateway        | `<LEAVE EMPTY>` |
 
 Click `Save` to generate the WireGuard key pair. Click `Edit` and copy the
-generated **Public Key**. Next, run the following shell command.
+generated **Public Key**.
+
+Next, run the following shell command to get a Mullvad access token:
 
 ```shell
-curl -sSL https://api.mullvad.net/app/v1/wireguard-keys \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Token <Mullvad account number>" \
-  -d '{"pubkey":"<generated public key>"}'
+access_token=$( \
+  curl -X 'POST' 'https://api.mullvad.net/auth/v1/token' \
+    -H 'accept: application/json' -H 'content-type: application/json' \
+    -d '{ "account_number": "YOUR_MULLVAD_ACCOUNT_NUMBER" }' \
+  | jq -r .access_token)
 ```
 
-This command returns a JSON response containing IPs without DNS hijacking
-enabled. I cover the snippet above and Mullvad's DNS hijacking in another post:
+Then run the following command to create a _Mullvad Device_ with DNS hijacking
+disabled:
+
+```shell
+curl -X POST https://api.mullvad.net/accounts/v1/devices \
+  -H "Authorization: Bearer $access_token" \
+  -H 'content-type: application/json' \
+  -d '{"pubkey":"YOUR PUBLIC KEY","hijack_dns":false}'
+```
+
+I cover the snippet above and Mullvad's DNS hijacking in another post:
 [Use Custom DNS Servers With Mullvad And Any WireGuard Client](/posts/use-custom-dns-servers-with-mullvad-and-any-wireguard-client).
 
 ```json
 {
-  "id": "ufO5jCni55uvioHM%2FeLBgyrrUMocEXsADPc2OvYhF3k%3D",
+  "id": "d8f07004-4559-4d19-b58b-985b257cd115",
+  "name": "uptown insect",
   "pubkey": "ufO5jCni55uvioHM/eLBgyrrUMocEXsADPc2OvYhF3k=",
-  "ipv4_address": "10.105.248.51/32",
-  "ipv6_address": "fc00:bbbb:bbbb:bb01::2a:f832/128"
+  "hijack_dns": false,
+  "created": "2023-07-30T02:08:41+00:00",
+  "ipv4_address": "10.138.30.139/32",
+  "ipv6_address": "fc00:bbbb:bbbb:bb01:d:0:a:1e8b/128",
+  "ports": []
 }
 ```
 
-Copy the IPv4 IP address to the **Tunnel Address** field of the local peer.
-Subtract one from the **Tunnel Address** and enter the result as **Gateway** IP.
-E.g., `10.105.248.50` for the example above. It's just a convention I like, but
-you can use any arbitrary, unused
+Copy the IPv4 IP address to the **Tunnel Address** field of the Wireguard local
+peer. Subtract one from the **Tunnel Address** and enter the result as
+**Gateway** IP. E.g., `10.105.248.50` for the example above. It's just a
+convention I like, but you can use any arbitrary, unused
 [private RFC1918 IP](https://datatracker.ietf.org/doc/html/rfc1918).
 
 ![Screenshot of WireGuard Local Peer configuration](wireguard-local-peer.png)
@@ -1699,3 +1715,7 @@ with a public DNS record.~~
 want to look into, too.
 
 So yeah, OPNsense and I will be friends for a while. 👫
+
+```
+
+```
