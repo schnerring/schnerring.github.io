@@ -89,6 +89,8 @@ These are my most recent code contributions, if you're interested:
 
 
 
+- [fix(plausible): migrate to new common chart and upgrade to v2](https://github.com/truecharts/charts/pull/11186) on [truecharts/charts](https://github.com/truecharts/charts) (today)
+- [Fix typo in self-hosting docs](https://github.com/plausible/docs/pull/419) on [plausible/docs](https://github.com/plausible/docs) (today)
 - [fix(stash): add `/blobs` PVC storage](https://github.com/truecharts/charts/pull/10852) on [truecharts/charts](https://github.com/truecharts/charts) (1 week ago)
 - [fix(clusterissuer): fix `issuerRef` for self-signed CAs](https://github.com/truecharts/charts/pull/10847) on [truecharts/charts](https://github.com/truecharts/charts) (1 week ago)
 - [Add Marten end-to-end test using `MartenOps`](https://github.com/JasperFx/wolverine/pull/427) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (1 month ago)
@@ -97,8 +99,6 @@ These are my most recent code contributions, if you're interested:
 - [fix(clusterissuer): let users provide raw base64-encoded CA .crt and .key values via Web GUI](https://github.com/truecharts/charts/pull/9594) on [truecharts/charts](https://github.com/truecharts/charts) (1 month ago)
 - [fix(clusterissuer): Increase `max_length` for crt/key Web GUI fields](https://github.com/truecharts/charts/pull/9447) on [truecharts/charts](https://github.com/truecharts/charts) (1 month ago)
 - [Fix boolean `show_if` conditionals](https://github.com/truecharts/charts/pull/9218) on [truecharts/charts](https://github.com/truecharts/charts) (2 months ago)
-- [Add support for STJ-native polymorphic `JsonDerivedType` and `JsonPolymorphic` attributes to C# client/schema generator](https://github.com/RicoSuter/NJsonSchema/pull/1595) on [RicoSuter/NJsonSchema](https://github.com/RicoSuter/NJsonSchema) (2 months ago)
-- [Fix broken markdown link in Schema Feature Extensions docs](https://github.com/JasperFx/marten/pull/2584) on [JasperFx/marten](https://github.com/JasperFx/marten) (2 months ago)
 
 
 
