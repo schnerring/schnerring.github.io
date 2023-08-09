@@ -89,10 +89,10 @@ These are my most recent code contributions, if you're interested:
 
 
 
-- [fix(plausible): migrate to new common chart and upgrade to v2](https://github.com/truecharts/charts/pull/11186) on [truecharts/charts](https://github.com/truecharts/charts) (4 days ago)
-- [Fix typo in self-hosting docs](https://github.com/plausible/docs/pull/419) on [plausible/docs](https://github.com/plausible/docs) (4 days ago)
-- [fix(stash): add `/blobs` PVC storage](https://github.com/truecharts/charts/pull/10852) on [truecharts/charts](https://github.com/truecharts/charts) (1 week ago)
-- [fix(clusterissuer): fix `issuerRef` for self-signed CAs](https://github.com/truecharts/charts/pull/10847) on [truecharts/charts](https://github.com/truecharts/charts) (1 week ago)
+- [fix(plausible): migrate to new common chart and upgrade to v2](https://github.com/truecharts/charts/pull/11186) on [truecharts/charts](https://github.com/truecharts/charts) (5 days ago)
+- [Fix typo in self-hosting docs](https://github.com/plausible/docs/pull/419) on [plausible/docs](https://github.com/plausible/docs) (5 days ago)
+- [fix(stash): add `/blobs` PVC storage](https://github.com/truecharts/charts/pull/10852) on [truecharts/charts](https://github.com/truecharts/charts) (2 weeks ago)
+- [fix(clusterissuer): fix `issuerRef` for self-signed CAs](https://github.com/truecharts/charts/pull/10847) on [truecharts/charts](https://github.com/truecharts/charts) (2 weeks ago)
 - [Add Marten end-to-end test using `MartenOps`](https://github.com/JasperFx/wolverine/pull/427) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (1 month ago)
 - [💚Move tests to net7 to fix build](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/2672) on [domaindrivendev/Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) (1 month ago)
 - [Add support for `JsonPolymorphic` and `JsonDerivedType` attributes to `Swashbuckle.AspNetCore.Annotations` for .NET7 and later](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/2671) on [domaindrivendev/Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) (1 month ago)
