@@ -89,6 +89,7 @@ These are my most recent code contributions, if you're interested:
 
 
 
+- [Docs: fix dead GitHub link](https://github.com/JasperFx/wolverine/pull/530) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (today)
 - [Docs: consolidate piece selection algorithm from docs with actual implementation](https://github.com/casey/intermodal/pull/524) on [casey/intermodal](https://github.com/casey/intermodal) (1 week ago)
 - [fix(plausible): migrate to new common chart and upgrade to v2](https://github.com/truecharts/charts/pull/11186) on [truecharts/charts](https://github.com/truecharts/charts) (1 month ago)
 - [Fix typo in self-hosting docs](https://github.com/plausible/docs/pull/419) on [plausible/docs](https://github.com/plausible/docs) (1 month ago)
@@ -98,7 +99,6 @@ These are my most recent code contributions, if you're interested:
 - [💚Move tests to net7 to fix build](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/2672) on [domaindrivendev/Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) (2 months ago)
 - [Add support for `JsonPolymorphic` and `JsonDerivedType` attributes to `Swashbuckle.AspNetCore.Annotations` for .NET7 and later](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/2671) on [domaindrivendev/Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) (2 months ago)
 - [fix(clusterissuer): let users provide raw base64-encoded CA .crt and .key values via Web GUI](https://github.com/truecharts/charts/pull/9594) on [truecharts/charts](https://github.com/truecharts/charts) (2 months ago)
-- [fix(clusterissuer): Increase `max_length` for crt/key Web GUI fields](https://github.com/truecharts/charts/pull/9447) on [truecharts/charts](https://github.com/truecharts/charts) (3 months ago)
 
 
 
