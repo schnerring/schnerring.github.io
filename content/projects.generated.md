@@ -89,6 +89,7 @@ These are my most recent code contributions, if you're interested:
 
 
 
+- [[WIP] Add TodoWebService.NSwag sample project](https://github.com/JasperFx/wolverine/pull/684) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (1 day ago)
 - [Fix docs: links and minor typos](https://github.com/JasperFx/marten/pull/2869) on [JasperFx/marten](https://github.com/JasperFx/marten) (3 weeks ago)
 - [Docs: fix dead GitHub link](https://github.com/JasperFx/wolverine/pull/530) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (4 months ago)
 - [Docs: consolidate piece selection algorithm from docs with actual implementation](https://github.com/casey/intermodal/pull/524) on [casey/intermodal](https://github.com/casey/intermodal) (4 months ago)
@@ -98,7 +99,6 @@ These are my most recent code contributions, if you're interested:
 - [fix(clusterissuer): fix `issuerRef` for self-signed CAs](https://github.com/truecharts/charts/pull/10847) on [truecharts/charts](https://github.com/truecharts/charts) (5 months ago)
 - [Add Marten end-to-end test using `MartenOps`](https://github.com/JasperFx/wolverine/pull/427) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (6 months ago)
 - [💚Move tests to net7 to fix build](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/2672) on [domaindrivendev/Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) (7 months ago)
-- [Add support for `JsonPolymorphic` and `JsonDerivedType` attributes to `Swashbuckle.AspNetCore.Annotations` for .NET7 and later](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/2671) on [domaindrivendev/Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) (7 months ago)
 
 
 
