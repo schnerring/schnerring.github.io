@@ -23,7 +23,7 @@
     "lint:css": "stylelint --fix **/*.css",
     "lint:js": "eslint --fix --ext js .",
     "lint:md": "markdownlint --fix **/*.md",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.css": "stylelint --fix --allow-empty-input",
