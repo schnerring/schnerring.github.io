@@ -26,4 +26,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           commit_message: Update auto-generated content
+          commit_author:
+            renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
           branch: main
