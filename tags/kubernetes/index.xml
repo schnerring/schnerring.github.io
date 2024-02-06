@@ -35,13 +35,18 @@ class="link--external" target="_blank" rel="noreferrer"
 href="https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
 >creating a Hugo Website&lt;/a> and &lt;a
 href="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates"
->deploying an Azure Kubernetes Service cluster&lt;/a> if you haven&amp;rsquo;t already.&lt;/p></description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p>In this post, we will deploy a simple &lt;a
+>deploying an Azure Kubernetes Service cluster&lt;/a> if you haven&amp;rsquo;t already.&lt;/p></description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p>In this post, we will deploy a simple
+&lt;a
 href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
 class="link--external" target="_blank" rel="noreferrer"
->Azure Kubernetes Service (AKS)&lt;/a> cluster from scratch. To expose our web services securely, we will install Traefik 2 and configure &lt;a
+>Azure Kubernetes Service (AKS)&lt;/a>
+cluster from scratch. To expose our web services securely, we will install
+Traefik 2 and configure &lt;a
 href="https://cert-manager.io/"
 class="link--external" target="_blank" rel="noreferrer"
->cert-manager&lt;/a> to manage Let&amp;rsquo;s Encrypt certificates. The best part about it: we will do everything with &lt;a
+>cert-manager&lt;/a> to manage Let&amp;rsquo;s
+Encrypt certificates. The best part about it: we will do everything with
+&lt;a
 href="https://www.terraform.io/"
 class="link--external" target="_blank" rel="noreferrer"
 >Terraform&lt;/a>.&lt;/p></description></item></channel></rss>
