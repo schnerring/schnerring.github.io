@@ -85,27 +85,27 @@ We add a `provider.tf` file with the following content:
 
 ```hcl
 terraform {
-  required_version = "= 0.14.9"
+  required_version = ">= 1.4.0"
 
   required_providers {
     azurerm = {
       source  = "azurerm"
-      version = "=2.97.0"
+      version = ">= 3.47.0"
     }
 
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "=3.9.1"
+      version = ">= 4.1.0"
     }
 
     helm = {
       source  = "helm"
-      version = "=2.4.1"
+      version = ">= 2.9.0"
     }
 
     kubernetes = {
       source  = "kubernetes"
-      version = "=2.8.0"
+      version = ">= 2.18.1"
     }
   }
 }
@@ -178,7 +178,7 @@ resource "azurerm_kubernetes_cluster" "k8s" {
 
 Note that I have defined the `var.location` and `var.tags` variables in a
 separate
-[variables.tf](https://github.com/schnerring/infrastructure-core/blob/v0.1.0/variables.tf)
+[variables.tf](https://github.com/schnerring/infrastructure-core/blob/v0.6.0/variables.tf)
 file.
 
 To be able to access the AKS cluster locally with `kubectl`, we define a
@@ -266,7 +266,7 @@ resource "helm_release" "cert_manager" {
   name       = "cert-manager"
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version    = "v1.7.1"
+  version    = "v1.14.1"
   namespace  = kubernetes_namespace.cert_manager.metadata.0.name
 
   set {
@@ -448,11 +448,11 @@ resource "helm_release" "traefik" {
   name       = "traefik"
   repository = "https://helm.traefik.io/traefik"
   chart      = "traefik"
-  version    = "10.14.2"
+  version    = "26.0.0"
   namespace  = kubernetes_namespace.traefik.metadata.0.name
 
   set {
-    name  = "ports.web.redirectTo"
+    name  = "ports.web.redirectTo.port"
     value = "websecure"
   }
 
@@ -464,7 +464,7 @@ resource "helm_release" "traefik" {
 }
 ```
 
-Setting `ports.web.redirectTo` to `websecure` forces all HTTP traffic to be
+Setting `ports.web.redirectTo.port` to `websecure` forces all HTTP traffic to be
 redirected to HTTPS.
 
 To
@@ -688,7 +688,17 @@ Other than that, we created a pretty cool solution, fully managed by Terraform,
 did we not?
 
 You can find all the code on GitHub in my
-[schnerring/infrastructure-core repository](https://github.com/schnerring/infrastructure-core/blob/v0.5.0/k8s.tf),
-which is evolving continuously. After committing the code to the repo, I added
-the `v0.4.0` tag. This way, in the future, we can easily find the code depicted
-in this post.
+[schnerring/infrastructure-core repository](https://github.com/schnerring/infrastructure-core/),
+which is evolving continuously.
+
+I have updated and refactored my Terraform code several times since I published
+this post.
+[The original, all-in-one but outdated Terraform code can be found here.](https://github.com/schnerring/infrastructure-core/blob/v0.5.0/k8s.tf)
+
+The up-to-date code looks slightly different and can be found here:
+
+- [aks.tf](https://github.com/schnerring/infrastructure-core/blob/v0.6.0/core/aks.tf)
+- [cert-manager.tf](https://github.com/schnerring/infrastructure-core/blob/v0.6.0/kubernetes/cert-manager.tf)
+- [traefik-v2.tf](https://github.com/schnerring/infrastructure-core/blob/v0.6.0/kubernetes/traefik-v2.tf)
+- [letsencrypt.tf](https://github.com/schnerring/infrastructure-core/blob/v0.6.0/kubernetes/letsencrypt.tf)
+- [hello.tf](https://github.com/schnerring/infrastructure-core/blob/v0.6.0/kubernetes/hello.tf)
