@@ -211,6 +211,11 @@ behavior is effectively identical to [Dirty Fix #1](#dirty-fix-1-git-pull).
 
 ## Why Is This a Bad Idea?
 
+I know this diagram is a _terrible_ illustration of a race condition,
+[but I wanted to try out GoAT](https://github.com/schnerring/schnerring.github.io/blob/178607e31a92fd25114053d360f80fc50aad6f56/content/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/index.md?plain=1#L214C1-L227):
+
+<!-- See also: https://github.com/bep/goat -->
+
 ```goat
                                2. OOPSIE 🏇
                                      |
