@@ -1,13 +1,25 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>UPS on Michael Schnerring</title><link>https://schnerring.net/tags/ups/</link><description>Recent content in UPS on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 28 Nov 2021 03:50:22 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/ups/index.xml" rel="self" type="application/rss+xml"/><item><title>Configure NUT for OPNsense and TrueNAS with the CyberPower PR750ERT2U UPS</title><link>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</link><pubDate>Sun, 28 Nov 2021 03:50:22 +0100</pubDate><guid>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</guid><description>&lt;p>For storage in my homelab, I use &lt;a
-href="https://www.truenas.com/"
-class="link--external" target="_blank" rel="noreferrer"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>UPS on Michael Schnerring</title><link>https://schnerring.net/tags/ups/</link><description>Recent content in UPS on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 16 Jan 2022 17:57:18 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/ups/index.xml" rel="self" type="application/rss+xml"/><item><title>Configure NUT for OPNsense and TrueNAS with the CyberPower PR750ERT2U UPS</title><link>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</link><pubDate>Sun, 28 Nov 2021 03:50:22 +0100</pubDate><guid>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</guid><description>&lt;p>For storage in my homelab, I use &lt;a
+ href="https://www.truenas.com/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >TrueNAS&lt;/a>. Additionally, I run a couple of apps on top of it as &lt;a
-href="https://docs.freebsd.org/en/books/handbook/jails/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://docs.freebsd.org/en/books/handbook/jails/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >jails&lt;/a>. For over a year, I&amp;rsquo;ve been using an &lt;a
-href="https://en.wikipedia.org/wiki/Uninterruptible_power_supply"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://en.wikipedia.org/wiki/Uninterruptible_power_supply"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >uninterruptible power supply (UPS)&lt;/a> to protect my TrueNAS from possible data loss in case of a power failure. What I&amp;rsquo;ve been missing throughout that time are the monitoring and management tools to shut down everything gracefully when the battery of the UPS runs low. In the event of a power outage lasting longer than 30 minutes, the battery would run out of juice. Everything attached to the UPS would be powered off immediately, and data loss might occur. Luckily I live in an area where power outages rarely happen. I also have backups I could restore if my TrueNAS data gets corrupted. Still, doing this right and configuring &lt;a
-href="https://networkupstools.org/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://networkupstools.org/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Network UPS Tools (NUT)&lt;/a> to orchestrate shutdowns has been on my to-do list for way too long. It&amp;rsquo;s time to tackle the issue!&lt;/p></description></item></channel></rss>

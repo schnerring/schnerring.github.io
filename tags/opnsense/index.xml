@@ -1,18 +1,33 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OPNsense on Michael Schnerring</title><link>https://schnerring.net/tags/opnsense/</link><description>Recent content in OPNsense on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 28 Nov 2021 21:18:30 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/opnsense/index.xml" rel="self" type="application/rss+xml"/><item><title>Use Mullvad Port Forwarding to Connect to Your OPNsense Home Network with WireGuard</title><link>https://schnerring.net/blog/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard/</link><pubDate>Sun, 28 Nov 2021 21:18:30 +0100</pubDate><guid>https://schnerring.net/blog/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard/</guid><description>&lt;h2 id="update-2023-07-28">Update 2023-07-28&lt;a href="#update-2023-07-28" class="post-heading__anchor" aria-hidden="true">#&lt;/a>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OPNsense on Michael Schnerring</title><link>https://schnerring.net/tags/opnsense/</link><description>Recent content in OPNsense on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 30 Jul 2023 04:53:09 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/opnsense/index.xml" rel="self" type="application/rss+xml"/><item><title>Use Mullvad Port Forwarding to Connect to Your OPNsense Home Network with WireGuard</title><link>https://schnerring.net/blog/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard/</link><pubDate>Sun, 28 Nov 2021 21:18:30 +0100</pubDate><guid>https://schnerring.net/blog/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard/</guid><description>&lt;h2 id="update-2023-07-28">Update 2023-07-28&lt;a href="#update-2023-07-28" class="post-heading__anchor" aria-hidden="true">#&lt;/a>
 &lt;/h2>
 &lt;p>&lt;a
-href="https://mullvad.net/en/blog/2023/5/29/removing-the-support-for-forwarded-ports/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://mullvad.net/en/blog/2023/5/29/removing-the-support-for-forwarded-ports/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >In May 2023, Mullvad announced the discontinuation of port forwarding support.&lt;/a> Starting from 2023-07-01, all existing ports will be removed, making this guide obsolete. 😭&lt;/p></description></item><item><title>Configure NUT for OPNsense and TrueNAS with the CyberPower PR750ERT2U UPS</title><link>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</link><pubDate>Sun, 28 Nov 2021 03:50:22 +0100</pubDate><guid>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</guid><description>&lt;p>For storage in my homelab, I use &lt;a
-href="https://www.truenas.com/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.truenas.com/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >TrueNAS&lt;/a>. Additionally, I run a couple of apps on top of it as &lt;a
-href="https://docs.freebsd.org/en/books/handbook/jails/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://docs.freebsd.org/en/books/handbook/jails/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >jails&lt;/a>. For over a year, I&amp;rsquo;ve been using an &lt;a
-href="https://en.wikipedia.org/wiki/Uninterruptible_power_supply"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://en.wikipedia.org/wiki/Uninterruptible_power_supply"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >uninterruptible power supply (UPS)&lt;/a> to protect my TrueNAS from possible data loss in case of a power failure. What I&amp;rsquo;ve been missing throughout that time are the monitoring and management tools to shut down everything gracefully when the battery of the UPS runs low. In the event of a power outage lasting longer than 30 minutes, the battery would run out of juice. Everything attached to the UPS would be powered off immediately, and data loss might occur. Luckily I live in an area where power outages rarely happen. I also have backups I could restore if my TrueNAS data gets corrupted. Still, doing this right and configuring &lt;a
-href="https://networkupstools.org/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://networkupstools.org/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Network UPS Tools (NUT)&lt;/a> to orchestrate shutdowns has been on my to-do list for way too long. It&amp;rsquo;s time to tackle the issue!&lt;/p></description></item><item><title>OPNsense Baseline Guide with Mullvad VPN Multi-WAN, Guest, and VLAN Support</title><link>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</link><pubDate>Wed, 17 Nov 2021 03:56:35 +0100</pubDate><guid>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</guid><description>This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the pfSense baseline guide with VPN, Guest, and VLAN support that some of you guys might know, and this is an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use OPNsense instead of pfSense.</description></item></channel></rss>

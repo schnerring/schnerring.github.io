@@ -1,22 +1,38 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hugo on Michael Schnerring</title><link>https://schnerring.net/tags/hugo/</link><description>Recent content in Hugo on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 16 Jan 2022 21:33:17 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/hugo/index.xml" rel="self" type="application/rss+xml"/><item><title>Percent-encoding with the Hugo `urlquery` Function</title><link>https://schnerring.net/blog/percent-encoding-with-the-hugo-urlquery-function/</link><pubDate>Sun, 16 Jan 2022 21:33:17 +0100</pubDate><guid>https://schnerring.net/blog/percent-encoding-with-the-hugo-urlquery-function/</guid><description>&lt;p>I recently tried to &lt;em>percent-encode&lt;/em> (or &lt;em>URL-encode&lt;/em>) strings in Hugo.
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Hugo on Michael Schnerring</title><link>https://schnerring.net/tags/hugo/</link><description>Recent content in Hugo on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 02 Apr 2023 15:42:11 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/hugo/index.xml" rel="self" type="application/rss+xml"/><item><title>Percent-encoding with the Hugo `urlquery` Function</title><link>https://schnerring.net/blog/percent-encoding-with-the-hugo-urlquery-function/</link><pubDate>Sun, 16 Jan 2022 21:33:17 +0100</pubDate><guid>https://schnerring.net/blog/percent-encoding-with-the-hugo-urlquery-function/</guid><description>&lt;p>I recently tried to &lt;em>percent-encode&lt;/em> (or &lt;em>URL-encode&lt;/em>) strings in Hugo.
 Percent-encoding is used to encode data in query strings of URLs because they
 must only contain ASCII characters. There is a
 &lt;a
-href="https://gohugo.io/functions/querify/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://gohugo.io/functions/querify/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Hugo built-in &lt;code>querify&lt;/code> function to transform key-value pairs to query strings&lt;/a>.
 But I required to URL-encode a single string value and not build a query string
 from key-value pairs.&lt;/p></description></item><item><title>Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website</title><link>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</link><pubDate>Sun, 09 May 2021 09:31:13 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</guid><description>&lt;p>Building upon our previous work, we will deploy &lt;a
-href="https://remark42.com/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://remark42.com/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Remark42&lt;/a> on Kubernetes with &lt;a
-href="https://www.terraform.io/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.terraform.io/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Terraform&lt;/a> and integrate it with your existing &lt;a
-href="https://gohugo.io/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://gohugo.io/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Hugo&lt;/a> website. Make sure to check out my previous posts about &lt;a
-href="https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
+ href="https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
+ 
+ 
 >creating a Hugo Website&lt;/a> and &lt;a
-href="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates"
+ href="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates"
+ 
+ 
 >deploying an Azure Kubernetes Service cluster&lt;/a> if you haven&amp;rsquo;t already.&lt;/p></description></item><item><title>Create a Hugo Website with GitHub Pages, GitHub Actions, and Cloudflare</title><link>https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare/</link><pubDate>Fri, 19 Mar 2021 21:14:22 +0100</pubDate><guid>https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare/</guid><description>&lt;p>In this beginner guide, you&amp;rsquo;ll create a Hugo website from scratch and publish the website on GitHub Pages. You&amp;rsquo;ll configure Cloudflare&amp;rsquo;s DNS and utilize its caching capabilities to optimize page speeds. Finally, implementing automated deployments with GitHub Pages will enable you to publish new content on your site easily.&lt;/p></description></item></channel></rss>

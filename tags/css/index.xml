@@ -1,13 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CSS on Michael Schnerring</title><link>https://schnerring.net/tags/css/</link><description>Recent content in CSS on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Tue, 03 Aug 2021 03:30:10 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/css/index.xml" rel="self" type="application/rss+xml"/><item><title>Create a Modern CSS-only Fold-Out Burger Menu</title><link>https://schnerring.net/blog/create-a-modern-css-only-fold-out-burger-menu/</link><pubDate>Tue, 03 Aug 2021 03:30:10 +0200</pubDate><guid>https://schnerring.net/blog/create-a-modern-css-only-fold-out-burger-menu/</guid><description>&lt;p>For the last couple of months, I have been working on a custom Hugo theme in my
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CSS on Michael Schnerring</title><link>https://schnerring.net/tags/css/</link><description>Recent content in CSS on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 02 Apr 2023 15:34:39 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/css/index.xml" rel="self" type="application/rss+xml"/><item><title>Create a Modern CSS-only Fold-Out Burger Menu</title><link>https://schnerring.net/blog/create-a-modern-css-only-fold-out-burger-menu/</link><pubDate>Tue, 03 Aug 2021 03:30:10 +0200</pubDate><guid>https://schnerring.net/blog/create-a-modern-css-only-fold-out-burger-menu/</guid><description>&lt;p>For the last couple of months, I have been working on a custom Hugo theme in my
 free time. Most recently, I implemented a CSS-only burger fold-out menu to
 increase its responsiveness. I based the implementation on
 &lt;a
-href="https://twitter.com/erikterwan"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://twitter.com/erikterwan"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Erik Terwan&amp;rsquo;s&lt;/a> nifty
 &lt;a
-href="https://codepen.io/erikterwan/pen/EVzeRP"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://codepen.io/erikterwan/pen/EVzeRP"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >pure CSS Hamburger fold-out menu&lt;/a>
 which is pretty popular on CodePen. I modernized it by utilizing SVG and newer
 CSS selectors to make the code more declarative and scalable. It comes with the

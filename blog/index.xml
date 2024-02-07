@@ -1,6 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blog on Michael Schnerring</title><link>https://schnerring.net/blog/</link><description>Recent content in Blog on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>© 2020 - 2023 Michael Schnerring</copyright><atom:link href="https://schnerring.net/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>Checking Out Code Committed Within the Same GitHub Actions Workflow Run</title><link>https://schnerring.net/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/</link><pubDate>Sun, 02 Apr 2023 05:30:00 +0200</pubDate><guid>https://schnerring.net/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/</guid><description>&lt;p>When using &lt;a
-href="https://docs.github.com/en/actions"
-class="link--external" target="_blank" rel="noreferrer"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blog on Michael Schnerring</title><link>https://schnerring.net/blog/</link><description>Recent content in Blog on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><atom:link href="https://schnerring.net/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>Checking Out Code Committed Within the Same GitHub Actions Workflow Run</title><link>https://schnerring.net/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/</link><pubDate>Sun, 02 Apr 2023 05:30:00 +0200</pubDate><guid>https://schnerring.net/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/</guid><description>&lt;p>When using &lt;a
+ href="https://docs.github.com/en/actions"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >GitHub Actions&lt;/a>, we often
 include steps that use Git to check out the code of the repository, make some
 changes to the code, and then commit these changes back to the repo. Additional
@@ -9,51 +12,82 @@ example, appending auto-generated release notes to a &lt;code>CHANGELOG.md&lt;/c
 committing it to the repo, to later bundle the changelog with release artifacts.
 Another example is using a workflow that periodically uses a linter to clean up
 the code base. Simple enough, right?&lt;/p></description></item><item><title>Use OBS and ffmpeg to Create Modern GIF-like Screencasts</title><link>https://schnerring.net/blog/use-obs-and-ffmpeg-to-create-gif-like-screencasts/</link><pubDate>Tue, 26 Apr 2022 22:30:46 +0200</pubDate><guid>https://schnerring.net/blog/use-obs-and-ffmpeg-to-create-gif-like-screencasts/</guid><description>&lt;p>In this post, I&amp;rsquo;ll share how I use &lt;a
-href="https://obsproject.com/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://obsproject.com/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >OBS Studio&lt;/a> and
 &lt;a
-href="https://ffmpeg.org/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://ffmpeg.org/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >ffmpeg&lt;/a> to create short MP4/WebM video snippets for my
 blog posts. Using the &lt;code>&amp;lt;video&amp;gt;&lt;/code> tag with the &lt;code>autoplay&lt;/code> and &lt;code>loop&lt;/code> attributes
 makes them look like GIFs. However,
 &lt;a
-href="https://techstacker.com/why-webm-is-superior-to-gif-video-comparison/FR6xLr2zHn9uSTTsH/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://techstacker.com/why-webm-is-superior-to-gif-video-comparison/FR6xLr2zHn9uSTTsH/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >modern video formats result in much smaller file sizes&lt;/a>.&lt;/p></description></item><item><title>Use PowerShell to Request Quotes for Azure Reservations</title><link>https://schnerring.net/blog/use-powershell-to-request-quotes-for-azure-reservations/</link><pubDate>Tue, 26 Apr 2022 04:14:21 +0200</pubDate><guid>https://schnerring.net/blog/use-powershell-to-request-quotes-for-azure-reservations/</guid><description>&lt;p>Over the weekend, I was on a quest to find the cheapest available Azure Virtual
 Machine to house my Azure Kubernetes Service cluster. I previously wrote about
 &lt;a
-href="https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform"
+ href="https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform"
+ 
+ 
 >optimizing storage cost with Azure Kubernetes Service (AKS)&lt;/a>,
 where I talk about the importance of selecting VMs that support
 &lt;a
-href="https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >ephemeral OS disks&lt;/a>.
 But what VM type and region should I choose? Searching through reservation
 offers in the Azure Portal turned out to be tedious. This time, I&amp;rsquo;ll demonstrate
 how to find the best offers using PowerShell and export the results to a CSV
 file.&lt;/p></description></item><item><title>Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions</title><link>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</link><pubDate>Sun, 27 Mar 2022 08:12:20 +0200</pubDate><guid>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</guid><description>&lt;p>One aspect of managing &lt;a
-href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Azure Virtual Desktop (AVD)&lt;/a> is keeping it up-to-date. One strategy is periodically building a &amp;ldquo;golden&amp;rdquo; image and re-deploying AVD session host VMs using the updated image. In this post, we&amp;rsquo;ll use &lt;a
-href="https://www.packer.io/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.packer.io/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Packer&lt;/a> and &lt;a
-href="https://github.com/features/actions"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://github.com/features/actions"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >GitHub Actions&lt;/a> to build a Windows 11 image and push it to Azure.&lt;/p></description></item><item><title>Deploy Azure Virtual Desktop (AVD) Using Terraform and Azure Active Directory Domain Services (AADDS)</title><link>https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/</link><pubDate>Sun, 27 Feb 2022 21:32:52 +0100</pubDate><guid>https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/</guid><description>&lt;p>With &lt;a
-href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Azure Virtual Desktop (AVD)&lt;/a>, you can deliver secure Windows 11 desktops and environments anywhere. It&amp;rsquo;s pretty easy to deploy and scale. You can provide a coherent user experience from any end-user device and reduce costs by leveraging Windows 11 multi-session licensing. This tutorial will guide you through setting up AVD with AADDS using Terraform.&lt;/p></description></item><item><title>Set Up Azure Active Directory Domain Services (AADDS) With Terraform</title><link>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/</link><pubDate>Sun, 20 Feb 2022 06:05:36 +0100</pubDate><guid>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/</guid><description>&lt;p>I wanted to revisit this topic for a while because the &lt;a
-href="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform"
+ href="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform"
+ 
+ 
 >previous guide I wrote about setting up Azure Active Directory Domain Services (AADDS) with Terraform&lt;/a> is outdated. However, the article still attracts around 100 visitors per month. People also keep downloading the deprecated Terraform module I created. Time to set things right!&lt;/p></description></item><item><title>Percent-encoding with the Hugo `urlquery` Function</title><link>https://schnerring.net/blog/percent-encoding-with-the-hugo-urlquery-function/</link><pubDate>Sun, 16 Jan 2022 21:33:17 +0100</pubDate><guid>https://schnerring.net/blog/percent-encoding-with-the-hugo-urlquery-function/</guid><description>&lt;p>I recently tried to &lt;em>percent-encode&lt;/em> (or &lt;em>URL-encode&lt;/em>) strings in Hugo.
 Percent-encoding is used to encode data in query strings of URLs because they
 must only contain ASCII characters. There is a
 &lt;a
-href="https://gohugo.io/functions/querify/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://gohugo.io/functions/querify/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Hugo built-in &lt;code>querify&lt;/code> function to transform key-value pairs to query strings&lt;/a>.
 But I required to URL-encode a single string value and not build a query string
 from key-value pairs.&lt;/p></description></item><item><title>Reduce Storage Costs when Deploying Azure Kubernetes Service Clusters with Terraform</title><link>https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform/</link><pubDate>Mon, 29 Nov 2021 03:50:04 +0100</pubDate><guid>https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform/</guid><description>&lt;p>I use the Azure Kubernetes Service (AKS) to host a few services, like Synapse,
@@ -64,128 +98,236 @@ have saved more than a hundred bucks in the past months if I had been more
 diligent.&lt;/p></description></item><item><title>Use Mullvad Port Forwarding to Connect to Your OPNsense Home Network with WireGuard</title><link>https://schnerring.net/blog/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard/</link><pubDate>Sun, 28 Nov 2021 21:18:30 +0100</pubDate><guid>https://schnerring.net/blog/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard/</guid><description>&lt;h2 id="update-2023-07-28">Update 2023-07-28&lt;a href="#update-2023-07-28" class="post-heading__anchor" aria-hidden="true">#&lt;/a>
 &lt;/h2>
 &lt;p>&lt;a
-href="https://mullvad.net/en/blog/2023/5/29/removing-the-support-for-forwarded-ports/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://mullvad.net/en/blog/2023/5/29/removing-the-support-for-forwarded-ports/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >In May 2023, Mullvad announced the discontinuation of port forwarding support.&lt;/a> Starting from 2023-07-01, all existing ports will be removed, making this guide obsolete. 😭&lt;/p></description></item><item><title>Configure NUT for OPNsense and TrueNAS with the CyberPower PR750ERT2U UPS</title><link>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</link><pubDate>Sun, 28 Nov 2021 03:50:22 +0100</pubDate><guid>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</guid><description>&lt;p>For storage in my homelab, I use &lt;a
-href="https://www.truenas.com/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.truenas.com/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >TrueNAS&lt;/a>. Additionally, I run a couple of apps on top of it as &lt;a
-href="https://docs.freebsd.org/en/books/handbook/jails/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://docs.freebsd.org/en/books/handbook/jails/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >jails&lt;/a>. For over a year, I&amp;rsquo;ve been using an &lt;a
-href="https://en.wikipedia.org/wiki/Uninterruptible_power_supply"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://en.wikipedia.org/wiki/Uninterruptible_power_supply"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >uninterruptible power supply (UPS)&lt;/a> to protect my TrueNAS from possible data loss in case of a power failure. What I&amp;rsquo;ve been missing throughout that time are the monitoring and management tools to shut down everything gracefully when the battery of the UPS runs low. In the event of a power outage lasting longer than 30 minutes, the battery would run out of juice. Everything attached to the UPS would be powered off immediately, and data loss might occur. Luckily I live in an area where power outages rarely happen. I also have backups I could restore if my TrueNAS data gets corrupted. Still, doing this right and configuring &lt;a
-href="https://networkupstools.org/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://networkupstools.org/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Network UPS Tools (NUT)&lt;/a> to orchestrate shutdowns has been on my to-do list for way too long. It&amp;rsquo;s time to tackle the issue!&lt;/p></description></item><item><title>OPNsense Baseline Guide with Mullvad VPN Multi-WAN, Guest, and VLAN Support</title><link>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</link><pubDate>Wed, 17 Nov 2021 03:56:35 +0100</pubDate><guid>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</guid><description>This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the pfSense baseline guide with VPN, Guest, and VLAN support that some of you guys might know, and this is an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use OPNsense instead of pfSense.</description></item><item><title>Install qBittorrent, Jackett, Lidarr, Radarr, Sonarr, and Plex inside TrueNAS Jails</title><link>https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</link><pubDate>Sun, 14 Nov 2021 20:41:04 +0100</pubDate><guid>https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</guid><description>&lt;p>This post documents the steps required to install &lt;a
-href="https://www.qbittorrent.org/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.qbittorrent.org/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >qBittorrent&lt;/a>, &lt;a
-href="https://github.com/Jackett/Jackett"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://github.com/Jackett/Jackett"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Jackett&lt;/a>, &lt;a
-href="https://lidarr.audio/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://lidarr.audio/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Lidarr&lt;/a>, &lt;a
-href="https://radarr.video/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://radarr.video/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Radarr&lt;/a>, &lt;a
-href="https://sonarr.tv/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://sonarr.tv/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Sonarr&lt;/a>, and &lt;a
-href="https://www.plex.tv/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.plex.tv/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Plex&lt;/a> in &lt;a
-href="https://www.truenas.com/docs/core/applications/jails/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.truenas.com/docs/core/applications/jails/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >TrueNAS jails&lt;/a> version &lt;code>12.0-U6&lt;/code>.&lt;/p></description></item><item><title>Router on a Stick VLAN Configuration with SwOS on the Mikrotik CRS328-24P-4S+RM Switch</title><link>https://schnerring.net/blog/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch/</link><pubDate>Wed, 10 Nov 2021 03:30:18 +0100</pubDate><guid>https://schnerring.net/blog/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch/</guid><description>&lt;p>My homelab grew quite a bit over the past years. And with that, my networking needs also changed: stricter firewall rules, segregating untrusted IoT devices into separate networks, traffic prioritization, and more. I wanted to document my switch and VLAN configuration. And maybe this is useful for someone else, too.&lt;/p></description></item><item><title>Install the Ubiquiti Unifi Controller Software v6 Inside a TrueNAS Jail</title><link>https://schnerring.net/blog/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail/</link><pubDate>Thu, 04 Nov 2021 23:15:27 +0100</pubDate><guid>https://schnerring.net/blog/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail/</guid><description>&lt;p>To manage &lt;a
-href="https://www.ui.com/wi-fi"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.ui.com/wi-fi"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Ubiquiti UniFi devices&lt;/a>, a UniFi controller is required. Over a year ago, I initially installed the controller software inside a Ubuntu VirtualBox VM. Now that version 6 of the UniFi controller software is released, it&amp;rsquo;s time to upgrade. I decided to reinstall the controller inside a TrueNAS jail instead of a VirtualBox VM. When searching the interwebs, I only found lots of outdated instructions. It turns out that it&amp;rsquo;s very straightforward, so here are my quick notes on how to do it.&lt;/p></description></item><item><title>Use Custom DNS Servers With Mullvad And Any WireGuard Client</title><link>https://schnerring.net/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/</link><pubDate>Sun, 31 Oct 2021 08:19:52 +0100</pubDate><guid>https://schnerring.net/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/</guid><description>I&amp;rsquo;ve been using Mullvad VPN for a while now but only ever used it with the official client on my workstation. I use DNS extensively in my home network, so as soon as I activate Mullvad, I can&amp;rsquo;t resolve DNS names locally. Of course, this is by design and expected. I own an OPNsense appliance, so the natural solution is to move the tunnel there.
 TL;DR# Use the following shell command to request an IP with no DNS hijacking:</description></item><item><title>Use the Trezor Hardware Wallet Anonymously Inside a VirtualBox Whonix VM With External Wallets Like Adalite and Monero GUI</title><link>https://schnerring.net/blog/use-the-trezor-hardware-wallet-anonymously-inside-a-virtualbox-whonix-vm-with-external-wallets-like-adalite-and-monero-gui/</link><pubDate>Fri, 22 Oct 2021 20:15:36 +0200</pubDate><guid>https://schnerring.net/blog/use-the-trezor-hardware-wallet-anonymously-inside-a-virtualbox-whonix-vm-with-external-wallets-like-adalite-and-monero-gui/</guid><description>In the past, I used an old laptop running Qubes OS for any cryptocurrency-related stuff, and it worked great. It&amp;rsquo;s where I first learned about Whonix, a desktop operating system designed to protect your privacy online. Unfortunately, Qubes OS is a bit picky about the hardware it runs on. My old laptop only has four gigs of RAM, and I could barely run two instances of MyEtherWallet in two separate qubes without the system running out of memory.</description></item><item><title>Create a Modern CSS-only Fold-Out Burger Menu</title><link>https://schnerring.net/blog/create-a-modern-css-only-fold-out-burger-menu/</link><pubDate>Tue, 03 Aug 2021 03:30:10 +0200</pubDate><guid>https://schnerring.net/blog/create-a-modern-css-only-fold-out-burger-menu/</guid><description>&lt;p>For the last couple of months, I have been working on a custom Hugo theme in my
 free time. Most recently, I implemented a CSS-only burger fold-out menu to
 increase its responsiveness. I based the implementation on
 &lt;a
-href="https://twitter.com/erikterwan"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://twitter.com/erikterwan"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Erik Terwan&amp;rsquo;s&lt;/a> nifty
 &lt;a
-href="https://codepen.io/erikterwan/pen/EVzeRP"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://codepen.io/erikterwan/pen/EVzeRP"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >pure CSS Hamburger fold-out menu&lt;/a>
 which is pretty popular on CodePen. I modernized it by utilizing SVG and newer
 CSS selectors to make the code more declarative and scalable. It comes with the
 price of not supporting as many browsers, but honestly, who cares about Internet
 Explorer users?&lt;/p></description></item><item><title>Use Sieve Filters to Auto-Sort Your ProtonMail Inbox into Subfolders</title><link>https://schnerring.net/blog/use-sieve-filters-to-auto-sort-your-protonmail-inbox-into-subfolders/</link><pubDate>Wed, 16 Jun 2021 20:32:21 +0200</pubDate><guid>https://schnerring.net/blog/use-sieve-filters-to-auto-sort-your-protonmail-inbox-into-subfolders/</guid><description>&lt;p>&lt;a
-href="https://en.wikipedia.org/wiki/Sieve_%28mail_filtering_language%29"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://en.wikipedia.org/wiki/Sieve_%28mail_filtering_language%29"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Sieve&lt;/a> is a programming language used for email filtering. Today, I show you how I automatically sort my ProtonMail inbox into folders and subfolders using &lt;a
-href="https://protonmail.com/support/knowledge-base/sieve-advanced-custom-filters/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://protonmail.com/support/knowledge-base/sieve-advanced-custom-filters/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >custom sieve filters&lt;/a>. My setup uses the &lt;a
-href="https://protonmail.com/support/knowledge-base/catch-all/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://protonmail.com/support/knowledge-base/catch-all/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >catch-all feature&lt;/a> requiring at least a &lt;a
-href="https://protonmail.com/pricing"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://protonmail.com/pricing"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >ProtonMail Professional subscription&lt;/a> and a &lt;a
-href="https://protonmail.com/support/categories/custom-domains/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://protonmail.com/support/categories/custom-domains/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >properly configured custom domain&lt;/a>.&lt;/p></description></item><item><title>Set Up Azure Active Directory Domain Services (AADDS) with Terraform</title><link>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/</link><pubDate>Sat, 22 May 2021 16:23:36 +0200</pubDate><guid>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/</guid><description>&lt;h2 id="update-2022-02-20">Update 2022-02-20&lt;a href="#update-2022-02-20" class="post-heading__anchor" aria-hidden="true">#&lt;/a>
 &lt;/h2>
 &lt;p>This guide is outdated! &lt;a
-href="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated"
+ href="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated"
+ 
+ 
 >Please click here to go to the new guide I wrote.&lt;/a>&lt;/p></description></item><item><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</title><link>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</link><pubDate>Fri, 14 May 2021 01:13:33 +0200</pubDate><guid>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</guid><description>&lt;p>Did you ever think about running a Matrix homeserver? In this post, we will set one up on the &lt;a
-href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Azure Kubernetes Service&lt;/a> (AKS). We will use the reference homeserver implementation, which is &lt;a
-href="https://github.com/matrix-org/synapse/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://github.com/matrix-org/synapse/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Synapse&lt;/a> from the folks at &lt;a
-href="https://matrix.org/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://matrix.org/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >matrix.org&lt;/a>. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like &lt;a
-href="https://github.com/matrix-org/synapse/blob/master/docs/federate.md"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://github.com/matrix-org/synapse/blob/master/docs/federate.md"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >federation&lt;/a>, &lt;a
-href="https://github.com/matrix-org/synapse/blob/master/docs/delegate.md"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://github.com/matrix-org/synapse/blob/master/docs/delegate.md"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >delegation&lt;/a> and &lt;a
-href="https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >PostgreSQL&lt;/a> are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the &lt;a
-href="https://github.com/Awesome-Technologies/synapse-admin"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://github.com/Awesome-Technologies/synapse-admin"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Synapse Admin UI&lt;/a> deployment with secure access to the &lt;a
-href="https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >administration endpoints&lt;/a> to make management of our homeserver easier.&lt;/p></description></item><item><title>Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website</title><link>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</link><pubDate>Sun, 09 May 2021 09:31:13 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</guid><description>&lt;p>Building upon our previous work, we will deploy &lt;a
-href="https://remark42.com/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://remark42.com/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Remark42&lt;/a> on Kubernetes with &lt;a
-href="https://www.terraform.io/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.terraform.io/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Terraform&lt;/a> and integrate it with your existing &lt;a
-href="https://gohugo.io/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://gohugo.io/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Hugo&lt;/a> website. Make sure to check out my previous posts about &lt;a
-href="https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
+ href="https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
+ 
+ 
 >creating a Hugo Website&lt;/a> and &lt;a
-href="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates"
+ href="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates"
+ 
+ 
 >deploying an Azure Kubernetes Service cluster&lt;/a> if you haven&amp;rsquo;t already.&lt;/p></description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p>In this post, we will deploy a simple
 &lt;a
-href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Azure Kubernetes Service (AKS)&lt;/a>
 cluster from scratch. To expose our web services securely, we will install
 Traefik 2 and configure &lt;a
-href="https://cert-manager.io/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://cert-manager.io/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >cert-manager&lt;/a> to manage Let&amp;rsquo;s
 Encrypt certificates. The best part about it: we will do everything with
 &lt;a
-href="https://www.terraform.io/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.terraform.io/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Terraform&lt;/a>.&lt;/p></description></item><item><title>Create a Hugo Website with GitHub Pages, GitHub Actions, and Cloudflare</title><link>https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare/</link><pubDate>Fri, 19 Mar 2021 21:14:22 +0100</pubDate><guid>https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare/</guid><description>&lt;p>In this beginner guide, you&amp;rsquo;ll create a Hugo website from scratch and publish the website on GitHub Pages. You&amp;rsquo;ll configure Cloudflare&amp;rsquo;s DNS and utilize its caching capabilities to optimize page speeds. Finally, implementing automated deployments with GitHub Pages will enable you to publish new content on your site easily.&lt;/p></description></item><item><title>Hello World</title><link>https://schnerring.net/blog/hello-world/</link><pubDate>Sun, 14 Mar 2021 15:00:21 +0100</pubDate><guid>https://schnerring.net/blog/hello-world/</guid><description>I&amp;rsquo;m a .NET developer by trade, so let&amp;rsquo;s say hello in C#!
 using System; class Program { public static void Main(string[] args) { Console.WriteLine(&amp;#34;Hello, world!&amp;#34;); } }</description></item></channel></rss>

@@ -1,19 +1,35 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Infrastructure as Code on Michael Schnerring</title><link>https://schnerring.net/tags/infrastructure-as-code/</link><description>Recent content in Infrastructure as Code on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 27 Mar 2022 08:12:20 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/infrastructure-as-code/index.xml" rel="self" type="application/rss+xml"/><item><title>Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions</title><link>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</link><pubDate>Sun, 27 Mar 2022 08:12:20 +0200</pubDate><guid>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</guid><description>&lt;p>One aspect of managing &lt;a
-href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
-class="link--external" target="_blank" rel="noreferrer"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Infrastructure as Code on Michael Schnerring</title><link>https://schnerring.net/tags/infrastructure-as-code/</link><description>Recent content in Infrastructure as Code on Michael Schnerring</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Thu, 16 Mar 2023 01:01:44 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/infrastructure-as-code/index.xml" rel="self" type="application/rss+xml"/><item><title>Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions</title><link>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</link><pubDate>Sun, 27 Mar 2022 08:12:20 +0200</pubDate><guid>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</guid><description>&lt;p>One aspect of managing &lt;a
+ href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Azure Virtual Desktop (AVD)&lt;/a> is keeping it up-to-date. One strategy is periodically building a &amp;ldquo;golden&amp;rdquo; image and re-deploying AVD session host VMs using the updated image. In this post, we&amp;rsquo;ll use &lt;a
-href="https://www.packer.io/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://www.packer.io/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Packer&lt;/a> and &lt;a
-href="https://github.com/features/actions"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://github.com/features/actions"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >GitHub Actions&lt;/a> to build a Windows 11 image and push it to Azure.&lt;/p></description></item><item><title>Deploy Azure Virtual Desktop (AVD) Using Terraform and Azure Active Directory Domain Services (AADDS)</title><link>https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/</link><pubDate>Sun, 27 Feb 2022 21:32:52 +0100</pubDate><guid>https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/</guid><description>&lt;p>With &lt;a
-href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
-class="link--external" target="_blank" rel="noreferrer"
+ href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
 >Azure Virtual Desktop (AVD)&lt;/a>, you can deliver secure Windows 11 desktops and environments anywhere. It&amp;rsquo;s pretty easy to deploy and scale. You can provide a coherent user experience from any end-user device and reduce costs by leveraging Windows 11 multi-session licensing. This tutorial will guide you through setting up AVD with AADDS using Terraform.&lt;/p></description></item><item><title>Set Up Azure Active Directory Domain Services (AADDS) With Terraform</title><link>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/</link><pubDate>Sun, 20 Feb 2022 06:05:36 +0100</pubDate><guid>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/</guid><description>&lt;p>I wanted to revisit this topic for a while because the &lt;a
-href="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform"
+ href="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform"
+ 
+ 
 >previous guide I wrote about setting up Azure Active Directory Domain Services (AADDS) with Terraform&lt;/a> is outdated. However, the article still attracts around 100 visitors per month. People also keep downloading the deprecated Terraform module I created. Time to set things right!&lt;/p></description></item><item><title>Set Up Azure Active Directory Domain Services (AADDS) with Terraform</title><link>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/</link><pubDate>Sat, 22 May 2021 16:23:36 +0200</pubDate><guid>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/</guid><description>&lt;h2 id="update-2022-02-20">Update 2022-02-20&lt;a href="#update-2022-02-20" class="post-heading__anchor" aria-hidden="true">#&lt;/a>
 &lt;/h2>
 &lt;p>This guide is outdated! &lt;a
-href="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated"
+ href="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated"
+ 
+ 
 >Please click here to go to the new guide I wrote.&lt;/a>&lt;/p></description></item></channel></rss>
