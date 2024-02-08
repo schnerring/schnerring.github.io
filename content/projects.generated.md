@@ -89,6 +89,7 @@ These are my most recent code contributions, if you're interested:
 
 
 
+- [Update Hugo docs](https://github.com/FullHuman/purgecss/pull/1216) on [FullHuman/purgecss](https://github.com/FullHuman/purgecss) (1 day ago)
 - [[WIP] Add TodoWebService.NSwag sample project](https://github.com/JasperFx/wolverine/pull/684) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (3 weeks ago)
 - [Fix docs: links and minor typos](https://github.com/JasperFx/marten/pull/2869) on [JasperFx/marten](https://github.com/JasperFx/marten) (1 month ago)
 - [Docs: fix dead GitHub link](https://github.com/JasperFx/wolverine/pull/530) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (5 months ago)
@@ -98,7 +99,6 @@ These are my most recent code contributions, if you're interested:
 - [fix(stash): add `/blobs` PVC storage](https://github.com/truecharts/charts/pull/10852) on [truecharts/charts](https://github.com/truecharts/charts) (6 months ago)
 - [fix(clusterissuer): fix `issuerRef` for self-signed CAs](https://github.com/truecharts/charts/pull/10847) on [truecharts/charts](https://github.com/truecharts/charts) (6 months ago)
 - [Add Marten end-to-end test using `MartenOps`](https://github.com/JasperFx/wolverine/pull/427) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (7 months ago)
-- [💚Move tests to net7 to fix build](https://github.com/domaindrivendev/Swashbuckle.AspNetCore/pull/2672) on [domaindrivendev/Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) (7 months ago)
 
 
 
