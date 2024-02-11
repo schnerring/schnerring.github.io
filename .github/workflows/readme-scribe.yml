@@ -27,5 +27,6 @@ jobs:
         with:
           commit_message: Update auto-generated content
           commit_author:
-            renovate[bot] <29139614+renovate[bot]@users.noreply.github.com>
+            github-actions[bot]
+            <41898282+github-actions[bot]@users.noreply.github.com>
           branch: main
