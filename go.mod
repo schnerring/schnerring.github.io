@@ -1,8 +1,8 @@
 module github.com/schnerring/schnerring.github.io
 
-go 1.21
+go 1.22.0
 
 require (
-	github.com/schnerring/hugo-mod-json-resume v0.0.0-20240206222225-cbf839bf0b0d // indirect
-	github.com/schnerring/hugo-theme-gruvbox v0.0.0-20240208062401-d24660e132d1 // indirect
+	github.com/schnerring/hugo-mod-json-resume v0.0.0-20240218030928-3169b76e8e64 // indirect
+	github.com/schnerring/hugo-theme-gruvbox v0.0.0-20240219123334-2b5ffcfe71b2 // indirect
 )
