@@ -31,7 +31,7 @@ jobs:
           node-version: "20"
 
       - name: Install Hugo
-        uses: peaceiris/actions-hugo@v2
+        uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: "0.122.0"
           extended: true
@@ -72,7 +72,7 @@ jobs:
           node-version: "20"
 
       - name: Install Hugo
-        uses: peaceiris/actions-hugo@v2
+        uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: "0.122.0"
           extended: true
