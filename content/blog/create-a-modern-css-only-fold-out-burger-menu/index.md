@@ -16,7 +16,7 @@ aliases:
 For the last couple of months, I have been working on a custom Hugo theme in my
 free time. Most recently, I implemented a CSS-only burger fold-out menu to
 increase its responsiveness. I based the implementation on
-[Erik Terwan's](https://twitter.com/erikterwan) nifty
+[Erik Terwan's](https://x.com/erikterwan) nifty
 [pure CSS Hamburger fold-out menu](https://codepen.io/erikterwan/pen/EVzeRP)
 which is pretty popular on CodePen. I modernized it by utilizing SVG and newer
 CSS selectors to make the code more declarative and scalable. It comes with the

@@ -45,7 +45,7 @@ request.
 
 Connect with me! Stay up-to-date with what I'm sharing and working on:
 
-- Twitter: <https://twitter.com/schnerringo>
+- X: <https://x.com/schnerringo>
 - Mastodon: <https://hachyderm.io/@schnerring>
 - LinkedIn: <https://www.linkedin.com/in/schnerring>
 - GitHub: <https://github.com/schnerring>
