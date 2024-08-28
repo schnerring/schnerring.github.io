@@ -26,6 +26,16 @@ enableGitInfo = true
   # JPEG and WebP quality
   quality = 90
 
+[outputs]
+  home = ["html", "rss", "searchIndex"]
+
+[outputFormats]
+  [outputFormats.searchIndex]
+    mediaType = "application/json"
+    baseName = "search-index"
+    isPlainText = true
+    notAlternative = true
+
 [params]
   # dark or light, defaults to light
   defaultTheme = "dark"
