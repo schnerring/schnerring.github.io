@@ -1,5 +1,7 @@
 ---
-title: Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions
+title:
+  Automate Building Custom Windows Images For Azure Virtual Desktop With Packer
+  And GitHub Actions
 date: "2022-03-27T08:12:20+02:00"
 draft: false
 comments: true
@@ -22,23 +24,45 @@ tags:
   - Terraform
 ---
 
-One aspect of managing [Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/virtual-desktop/) is keeping it up-to-date. One strategy is periodically building a "golden" image and re-deploying AVD session host VMs using the updated image. In this post, we'll use [Packer](https://www.packer.io/) and [GitHub Actions](https://github.com/features/actions) to build a Windows 11 image and push it to Azure.
+One aspect of managing
+[Azure Virtual Desktop (AVD)](https://azure.microsoft.com/en-us/services/virtual-desktop/)
+is keeping it up-to-date. One strategy is periodically building a "golden" image
+and re-deploying AVD session host VMs using the updated image. In this post,
+we'll use [Packer](https://www.packer.io/) and
+[GitHub Actions](https://github.com/features/actions) to build a Windows 11
+image and push it to Azure.
 
 <!--more-->
 
-First, we'll use [Terraform](https://www.terraform.io/) to prepare some resources for Packer: a resource group for build artifacts and a [service principal (SP)](https://www.packer.io/plugins/builders/azure/arm#service-principal) for authentication. We'll also export the SP credentials as GitHub Actions secrets, making them available to our CI workflow.
+First, we'll use [Terraform](https://www.terraform.io/) to prepare some
+resources for Packer: a resource group for build artifacts and a
+[service principal (SP)](https://www.packer.io/plugins/builders/azure/arm#service-principal)
+for authentication. We'll also export the SP credentials as GitHub Actions
+secrets, making them available to our CI workflow.
 
-Then we'll build a customized Windows 11 image with Packer suitable for software development workstations. We'll use [Chocolatey](https://chocolatey.org/) to install some apps like Visual Studio 2022 for .NET development, 7zip, the Kubernetes CLI and more. We'll also use a custom PowerShell script to install [Azure PowerShell](https://github.com/Azure/azure-powershell).
+Then we'll build a customized Windows 11 image with Packer suitable for software
+development workstations. We'll use [Chocolatey](https://chocolatey.org/) to
+install some apps like Visual Studio 2022 for .NET development, 7zip, the
+Kubernetes CLI and more. We'll also use a custom PowerShell script to install
+[Azure PowerShell](https://github.com/Azure/azure-powershell).
 
-Finally, we'll [schedule a GitHub Actions workflow](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule) that runs the Packer build. We'll query Azure daily to check for new Windows releases and run Packer as soon as a new version is made available by Microsoft.
+Finally, we'll
+[schedule a GitHub Actions workflow](https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule)
+that runs the Packer build. We'll query Azure daily to check for new Windows
+releases and run Packer as soon as a new version is made available by Microsoft.
 
-As usual, [all the code is available on GitHub](https://github.com/schnerring/packer-windows-avd/tree/v0.3.0).
+As usual,
+[all the code is available on GitHub](https://github.com/schnerring/packer-windows-avd/tree/v0.3.0).
 
 ## Get the Latest Windows 11 Version Available on Azure
 
-[Microsoft releases monthly quality updates for Windows](https://docs.microsoft.com/en-us/windows/deployment/update/quality-updates#quality-updates), on _Patch Tuesday_, the second Tuesday of each month. Microsoft can provide a release outside of the monthly schedule in exceptional circumstances, e.g., to fix a critical security vulnerability.
+[Microsoft releases monthly quality updates for Windows](https://docs.microsoft.com/en-us/windows/deployment/update/quality-updates#quality-updates),
+on _Patch Tuesday_, the second Tuesday of each month. Microsoft can provide a
+release outside of the monthly schedule in exceptional circumstances, e.g., to
+fix a critical security vulnerability.
 
-We can use the Azure CLI to query the available Windows versions on Azure like this:
+We can use the Azure CLI to query the available Windows versions on Azure like
+this:
 
 ```bash
 az vm image list \
@@ -48,9 +72,15 @@ az vm image list \
   --all
 ```
 
-If you prefer using a Windows 11 base image without Office 365, use `--offer windows-11` and `--sku win11-21h2-avd` instead. You can discover more images using the Azure CLI commands `az vm image list-publishers`, `az vm image list-offers`, and `az vm image list-skus`.
+If you prefer using a Windows 11 base image without Office 365, use
+`--offer windows-11` and `--sku win11-21h2-avd` instead. You can discover more
+images using the Azure CLI commands `az vm image list-publishers`,
+`az vm image list-offers`, and `az vm image list-skus`.
 
-So, to specify an image, a value for _publisher_, _offer_, _SKU_, and _version_ is required. To get the _latest version number_ available, we use the follwing snippet (thanks [pc-dok](https://github.com/pc-dok) for commenting and providing a more elegant query):
+So, to specify an image, a value for _publisher_, _offer_, _SKU_, and _version_
+is required. To get the _latest version number_ available, we use the follwing
+snippet (thanks [pc-dok](https://github.com/pc-dok) for commenting and providing
+a more elegant query):
 
 ```bash
 az vm image show \
@@ -67,7 +97,8 @@ The result of the command above looks like this:
 
 ## Prepare Packer Resources with Terraform
 
-Before being able to use Packer, we have to create some resources. I like using Terraform, but you could also use the Azure CLI or the Azure Portal.
+Before being able to use Packer, we have to create some resources. I like using
+Terraform, but you could also use the Azure CLI or the Azure Portal.
 
 ### Resource Groups
 
@@ -85,12 +116,19 @@ resource "azurerm_resource_group" "packer_build" {
 }
 ```
 
-Packer puts resources required during build time into the `packer-build-rg` resource group, which means it should only contain resources during build time.
-Packer publishes the resulting [managed images](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/capture-image-resource) to the `packer-artifacts-rg` resource group. We could also let Packer manage the creation of resource groups, but in my opinion, it's easier to scope permissions if we pre-provision them.
+Packer puts resources required during build time into the `packer-build-rg`
+resource group, which means it should only contain resources during build time.
+Packer publishes the resulting
+[managed images](https://docs.microsoft.com/en-us/azure/virtual-machines/windows/capture-image-resource)
+to the `packer-artifacts-rg` resource group. We could also let Packer manage the
+creation of resource groups, but in my opinion, it's easier to scope permissions
+if we pre-provision them.
 
 ### Authentication and Authorization
 
-We'll use [SP authentication](https://www.packer.io/plugins/builders/azure/arm#service-principal=) with Packer because it integrates well with GitHub Actions:
+We'll use
+[SP authentication](https://www.packer.io/plugins/builders/azure/arm#service-principal=)
+with Packer because it integrates well with GitHub Actions:
 
 ```hcl
 resource "azuread_application" "packer" {
@@ -106,7 +144,12 @@ resource "azuread_service_principal_password" "packer" {
 }
 ```
 
-To authorize the SP to manage resources inside the resource groups, we use [role-based access control (RBAC)](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview) and assign the SP the `Contributor` role. To allow the SP to check for existing images via the Azure CLI [`az image show` command](https://docs.microsoft.com/en-us/cli/azure/image?view=azure-cli-latest#az-image-show), we also assign it the `Reader` role on the subscription level.
+To authorize the SP to manage resources inside the resource groups, we use
+[role-based access control (RBAC)](https://docs.microsoft.com/en-us/azure/role-based-access-control/overview)
+and assign the SP the `Contributor` role. To allow the SP to check for existing
+images via the Azure CLI
+[`az image show` command](https://docs.microsoft.com/en-us/cli/azure/image?view=azure-cli-latest#az-image-show),
+we also assign it the `Reader` role on the subscription level.
 
 ```hcl
 data "azurerm_subscription" "subscription" {}
@@ -132,7 +175,10 @@ resource "azurerm_role_assignment" "packer_artifacts_contributor" {
 
 ### Export GitHub Actions Secrets
 
-To make the credentials accessible to GitHub Actions, we export them to GitHub as [encrypted secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets) like this:
+To make the credentials accessible to GitHub Actions, we export them to GitHub
+as
+[encrypted secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+like this:
 
 ```hcl
 data "github_repository" "packer_windows_avd" {
@@ -164,7 +210,11 @@ resource "github_actions_secret" "packer_tenant_id" {
 }
 ```
 
-We'll later also make use of the [Azure Login Action](https://github.com/Azure/login#configure-a-service-principal-with-a-secret) to dynamically query the latest Windows version available on Azure with the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/). [It expects the credentials in the following JSON format](https://github.com/Azure/login#configure-a-service-principal-with-a-secret):
+We'll later also make use of the
+[Azure Login Action](https://github.com/Azure/login#configure-a-service-principal-with-a-secret)
+to dynamically query the latest Windows version available on Azure with the
+[Azure CLI](https://docs.microsoft.com/en-us/cli/azure/).
+[It expects the credentials in the following JSON format](https://github.com/Azure/login#configure-a-service-principal-with-a-secret):
 
 ```json
 {
@@ -175,7 +225,8 @@ We'll later also make use of the [Azure Login Action](https://github.com/Azure/l
 }
 ```
 
-Let's export another secret named `AZURE_CREDENTIALS` containing the credentials in the JSON format above using Terraform's `jsonencode` function:
+Let's export another secret named `AZURE_CREDENTIALS` containing the credentials
+in the JSON format above using Terraform's `jsonencode` function:
 
 ```hcl
 resource "github_actions_secret" "github_actions_azure_credentials" {
@@ -211,7 +262,9 @@ resource "github_actions_secret" "packer_build_resource_group" {
 
 ### Add Terraform Outputs
 
-To run Packer locally, we also need to access the credentials locally. We can use [Terraform outputs](https://www.terraform.io/language/values/outputs) for this:
+To run Packer locally, we also need to access the credentials locally. We can
+use [Terraform outputs](https://www.terraform.io/language/values/outputs) for
+this:
 
 ```hcl
 output "packer_artifacts_resource_group" {
@@ -243,7 +296,8 @@ output "packer_tenant_id" {
 }
 ```
 
-After running `terraform apply` to deploy everything, we can access output values like this: `terraform output packer_client_secret`.
+After running `terraform apply` to deploy everything, we can access output
+values like this: `terraform output packer_client_secret`.
 
 ## Create the Packer Template
 
@@ -251,9 +305,12 @@ Let's add a Packer template file named `windows.pkr.hcl`.
 
 ### Input Variables
 
-[Input variables](https://www.packer.io/guides/hcl/variables) allow us to parameterize the Packer build. We can later set their values from default values, environment, file, or CLI arguments.
+[Input variables](https://www.packer.io/guides/hcl/variables) allow us to
+parameterize the Packer build. We can later set their values from default
+values, environment, file, or CLI arguments.
 
-We need to add variables allowing us to pass the SP credentials and resource group names, as well as the image publisher, offer, SKU, and version:
+We need to add variables allowing us to pass the SP credentials and resource
+group names, as well as the image publisher, offer, SKU, and version:
 
 ```hcl
 variable "client_id" {
@@ -313,7 +370,11 @@ variable "source_image_version" {
 
 ### Configure Azure ARM Builder
 
-Next, we configure [Packer's Azure Resource Manager (ARM) Builder](https://www.packer.io/plugins/builders/azure/arm). We start with the [`source`](https://www.packer.io/docs/templates/hcl_templates/blocks/source) configuration block:
+Next, we configure
+[Packer's Azure Resource Manager (ARM) Builder](https://www.packer.io/plugins/builders/azure/arm).
+We start with the
+[`source`](https://www.packer.io/docs/templates/hcl_templates/blocks/source)
+configuration block:
 
 ```hcl
 source "azure-arm" "avd" {
@@ -352,7 +413,10 @@ source "azure-arm" "avd" {
 }
 ```
 
-The [WinRM communicator](https://www.packer.io/docs/communicators/winrm) is Packer's way of talking to Azure Windows VMs. We give the resulting image a unique `managed_image_name` by concatenating the values of the SKU and version. The remaining options are self-explanatory.
+The [WinRM communicator](https://www.packer.io/docs/communicators/winrm) is
+Packer's way of talking to Azure Windows VMs. We give the resulting image a
+unique `managed_image_name` by concatenating the values of the SKU and version.
+The remaining options are self-explanatory.
 
 Next, we define a `builder` block that contains our provisioning steps:
 
@@ -401,10 +465,20 @@ build {
 Let's look at what's happening here:
 
 - First, we reference the `source` block that we defined before.
-- We install Chocolatey using the [one-liner PowerShell command from the official docs](https://chocolatey.org/install#individual).
-- We copy the `packages.config` file, an XML manifest containing a list of apps for Chocolatey to install, to the [temporary disk `D:` of the VM](https://docs.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview#temporary-disk). Then we pass the manifest to the [`choco install`](https://docs.chocolatey.org/en-us/choco/commands/install) command. [When the command exits with the code `3010`, a reboot is required](https://docs.chocolatey.org/en-us/choco/commands/install#exit-codes). We make Packer aware of that by passing `3010` to the list of `valid_exit_codes`.
+- We install Chocolatey using the
+  [one-liner PowerShell command from the official docs](https://chocolatey.org/install#individual).
+- We copy the `packages.config` file, an XML manifest containing a list of apps
+  for Chocolatey to install, to the
+  [temporary disk `D:` of the VM](https://docs.microsoft.com/en-us/azure/virtual-machines/managed-disks-overview#temporary-disk).
+  Then we pass the manifest to the
+  [`choco install`](https://docs.chocolatey.org/en-us/choco/commands/install)
+  command.
+  [When the command exits with the code `3010`, a reboot is required](https://docs.chocolatey.org/en-us/choco/commands/install#exit-codes).
+  We make Packer aware of that by passing `3010` to the list of
+  `valid_exit_codes`.
 - For good measure, we reboot the VM.
-- We run a custom PowerShell script to install the [Azure PowerShell modules](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-7.3.2).
+- We run a custom PowerShell script to install the
+  [Azure PowerShell modules](https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-7.3.2).
 - [Finally, we generalize the image using Sysprep](https://www.packer.io/plugins/builders/azure/arm#windows)
 
 The `packages.config` manifest looks like this:
@@ -461,9 +535,14 @@ The `packages.config` manifest looks like this:
 </packages>
 ```
 
-Note that installing Chocolatey packages like that is a pretty naive approach that I wouldn't recommend for production-level scenarios. [Using the Chocolatey community repository has limits in terms of reliability, control, and trust.](https://docs.chocolatey.org/en-us/community-repository/community-packages-disclaimer). Also, any failing package installation breaks the entire build, so pinning versions is a good idea.
+Note that installing Chocolatey packages like that is a pretty naive approach
+that I wouldn't recommend for production-level scenarios.
+[Using the Chocolatey community repository has limits in terms of reliability, control, and trust.](https://docs.chocolatey.org/en-us/community-repository/community-packages-disclaimer).
+Also, any failing package installation breaks the entire build, so pinning
+versions is a good idea.
 
-The `install-azure-powershell.ps1` provisioning script to install the Azure PowerShell modules looks like this:
+The `install-azure-powershell.ps1` provisioning script to install the Azure
+PowerShell modules looks like this:
 
 ```powershell
 # See https://docs.microsoft.com/en-us/powershell/azure/install-az-ps-msi?view=azps-7.3.2#install-or-update-on-windows-using-the-msi-package
@@ -483,11 +562,18 @@ Start-Process "msiexec.exe" -Wait -ArgumentList "/package $outFile"
 Write-Host "Done."
 ```
 
-We only covered two methods for installing software into the golden image. Often it doesn't even make sense to bake apps into your golden image, e.g., when app deployments frequently change. For these scenarios, other solutions like [Microsoft Endpoint Manager](https://docs.microsoft.com/en-us/mem/endpoint-manager-overview) or [MSIX App Attach](https://docs.microsoft.com/en-us/azure/virtual-desktop/what-is-app-attach) exist.
+We only covered two methods for installing software into the golden image. Often
+it doesn't even make sense to bake apps into your golden image, e.g., when app
+deployments frequently change. For these scenarios, other solutions like
+[Microsoft Endpoint Manager](https://docs.microsoft.com/en-us/mem/endpoint-manager-overview)
+or
+[MSIX App Attach](https://docs.microsoft.com/en-us/azure/virtual-desktop/what-is-app-attach)
+exist.
 
 ### Run Packer Locally
 
-To run Packer locally, we use the following command (note the `.` at the very end):
+To run Packer locally, we use the following command (note the `.` at the very
+end):
 
 ```bash
 packer build \
@@ -504,11 +590,14 @@ packer build \
   .
 ```
 
-With the `-var` option, we can set Packer variables. We pass the Terraform outputs that we configured earlier to Packer using command substitution.
+With the `-var` option, we can set Packer variables. We pass the Terraform
+outputs that we configured earlier to Packer using command substitution.
 
 ## GitHub Actions
 
-Next, we tie everything together using GitHub Actions. Add a workflow by adding a file named `.github/workflows/packer.yml`. We name the workflow and specify the events that trigger it:
+Next, we tie everything together using GitHub Actions. Add a workflow by adding
+a file named `.github/workflows/packer.yml`. We name the workflow and specify
+the events that trigger it:
 
 ```yml
 name: Packer Windows 11
@@ -521,9 +610,12 @@ on:
     - cron: 0 0 * * *
 ```
 
-It's triggered whenever we push code to the `main` branch. We schedule to run the workflow daily at 0:00 UTC using the [POSIX cron syntax](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07).
+It's triggered whenever we push code to the `main` branch. We schedule to run
+the workflow daily at 0:00 UTC using the
+[POSIX cron syntax](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/crontab.html#tag_20_25_07).
 
-Using workflow-level environment variables, we specify the desired source image publisher, offer, and SKU :
+Using workflow-level environment variables, we specify the desired source image
+publisher, offer, and SKU :
 
 ```yml
 env:
@@ -538,7 +630,8 @@ env:
   #IMAGE_SKU: win11-21h2-avd
 ```
 
-Here is a high-level overview of the workflow `jobs` where all the magic happens:
+Here is a high-level overview of the workflow `jobs` where all the magic
+happens:
 
 ```yml
 jobs:
@@ -556,11 +649,16 @@ Let's look into each job in detail next.
 
 ### Job: `latest_windows_version`
 
-We use the `AZURE_CREDENTIALS` secret we defined earlier with Terraform to authenticate to Azure with the [Azure Login Action](https://github.com/Azure/login).
+We use the `AZURE_CREDENTIALS` secret we defined earlier with Terraform to
+authenticate to Azure with the
+[Azure Login Action](https://github.com/Azure/login).
 
-After, we use the [Azure CLI Action](https://github.com/Azure/cli) to run [the snippet to calculate the latest available image version](#get-the-latest-windows-11-version-available-on-azure).
+After, we use the [Azure CLI Action](https://github.com/Azure/cli) to run
+[the snippet to calculate the latest available image version](#get-the-latest-windows-11-version-available-on-azure).
 
-To allow using the result from the other jobs, we define the `version` job output. It's set using the `echo "version=${latest_version}" >> $GITHUB_OUTPUT` command.
+To allow using the result from the other jobs, we define the `version` job
+output. It's set using the `echo "version=${latest_version}" >> $GITHUB_OUTPUT`
+command.
 
 ```yml
 latest_windows_version:
@@ -595,11 +693,17 @@ latest_windows_version:
 
 ### Job: `check_image_exists`
 
-This job `needs` the `latest_windows_version` job to finish first because it depends on its `version` output.
+This job `needs` the `latest_windows_version` job to finish first because it
+depends on its `version` output.
 
-Remember that we name our Packer images (`managed_image_name`) like `${sku}-${version}`. Using the `IMAGE_SKU` workflow environment variable and the `version` output from the `latest_windows_version` job, we can use the `az image show` command to check for existing images inside the Packer artifacts resource group.
+Remember that we name our Packer images (`managed_image_name`) like
+`${sku}-${version}`. Using the `IMAGE_SKU` workflow environment variable and the
+`version` output from the `latest_windows_version` job, we can use the
+`az image show` command to check for existing images inside the Packer artifacts
+resource group.
 
-Depending on whether or not an image exists, we set the job output `exists` to `true` or `false`.
+Depending on whether or not an image exists, we set the job output `exists` to
+`true` or `false`.
 
 ```yml
 check_image_exists:
@@ -633,11 +737,17 @@ check_image_exists:
 
 ### Job: `packer`
 
-This job `needs` the outputs from both previous jobs. It only runs `if` the `exists` output of the `check_image_exists` job equals `false`. Otherwise, it's skipped.
+This job `needs` the outputs from both previous jobs. It only runs `if` the
+`exists` output of the `check_image_exists` job equals `false`. Otherwise, it's
+skipped.
 
-We use the [Checkout Action](https://github.com/actions/checkout) to make the code available to the workflow and validate the syntax of the Packer template by running `packer validate`.
+We use the [Checkout Action](https://github.com/actions/checkout) to make the
+code available to the workflow and validate the syntax of the Packer template by
+running `packer validate`.
 
-Finally, we run `packer build`. This time we use environment variables in the form of `PKR_VAR_*` to set the Packer inputs opposed to the `-var` CLI option we used earlier when running Packer locally.
+Finally, we run `packer build`. This time we use environment variables in the
+form of `PKR_VAR_*` to set the Packer inputs opposed to the `-var` CLI option we
+used earlier when running Packer locally.
 
 ```yml
 packer:
@@ -665,19 +775,27 @@ packer:
         PKR_VAR_client_secret: ${{ secrets.PACKER_CLIENT_SECRET }}
         PKR_VAR_subscription_id: ${{ secrets.PACKER_SUBSCRIPTION_ID }}
         PKR_VAR_tenant_id: ${{ secrets.PACKER_TENANT_ID }}
-        PKR_VAR_artifacts_resource_group: ${{ secrets.PACKER_ARTIFACTS_RESOURCE_GROUP }}
+        PKR_VAR_artifacts_resource_group:
+          ${{ secrets.PACKER_ARTIFACTS_RESOURCE_GROUP }}
         PKR_VAR_build_resource_group: ${{ secrets.PACKER_BUILD_RESOURCE_GROUP }}
         PKR_VAR_source_image_publisher: ${{ env.IMAGE_PUBLISHER }}
         PKR_VAR_source_image_offer: ${{ env.IMAGE_OFFER }}
         PKR_VAR_source_image_sku: ${{ env.IMAGE_SKU }}
-        PKR_VAR_source_image_version: ${{ needs.latest_windows_version.outputs.version }}
+        PKR_VAR_source_image_version:
+          ${{ needs.latest_windows_version.outputs.version }}
 ```
 
 ### Job: `cleanup`
 
-If the pipeline crashes somewhere along the way, resources inside the `packer-build-rg` resource group may linger and incur costs. We want to define a job that purges everything from the resource group.
+If the pipeline crashes somewhere along the way, resources inside the
+`packer-build-rg` resource group may linger and incur costs. We want to define a
+job that purges everything from the resource group.
 
-One way to achieve this is by starting a deployment to the resource group using an empty ARM template. First, we add an empty [Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep) named `cleanup-resource-group.bicep`. We can then deploy the template using [`az deployment group create`](https://docs.microsoft.com/en-us/cli/azure/deployment/group?view=azure-cli-latest#az-deployment-group-create):
+One way to achieve this is by starting a deployment to the resource group using
+an empty ARM template. First, we add an empty
+[Bicep](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview?tabs=bicep)
+named `cleanup-resource-group.bicep`. We can then deploy the template using
+[`az deployment group create`](https://docs.microsoft.com/en-us/cli/azure/deployment/group?view=azure-cli-latest#az-deployment-group-create):
 
 ```yml
 cleanup:
@@ -706,8 +824,11 @@ cleanup:
 
 ## What Do You Think?
 
-Phew! That was quite a bit of work. [Here's one of the workflow runs](https://github.com/schnerring/packer-windows-avd/runs/5711503619) that took around one hour to complete:
+Phew! That was quite a bit of work.
+[Here's one of the workflow runs](https://github.com/schnerring/packer-windows-avd/runs/5711503619)
+that took around one hour to complete:
 
 ![Sample workflow summary](./workflow-summary.png)
 
-I especially like how the GitHub Actions part turned out. Leave a comment or at me on Twitter to let me know what you think about it!
+I especially like how the GitHub Actions part turned out. Leave a comment or at
+me on Twitter to let me know what you think about it!
