@@ -670,13 +670,13 @@ latest_windows_version:
     version: ${{ steps.get_latest_version.outputs.version }}
   steps:
     - name: Azure Login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Get Latest Version
       id: get_latest_version
-      uses: azure/CLI@v1
+      uses: azure/cli@v2
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
@@ -716,13 +716,13 @@ check_image_exists:
     exists: ${{ steps.get_image.outputs.exists }}
   steps:
     - name: Azure Login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Check If Image Exists
       id: get_image
-      uses: azure/CLI@v1
+      uses: azure/cli@v2
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
@@ -809,12 +809,12 @@ cleanup:
       uses: actions/checkout@v2
 
     - name: Azure Login
-      uses: azure/login@v1
+      uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: Cleanup Resource Group
-      uses: azure/CLI@v1
+      uses: azure/cli@v2
       with:
         azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
