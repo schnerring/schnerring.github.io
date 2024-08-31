@@ -52,7 +52,7 @@ that runs the Packer build. We'll query Azure daily to check for new Windows
 releases and run Packer as soon as a new version is made available by Microsoft.
 
 As usual,
-[all the code is available on GitHub](https://github.com/schnerring/packer-windows-avd/tree/v0.3.0).
+[all the code is available on GitHub](https://github.com/schnerring/packer-windows-avd/tree/v0.4.0).
 
 ## Get the Latest Windows 11 Version Available on Azure
 
@@ -68,12 +68,12 @@ this:
 az vm image list \
   --publisher MicrosoftWindowsDesktop \
   --offer office-365 \
-  --sku win11-21h2-avd-m365 \
+  --sku win11-23h2-avd-m365 \
   --all
 ```
 
 If you prefer using a Windows 11 base image without Office 365, use
-`--offer windows-11` and `--sku win11-21h2-avd` instead. You can discover more
+`--offer windows-11` and `--sku win11-23h2-avd` instead. You can discover more
 images using the Azure CLI commands `az vm image list-publishers`,
 `az vm image list-offers`, and `az vm image list-skus`.
 
@@ -92,7 +92,7 @@ az vm image show \
 The result of the command above looks like this:
 
 ```text
-22000.556.220308
+22631.4037.240813
 ```
 
 ## Prepare Packer Resources with Terraform
@@ -136,7 +136,7 @@ resource "azuread_application" "packer" {
 }
 
 resource "azuread_service_principal" "packer" {
-  application_id = azuread_application.packer.application_id
+  client_id = azuread_application.packer.client_id
 }
 
 resource "azuread_service_principal_password" "packer" {
@@ -188,7 +188,7 @@ data "github_repository" "packer_windows_avd" {
 resource "github_actions_secret" "packer_client_id" {
   repository      = data.github_repository.packer_windows_avd.name
   secret_name     = "PACKER_CLIENT_ID"
-  plaintext_value = azuread_application.packer.application_id
+  plaintext_value = azuread_application.packer.client_id
 }
 
 resource "github_actions_secret" "packer_client_secret" {
@@ -235,7 +235,7 @@ resource "github_actions_secret" "github_actions_azure_credentials" {
 
   plaintext_value = jsonencode(
     {
-      clientId       = azuread_application.packer.application_id
+      clientId       = azuread_application.packer.client_id
       clientSecret   = azuread_service_principal_password.packer.value
       subscriptionId = data.azurerm_subscription.subscription.subscription_id
       tenantId       = data.azurerm_subscription.subscription.tenant_id
@@ -276,7 +276,7 @@ output "packer_build_resource_group" {
 }
 
 output "packer_client_id" {
-  value     = azuread_application.packer.application_id
+  value     = azuread_application.packer.client_id
   sensitive = true
 }
 
@@ -585,8 +585,8 @@ packer build \
   -var "tenant_id=$(terraform output -raw packer_tenant_id)" \
   -var "source_image_publisher=MicrosoftWindowsDesktop" \
   -var "source_image_offer=office-365" \
-  -var "source_image_sku=win11-21h2-avd-m365" \
-  -var "source_image_version=22000.556.220308" \
+  -var "source_image_sku=win11-23h2-avd-m365" \
+  -var "source_image_version=22631.4037.240813" \
   .
 ```
 
@@ -619,15 +619,17 @@ publisher, offer, and SKU :
 
 ```yml
 env:
+  AZ_CLI_VERSION: 2.40.1
+
   IMAGE_PUBLISHER: MicrosoftWindowsDesktop
 
   # With Office 365
   IMAGE_OFFER: office-365
-  IMAGE_SKU: win11-21h2-avd-m365
+  IMAGE_SKU: win11-23h2-avd-m365
 
   # Without Office 365
   #IMAGE_OFFER: windows-11
-  #IMAGE_SKU: win11-21h2-avd
+  #IMAGE_SKU: win11-23h2-avd
 ```
 
 Here is a high-level overview of the workflow `jobs` where all the magic
@@ -676,7 +678,7 @@ latest_windows_version:
       id: get_latest_version
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.34.1
+        azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
           latest_version=$(
             az vm image show \
@@ -722,7 +724,7 @@ check_image_exists:
       id: get_image
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.34.1
+        azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
           if az image show \
             --resource-group "${{ secrets.PACKER_ARTIFACTS_RESOURCE_GROUP }}" \
@@ -814,7 +816,7 @@ cleanup:
     - name: Cleanup Resource Group
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.34.1
+        azcliversion: ${{ env.AZ_CLI_VERSION }}
         inlineScript: |
           az deployment group create \
             --mode Complete \
