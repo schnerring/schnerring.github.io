@@ -827,7 +827,7 @@ cleanup:
 ## What Do You Think?
 
 Phew! That was quite a bit of work.
-[Here's one of the workflow runs](https://github.com/schnerring/packer-windows-avd/runs/5711503619)
+[Here is a summary one of the workflow runs](https://github.com/schnerring/packer-windows-avd/actions)
 that took around one hour to complete:
 
 ![Sample workflow summary](./workflow-summary.png)
