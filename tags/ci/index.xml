@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CI on Michael Schnerring</title><link>https://schnerring.net/tags/ci/</link><description>Recent content in CI on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Wed, 07 Feb 2024 08:15:50 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/ci/index.xml" rel="self" type="application/rss+xml"/><item><title>Checking Out Code Committed Within the Same GitHub Actions Workflow Run</title><link>https://schnerring.net/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/</link><pubDate>Sun, 02 Apr 2023 05:30:00 +0200</pubDate><guid>https://schnerring.net/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/</guid><description>&lt;p>When using &lt;a
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>CI on Michael Schnerring</title><link>https://schnerring.net/tags/ci/</link><description>Recent content in CI on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 01 Sep 2024 00:49:27 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/ci/index.xml" rel="self" type="application/rss+xml"/><item><title>Checking Out Code Committed Within the Same GitHub Actions Workflow Run</title><link>https://schnerring.net/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/</link><pubDate>Sun, 02 Apr 2023 05:30:00 +0200</pubDate><guid>https://schnerring.net/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/</guid><description>&lt;p>When using &lt;a
  href="https://docs.github.com/en/actions"
  
  
@@ -11,22 +11,28 @@ steps subsequently act upon these changes within the same workflow run. For
 example, appending auto-generated release notes to a &lt;code>CHANGELOG.md&lt;/code> file and
 committing it to the repo, to later bundle the changelog with release artifacts.
 Another example is using a workflow that periodically uses a linter to clean up
-the code base. Simple enough, right?&lt;/p></description></item><item><title>Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions</title><link>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</link><pubDate>Sun, 27 Mar 2022 08:12:20 +0200</pubDate><guid>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</guid><description>&lt;p>One aspect of managing &lt;a
+the code base. Simple enough, right?&lt;/p></description></item><item><title>Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions</title><link>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</link><pubDate>Sun, 27 Mar 2022 08:12:20 +0200</pubDate><guid>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</guid><description>&lt;p>One aspect of managing
+&lt;a
  href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Virtual Desktop (AVD)&lt;/a> is keeping it up-to-date. One strategy is periodically building a &amp;ldquo;golden&amp;rdquo; image and re-deploying AVD session host VMs using the updated image. In this post, we&amp;rsquo;ll use &lt;a
+>Azure Virtual Desktop (AVD)&lt;/a>
+is keeping it up-to-date. One strategy is periodically building a &amp;ldquo;golden&amp;rdquo; image
+and re-deploying AVD session host VMs using the updated image. In this post,
+we&amp;rsquo;ll use &lt;a
  href="https://www.packer.io/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Packer&lt;/a> and &lt;a
+>Packer&lt;/a> and
+&lt;a
  href="https://github.com/features/actions"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->GitHub Actions&lt;/a> to build a Windows 11 image and push it to Azure.&lt;/p></description></item></channel></rss>
+>GitHub Actions&lt;/a> to build a Windows 11
+image and push it to Azure.&lt;/p></description></item></channel></rss>
