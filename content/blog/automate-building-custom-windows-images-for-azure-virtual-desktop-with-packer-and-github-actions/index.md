@@ -486,8 +486,11 @@ The `packages.config` manifest looks like this:
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <packages>
+  <!-- FSLogix -->
+  <package id="fslogix" />
+
   <!-- PowerShell -->
-  <!-- See https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.2#install-the-msi-package-from-the-command-line -->
+  <!-- See https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell-on-windows?view=powershell-7.4#install-the-msi-package-from-the-command-line -->
   <package id="powershell-core" installArguments="ADD_FILE_CONTEXT_MENU_RUNPOWERSHELL=1 ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1" />
   <package id="openssh" />
   <package id="curl" />
@@ -498,10 +501,6 @@ The `packages.config` manifest looks like this:
   <!-- See https://docs.microsoft.com/en-us/visualstudio/install/workload-component-id-vs-community?view=vs-2022 -->
   <package id="visualstudio2022community" packageParameters="--add Microsoft.VisualStudio.Workload.Azure;includeRecommended --add Microsoft.VisualStudio.Workload.ManagedDesktop;includeRecommended --add Microsoft.VisualStudio.Workload.NetCrossPlat;includeRecommended --add Microsoft.VisualStudio.Workload.NetWeb;includeRecommended --add Microsoft.VisualStudio.Workload.Office;includeRecommended" />
 
-  <!-- Editors -->
-  <package id="notepadplusplus" />
-  <package id="vscode" />
-
   <!-- System Administration -->
   <package id="sysinternals" />
   <package id="rsat" />
@@ -510,9 +509,7 @@ The `packages.config` manifest looks like this:
   <package id="azure-cli" />
   <package id="filezilla" />
   <package id="git" />
-  <package id="microsoftazurestorageexplorer" />
   <package id="sql-server-management-studio" />
-  <package id="postman" />
 
   <!-- Kubernetes -->
   <package id="kubernetes-cli" />
@@ -523,14 +520,9 @@ The `packages.config` manifest looks like this:
   <package id="terraform" />
   <package id="graphviz" />
 
-  <!-- Browsers -->
-  <package id="firefox" />
-  <package id="googlechrome" />
-
   <!-- Common Apps -->
   <package id="7zip" />
-  <package id="drawio" />
-  <package id="foxitreader" />
+  <package id="sumatrapdf" />
   <package id="keepassxc" />
 </packages>
 ```
@@ -545,11 +537,11 @@ The `install-azure-powershell.ps1` provisioning script to install the Azure
 PowerShell modules looks like this:
 
 ```powershell
-# See https://docs.microsoft.com/en-us/powershell/azure/install-az-ps-msi?view=azps-7.3.2#install-or-update-on-windows-using-the-msi-package
+# See https://learn.microsoft.com/en-us/powershell/azure/install-azps-windows?view=azps-12.2.0&tabs=powershell&pivots=windows-msi
 
 $ErrorActionPreference = "Stop"
 
-$downloadUrl = "https://github.com/Azure/azure-powershell/releases/download/v7.3.2-March2022/Az-Cmdlets-7.3.2.35305-x64.msi"
+$downloadUrl = "https://github.com/Azure/azure-powershell/releases/download/v12.2.0-August2024/Az-Cmdlets-12.2.0.38863-x64.msi"
 $outFile = "D:\az_pwsh.msi" # temporary disk
 
 Write-Host "Downloading $downloadUrl ..."
