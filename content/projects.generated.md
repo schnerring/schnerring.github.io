@@ -89,13 +89,13 @@ These are my most recent code contributions, if you're interested:
 
 
 
-- [Access FlexSearch static methods via bundled export (static class methods of FlexSearch)](https://github.com/thuliteio/doks-core/pull/105) on [thuliteio/doks-core](https://github.com/thuliteio/doks-core) (3 days ago)
+- [Access FlexSearch static methods via bundled export (static class methods of FlexSearch)](https://github.com/thuliteio/doks-core/pull/105) on [thuliteio/doks-core](https://github.com/thuliteio/doks-core) (4 days ago)
 - [Add support for STJ-native C# code gen](https://github.com/RicoSuter/NSwag/pull/4782) on [RicoSuter/NSwag](https://github.com/RicoSuter/NSwag) (6 months ago)
 - [Add support for STJ-native C# code gen](https://github.com/RicoSuter/NJsonSchema/pull/1675) on [RicoSuter/NJsonSchema](https://github.com/RicoSuter/NJsonSchema) (6 months ago)
 - [Update Hugo docs](https://github.com/FullHuman/purgecss/pull/1216) on [FullHuman/purgecss](https://github.com/FullHuman/purgecss) (6 months ago)
 - [[WIP] Add TodoWebService.NSwag sample project](https://github.com/JasperFx/wolverine/pull/684) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (7 months ago)
 - [Fix docs: links and minor typos](https://github.com/JasperFx/marten/pull/2869) on [JasperFx/marten](https://github.com/JasperFx/marten) (8 months ago)
-- [Docs: fix dead GitHub link](https://github.com/JasperFx/wolverine/pull/530) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (11 months ago)
+- [Docs: fix dead GitHub link](https://github.com/JasperFx/wolverine/pull/530) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (1 year ago)
 - [Docs: consolidate piece selection algorithm from docs with actual implementation](https://github.com/casey/intermodal/pull/524) on [casey/intermodal](https://github.com/casey/intermodal) (1 year ago)
 - [fix(plausible): migrate to new common chart and upgrade to v2](https://github.com/truecharts/charts/pull/11186) on [truecharts/charts](https://github.com/truecharts/charts) (1 year ago)
 - [Fix typo in self-hosting docs](https://github.com/plausible/docs/pull/419) on [plausible/docs](https://github.com/plausible/docs) (1 year ago)
