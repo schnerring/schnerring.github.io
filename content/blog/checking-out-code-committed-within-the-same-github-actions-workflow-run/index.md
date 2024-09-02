@@ -214,8 +214,6 @@ behavior is effectively identical to [Dirty Fix #1](#dirty-fix-1-git-pull).
 I know this diagram is a _terrible_ illustration of a race condition,
 [but I wanted to try out GoAT](https://github.com/schnerring/schnerring.github.io/blob/3fb1b511de6936c72304f60db84210daafb6b091/content/blog/checking-out-code-committed-within-the-same-github-actions-workflow-run/index.md?plain=1#L214-L232):
 
-<!-- See also: https://github.com/bep/goat -->
-
 ```goat
                                2. OOPSIE 🏇
                                      |
@@ -237,6 +235,9 @@ _right between_ the execution of the `update-changelog` and `publish` jobs. This
 means, that we could end up with a discrepancy between the changelog and what is
 published. While this is more unlikely to happen when working on your own, it
 can certainly happen on busy branches.
+
+I know this is a terrible diagram to illustrate a race condition, but I wanted
+to try out [GoAT ASCII diagram generation](https://github.com/bep/goat).
 
 ## The Solution
 
