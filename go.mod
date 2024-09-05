@@ -1,6 +1,6 @@
 module github.com/schnerring/schnerring.github.io
 
-go 1.23.0
+go 1.23.1
 
 require (
 	github.com/schnerring/hugo-mod-json-resume v0.0.0-20240827190105-167993f39fd1 // indirect
