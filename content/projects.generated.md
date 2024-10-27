@@ -89,7 +89,7 @@ These are my most recent code contributions, if you're interested:
 
 
 
-- [Access FlexSearch static methods via bundled export (static class methods of FlexSearch)](https://github.com/thuliteio/doks-core/pull/105) on [thuliteio/doks-core](https://github.com/thuliteio/doks-core) (1 month ago)
+- [Access FlexSearch static methods via bundled export (static class methods of FlexSearch)](https://github.com/thuliteio/doks-core/pull/105) on [thuliteio/doks-core](https://github.com/thuliteio/doks-core) (2 months ago)
 - [Add support for STJ-native C# code gen](https://github.com/RicoSuter/NSwag/pull/4782) on [RicoSuter/NSwag](https://github.com/RicoSuter/NSwag) (8 months ago)
 - [Add support for STJ-native C# code gen](https://github.com/RicoSuter/NJsonSchema/pull/1675) on [RicoSuter/NJsonSchema](https://github.com/RicoSuter/NJsonSchema) (8 months ago)
 - [Update Hugo docs](https://github.com/FullHuman/purgecss/pull/1216) on [FullHuman/purgecss](https://github.com/FullHuman/purgecss) (8 months ago)
