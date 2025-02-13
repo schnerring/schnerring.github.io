@@ -89,6 +89,7 @@ These are my most recent code contributions, if you're interested:
 
 
 
+- [Fix dead link in docs](https://github.com/JasperFx/wolverine/pull/1274) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (1 day ago)
 - [Access FlexSearch static methods via bundled export (static class methods of FlexSearch)](https://github.com/thuliteio/doks-core/pull/105) on [thuliteio/doks-core](https://github.com/thuliteio/doks-core) (5 months ago)
 - [Add support for STJ-native C# code gen](https://github.com/RicoSuter/NSwag/pull/4782) on [RicoSuter/NSwag](https://github.com/RicoSuter/NSwag) (1 year ago)
 - [Add support for STJ-native C# code gen](https://github.com/RicoSuter/NJsonSchema/pull/1675) on [RicoSuter/NJsonSchema](https://github.com/RicoSuter/NJsonSchema) (1 year ago)
@@ -98,7 +99,6 @@ These are my most recent code contributions, if you're interested:
 - [Docs: fix dead GitHub link](https://github.com/JasperFx/wolverine/pull/530) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (1 year ago)
 - [Docs: consolidate piece selection algorithm from docs with actual implementation](https://github.com/casey/intermodal/pull/524) on [casey/intermodal](https://github.com/casey/intermodal) (1 year ago)
 - [fix(plausible): migrate to new common chart and upgrade to v2](https://github.com/truecharts/public/pull/11186) on [truecharts/public](https://github.com/truecharts/public) (2 years ago)
-- [Fix typo in self-hosting docs](https://github.com/plausible/docs/pull/419) on [plausible/docs](https://github.com/plausible/docs) (2 years ago)
 
 
 
