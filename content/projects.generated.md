@@ -89,8 +89,8 @@ These are my most recent code contributions, if you're interested:
 
 
 
-- [chore: fix small mistake in parameters docs sample](https://github.com/nuke-build/nuke/pull/1528) on [nuke-build/nuke](https://github.com/nuke-build/nuke) (1 day ago)
-- [Fix dead link in docs](https://github.com/JasperFx/wolverine/pull/1274) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (3 weeks ago)
+- [chore: fix small mistake in parameters docs sample](https://github.com/nuke-build/nuke/pull/1528) on [nuke-build/nuke](https://github.com/nuke-build/nuke) (2 days ago)
+- [Fix dead link in docs](https://github.com/JasperFx/wolverine/pull/1274) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (4 weeks ago)
 - [Access FlexSearch static methods via bundled export (static class methods of FlexSearch)](https://github.com/thuliteio/doks-core/pull/105) on [thuliteio/doks-core](https://github.com/thuliteio/doks-core) (6 months ago)
 - [Add support for STJ-native C# code gen](https://github.com/RicoSuter/NSwag/pull/4782) on [RicoSuter/NSwag](https://github.com/RicoSuter/NSwag) (1 year ago)
 - [Add support for STJ-native C# code gen](https://github.com/RicoSuter/NJsonSchema/pull/1675) on [RicoSuter/NJsonSchema](https://github.com/RicoSuter/NJsonSchema) (1 year ago)
