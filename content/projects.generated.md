@@ -90,13 +90,13 @@ These are my most recent code contributions, if you're interested:
 
 
 - [chore: fix small mistake in parameters docs sample](https://github.com/nuke-build/nuke/pull/1528) on [nuke-build/nuke](https://github.com/nuke-build/nuke) (3 months ago)
-- [Fix dead link in docs](https://github.com/JasperFx/wolverine/pull/1274) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (3 months ago)
+- [Fix dead link in docs](https://github.com/JasperFx/wolverine/pull/1274) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (4 months ago)
 - [Access FlexSearch static methods via bundled export (static class methods of FlexSearch)](https://github.com/thuliteio/doks-core/pull/105) on [thuliteio/doks-core](https://github.com/thuliteio/doks-core) (9 months ago)
 - [Add support for STJ-native C# code gen](https://github.com/RicoSuter/NSwag/pull/4782) on [RicoSuter/NSwag](https://github.com/RicoSuter/NSwag) (1 year ago)
 - [Add support for STJ-native C# code gen](https://github.com/RicoSuter/NJsonSchema/pull/1675) on [RicoSuter/NJsonSchema](https://github.com/RicoSuter/NJsonSchema) (1 year ago)
 - [Update Hugo docs](https://github.com/FullHuman/purgecss/pull/1216) on [FullHuman/purgecss](https://github.com/FullHuman/purgecss) (1 year ago)
 - [[WIP] Add TodoWebService.NSwag sample project](https://github.com/JasperFx/wolverine/pull/684) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (1 year ago)
-- [Fix docs: links and minor typos](https://github.com/JasperFx/marten/pull/2869) on [JasperFx/marten](https://github.com/JasperFx/marten) (1 year ago)
+- [Fix docs: links and minor typos](https://github.com/JasperFx/marten/pull/2869) on [JasperFx/marten](https://github.com/JasperFx/marten) (2 years ago)
 - [Docs: fix dead GitHub link](https://github.com/JasperFx/wolverine/pull/530) on [JasperFx/wolverine](https://github.com/JasperFx/wolverine) (2 years ago)
 - [Docs: consolidate piece selection algorithm from docs with actual implementation](https://github.com/casey/intermodal/pull/524) on [casey/intermodal](https://github.com/casey/intermodal) (2 years ago)
 
