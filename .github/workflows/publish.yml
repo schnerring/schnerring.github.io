@@ -23,7 +23,7 @@ jobs:
       commit_hash: ${{ steps.commit_changes.outputs.commit_hash }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Node
         uses: actions/setup-node@v4
@@ -61,7 +61,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
           ref: ${{ needs.update_hugo_npm_dependencies.outputs.commit_hash }}
