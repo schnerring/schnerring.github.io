@@ -3,6 +3,6 @@ module github.com/schnerring/schnerring.github.io
 go 1.25.1
 
 require (
-	github.com/schnerring/hugo-mod-json-resume v0.0.0-20240827190105-167993f39fd1 // indirect
-	github.com/schnerring/hugo-theme-gruvbox v0.0.0-20240828143313-0eb434ccff16 // indirect
+	github.com/schnerring/hugo-mod-json-resume v0.0.0-20250914082338-60d199978528 // indirect
+	github.com/schnerring/hugo-theme-gruvbox v0.0.0-20250916195141-44d3016d746b // indirect
 )
