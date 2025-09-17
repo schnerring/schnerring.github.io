@@ -80,6 +80,10 @@ jobs:
       - name: Install npm Packages
         run: npm ci
 
+      # TODO: temporary workaround; blocked by: https://github.com/schnerring/hugo-theme-gruvbox/issues/364
+      - name: Vendor module dependencies
+        run: hugo mod vendor
+
       - name: Build Hugo
         run: hugo --minify
 
