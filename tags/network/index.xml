@@ -1,20 +1,76 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Network on Michael Schnerring</title><link>https://schnerring.net/tags/network/</link><description>Recent content in Network on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Tue, 06 Feb 2024 20:32:47 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/network/index.xml" rel="self" type="application/rss+xml"/><item><title>Use Mullvad Port Forwarding to Connect to Your OPNsense Home Network with WireGuard</title><link>https://schnerring.net/blog/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard/</link><pubDate>Sun, 28 Nov 2021 21:18:30 +0100</pubDate><guid>https://schnerring.net/blog/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard/</guid><description>&lt;h2 id="update-2023-07-28">Update 2023-07-28&lt;a href="#update-2023-07-28" class="post-heading__anchor" aria-hidden="true">#&lt;/a>
-&lt;/h2>
-&lt;p>&lt;a
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Network on Michael Schnerring</title><link>https://schnerring.net/tags/network/</link><description>Recent content in Network on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Tue, 06 Feb 2024 20:32:47 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/network/index.xml" rel="self" type="application/rss+xml"/><item><title>Use Mullvad Port Forwarding to Connect to Your OPNsense Home Network with WireGuard</title><link>https://schnerring.net/blog/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard/</link><pubDate>Sun, 28 Nov 2021 21:18:30 +0100</pubDate><guid>https://schnerring.net/blog/use-mullvad-port-forwarding-to-connect-to-your-opnsense-home-network-with-wireguard/</guid><description>&lt;h2 id="update-2023-07-28"&gt;Update 2023-07-28&lt;a href="#update-2023-07-28" class="post-heading__anchor" aria-hidden="true"&gt;#&lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;&lt;a
  href="https://mullvad.net/en/blog/2023/5/29/removing-the-support-for-forwarded-ports/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->In May 2023, Mullvad announced the discontinuation of port forwarding support.&lt;/a> Starting from 2023-07-01, all existing ports will be removed, making this guide obsolete. 😭&lt;/p></description></item><item><title>OPNsense Baseline Guide with Mullvad VPN Multi-WAN, Guest, and VLAN Support</title><link>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</link><pubDate>Wed, 17 Nov 2021 03:56:35 +0100</pubDate><guid>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</guid><description>This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the pfSense baseline guide with VPN, Guest, and VLAN support that some of you guys might know, and this is an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use OPNsense instead of pfSense.</description></item><item><title>Router on a Stick VLAN Configuration with SwOS on the Mikrotik CRS328-24P-4S+RM Switch</title><link>https://schnerring.net/blog/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch/</link><pubDate>Wed, 10 Nov 2021 03:30:18 +0100</pubDate><guid>https://schnerring.net/blog/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch/</guid><description>&lt;p>My homelab grew quite a bit over the past years. And with that, my networking needs also changed: stricter firewall rules, segregating untrusted IoT devices into separate networks, traffic prioritization, and more. I wanted to document my switch and VLAN configuration. And maybe this is useful for someone else, too.&lt;/p></description></item><item><title>Use Custom DNS Servers With Mullvad And Any WireGuard Client</title><link>https://schnerring.net/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/</link><pubDate>Sun, 31 Oct 2021 08:19:52 +0100</pubDate><guid>https://schnerring.net/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/</guid><description>I&amp;rsquo;ve been using Mullvad VPN for a while now but only ever used it with the official client on my workstation. I use DNS extensively in my home network, so as soon as I activate Mullvad, I can&amp;rsquo;t resolve DNS names locally. Of course, this is by design and expected. I own an OPNsense appliance, so the natural solution is to move the tunnel there.
-TL;DR# Use the following shell command to request an IP with no DNS hijacking:</description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p>In this post, we will deploy a simple
+&gt;In May 2023, Mullvad announced the discontinuation of port forwarding support.&lt;/a&gt; Starting from 2023-07-01, all existing ports will be removed, making this guide obsolete. 😭&lt;/p&gt;</description></item><item><title>OPNsense Baseline Guide with Mullvad VPN Multi-WAN, Guest, and VLAN Support</title><link>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</link><pubDate>Wed, 17 Nov 2021 03:56:35 +0100</pubDate><guid>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</guid><description>&lt;p&gt;This beginner-friendly, step-by-step guide walks you through the initial
+configuration of your OPNsense firewall. The title of this guide is an homage to
+the
+&lt;a
+ href="https://nguvu.org/pfsense/pfsense-baseline-setup"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;pfSense baseline guide with VPN, Guest, and VLAN support&lt;/a&gt;
+that some of you guys might know, and this is an
+&lt;a
+ href="https://opnsense.org"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;OPNsense&lt;/a&gt; migration of it. I found that guide two years
+ago and immediately fell in love with the network setup. After researching for
+weeks, I decided to use OPNsense instead of pfSense. I bit the bullet and bought
+the &lt;a
+ href="https://www.deciso.com/product-catalog/dec630/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;Deciso DEC630&lt;/a&gt; appliance.
+Albeit expensive and possibly overkill for my needs, I&amp;rsquo;m happy to support the
+open-source mission of Deciso, the maintainers of OPNsense. The only thing I
+regret about the purchase is that I now can&amp;rsquo;t afford the sexier-looking
+successor model, the
+&lt;a
+ href="https://shop.opnsense.com/dec600-series-opnsense-desktop-security-appliances/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;DEC690&lt;/a&gt;.&lt;/p&gt;</description></item><item><title>Router on a Stick VLAN Configuration with SwOS on the Mikrotik CRS328-24P-4S+RM Switch</title><link>https://schnerring.net/blog/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch/</link><pubDate>Wed, 10 Nov 2021 03:30:18 +0100</pubDate><guid>https://schnerring.net/blog/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch/</guid><description>&lt;p&gt;My homelab grew quite a bit over the past years. And with that, my networking needs also changed: stricter firewall rules, segregating untrusted IoT devices into separate networks, traffic prioritization, and more. I wanted to document my switch and VLAN configuration. And maybe this is useful for someone else, too.&lt;/p&gt;</description></item><item><title>Use Custom DNS Servers With Mullvad And Any WireGuard Client</title><link>https://schnerring.net/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/</link><pubDate>Sun, 31 Oct 2021 08:19:52 +0100</pubDate><guid>https://schnerring.net/blog/use-custom-dns-servers-with-mullvad-and-any-wireguard-client/</guid><description>&lt;p&gt;I&amp;rsquo;ve been using &lt;a
+ href="https://mullvad.net/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;Mullvad VPN&lt;/a&gt; for a while now but only
+ever used it with the official client on my workstation. I use DNS extensively
+in my home network, so as soon as I activate Mullvad, I can&amp;rsquo;t resolve DNS names
+locally. Of course, this is by design and expected. I own an
+&lt;a
+ href="https://opnsense.org/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;OPNsense&lt;/a&gt; appliance, so the natural solution is to move
+the tunnel there.&lt;/p&gt;
+&lt;h2 id="tldr"&gt;TL;DR&lt;a href="#tldr" class="post-heading__anchor" aria-hidden="true"&gt;#&lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;Use the following shell command to request an IP with no DNS hijacking:&lt;/p&gt;</description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p&gt;In this post, we will deploy a simple
 &lt;a
  href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Kubernetes Service (AKS)&lt;/a>
+&gt;Azure Kubernetes Service (AKS)&lt;/a&gt;
 cluster from scratch. To expose our web services securely, we will install
 Traefik 2 and configure &lt;a
  href="https://cert-manager.io/"
@@ -22,7 +78,7 @@ Traefik 2 and configure &lt;a
  
  class="link--external" target="_blank" rel="noreferrer"
  
->cert-manager&lt;/a> to manage Let&amp;rsquo;s
+&gt;cert-manager&lt;/a&gt; to manage Let&amp;rsquo;s
 Encrypt certificates. The best part about it: we will do everything with
 &lt;a
  href="https://www.terraform.io/"
@@ -30,4 +86,4 @@ Encrypt certificates. The best part about it: we will do everything with
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Terraform&lt;/a>.&lt;/p></description></item></channel></rss>
+&gt;Terraform&lt;/a&gt;.&lt;/p&gt;</description></item></channel></rss>

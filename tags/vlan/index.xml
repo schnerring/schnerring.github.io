@@ -1,1 +1,38 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>VLAN on Michael Schnerring</title><link>https://schnerring.net/tags/vlan/</link><description>Recent content in VLAN on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 30 Jul 2023 04:53:09 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/vlan/index.xml" rel="self" type="application/rss+xml"/><item><title>OPNsense Baseline Guide with Mullvad VPN Multi-WAN, Guest, and VLAN Support</title><link>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</link><pubDate>Wed, 17 Nov 2021 03:56:35 +0100</pubDate><guid>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</guid><description>This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the pfSense baseline guide with VPN, Guest, and VLAN support that some of you guys might know, and this is an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use OPNsense instead of pfSense.</description></item><item><title>Router on a Stick VLAN Configuration with SwOS on the Mikrotik CRS328-24P-4S+RM Switch</title><link>https://schnerring.net/blog/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch/</link><pubDate>Wed, 10 Nov 2021 03:30:18 +0100</pubDate><guid>https://schnerring.net/blog/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch/</guid><description>&lt;p>My homelab grew quite a bit over the past years. And with that, my networking needs also changed: stricter firewall rules, segregating untrusted IoT devices into separate networks, traffic prioritization, and more. I wanted to document my switch and VLAN configuration. And maybe this is useful for someone else, too.&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>VLAN on Michael Schnerring</title><link>https://schnerring.net/tags/vlan/</link><description>Recent content in VLAN on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 30 Jul 2023 04:53:09 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/vlan/index.xml" rel="self" type="application/rss+xml"/><item><title>OPNsense Baseline Guide with Mullvad VPN Multi-WAN, Guest, and VLAN Support</title><link>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</link><pubDate>Wed, 17 Nov 2021 03:56:35 +0100</pubDate><guid>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</guid><description>&lt;p&gt;This beginner-friendly, step-by-step guide walks you through the initial
+configuration of your OPNsense firewall. The title of this guide is an homage to
+the
+&lt;a
+ href="https://nguvu.org/pfsense/pfsense-baseline-setup"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;pfSense baseline guide with VPN, Guest, and VLAN support&lt;/a&gt;
+that some of you guys might know, and this is an
+&lt;a
+ href="https://opnsense.org"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;OPNsense&lt;/a&gt; migration of it. I found that guide two years
+ago and immediately fell in love with the network setup. After researching for
+weeks, I decided to use OPNsense instead of pfSense. I bit the bullet and bought
+the &lt;a
+ href="https://www.deciso.com/product-catalog/dec630/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;Deciso DEC630&lt;/a&gt; appliance.
+Albeit expensive and possibly overkill for my needs, I&amp;rsquo;m happy to support the
+open-source mission of Deciso, the maintainers of OPNsense. The only thing I
+regret about the purchase is that I now can&amp;rsquo;t afford the sexier-looking
+successor model, the
+&lt;a
+ href="https://shop.opnsense.com/dec600-series-opnsense-desktop-security-appliances/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;DEC690&lt;/a&gt;.&lt;/p&gt;</description></item><item><title>Router on a Stick VLAN Configuration with SwOS on the Mikrotik CRS328-24P-4S+RM Switch</title><link>https://schnerring.net/blog/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch/</link><pubDate>Wed, 10 Nov 2021 03:30:18 +0100</pubDate><guid>https://schnerring.net/blog/router-on-a-stick-vlan-configuration-with-swos-on-the-mikrotik-crs328-24p-4s+rm-switch/</guid><description>&lt;p&gt;My homelab grew quite a bit over the past years. And with that, my networking needs also changed: stricter firewall rules, segregating untrusted IoT devices into separate networks, traffic prioritization, and more. I wanted to document my switch and VLAN configuration. And maybe this is useful for someone else, too.&lt;/p&gt;</description></item></channel></rss>

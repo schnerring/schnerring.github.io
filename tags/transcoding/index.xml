@@ -1,18 +1,18 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Transcoding on Michael Schnerring</title><link>https://schnerring.net/tags/transcoding/</link><description>Recent content in Transcoding on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 02 Apr 2023 15:34:39 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/transcoding/index.xml" rel="self" type="application/rss+xml"/><item><title>Use OBS and ffmpeg to Create Modern GIF-like Screencasts</title><link>https://schnerring.net/blog/use-obs-and-ffmpeg-to-create-gif-like-screencasts/</link><pubDate>Tue, 26 Apr 2022 22:30:46 +0200</pubDate><guid>https://schnerring.net/blog/use-obs-and-ffmpeg-to-create-gif-like-screencasts/</guid><description>&lt;p>In this post, I&amp;rsquo;ll share how I use &lt;a
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Transcoding on Michael Schnerring</title><link>https://schnerring.net/tags/transcoding/</link><description>Recent content in Transcoding on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Sun, 02 Apr 2023 15:34:39 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/transcoding/index.xml" rel="self" type="application/rss+xml"/><item><title>Use OBS and ffmpeg to Create Modern GIF-like Screencasts</title><link>https://schnerring.net/blog/use-obs-and-ffmpeg-to-create-gif-like-screencasts/</link><pubDate>Tue, 26 Apr 2022 22:30:46 +0200</pubDate><guid>https://schnerring.net/blog/use-obs-and-ffmpeg-to-create-gif-like-screencasts/</guid><description>&lt;p&gt;In this post, I&amp;rsquo;ll share how I use &lt;a
  href="https://obsproject.com/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->OBS Studio&lt;/a> and
+&gt;OBS Studio&lt;/a&gt; and
 &lt;a
  href="https://ffmpeg.org/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->ffmpeg&lt;/a> to create short MP4/WebM video snippets for my
-blog posts. Using the &lt;code>&amp;lt;video&amp;gt;&lt;/code> tag with the &lt;code>autoplay&lt;/code> and &lt;code>loop&lt;/code> attributes
+&gt;ffmpeg&lt;/a&gt; to create short MP4/WebM video snippets for my
+blog posts. Using the &lt;code&gt;&amp;lt;video&amp;gt;&lt;/code&gt; tag with the &lt;code&gt;autoplay&lt;/code&gt; and &lt;code&gt;loop&lt;/code&gt; attributes
 makes them look like GIFs. However,
 &lt;a
  href="https://techstacker.com/why-webm-is-superior-to-gif-video-comparison/FR6xLr2zHn9uSTTsH/"
@@ -20,4 +20,4 @@ makes them look like GIFs. However,
  
  class="link--external" target="_blank" rel="noreferrer"
  
->modern video formats result in much smaller file sizes&lt;/a>.&lt;/p></description></item></channel></rss>
+&gt;modern video formats result in much smaller file sizes&lt;/a&gt;.&lt;/p&gt;</description></item></channel></rss>

@@ -1,90 +1,90 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Azure Kubernetes Service on Michael Schnerring</title><link>https://schnerring.net/tags/azure-kubernetes-service/</link><description>Recent content in Azure Kubernetes Service on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Tue, 06 Feb 2024 20:32:47 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/azure-kubernetes-service/index.xml" rel="self" type="application/rss+xml"/><item><title>Reduce Storage Costs when Deploying Azure Kubernetes Service Clusters with Terraform</title><link>https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform/</link><pubDate>Mon, 29 Nov 2021 03:50:04 +0100</pubDate><guid>https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform/</guid><description>&lt;p>I use the Azure Kubernetes Service (AKS) to host a few services, like Synapse,
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Azure Kubernetes Service on Michael Schnerring</title><link>https://schnerring.net/tags/azure-kubernetes-service/</link><description>Recent content in Azure Kubernetes Service on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Tue, 06 Feb 2024 20:32:47 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/azure-kubernetes-service/index.xml" rel="self" type="application/rss+xml"/><item><title>Reduce Storage Costs when Deploying Azure Kubernetes Service Clusters with Terraform</title><link>https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform/</link><pubDate>Mon, 29 Nov 2021 03:50:04 +0100</pubDate><guid>https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform/</guid><description>&lt;p&gt;I use the Azure Kubernetes Service (AKS) to host a few services, like Synapse,
 Remark42, and Plausible Analytics. As of yet, none of these services require
 much computing power, so I chose a small VM size for the AKS node:
-&lt;code>Standard_B2ms&lt;/code>. I recently analyzed my Azure costs and found out that I could
+&lt;code&gt;Standard_B2ms&lt;/code&gt;. I recently analyzed my Azure costs and found out that I could
 have saved more than a hundred bucks in the past months if I had been more
-diligent.&lt;/p></description></item><item><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</title><link>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</link><pubDate>Fri, 14 May 2021 01:13:33 +0200</pubDate><guid>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</guid><description>&lt;p>Did you ever think about running a Matrix homeserver? In this post, we will set one up on the &lt;a
+diligent.&lt;/p&gt;</description></item><item><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</title><link>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</link><pubDate>Fri, 14 May 2021 01:13:33 +0200</pubDate><guid>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</guid><description>&lt;p&gt;Did you ever think about running a Matrix homeserver? In this post, we will set one up on the &lt;a
  href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Kubernetes Service&lt;/a> (AKS). We will use the reference homeserver implementation, which is &lt;a
+&gt;Azure Kubernetes Service&lt;/a&gt; (AKS). We will use the reference homeserver implementation, which is &lt;a
  href="https://github.com/matrix-org/synapse/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Synapse&lt;/a> from the folks at &lt;a
+&gt;Synapse&lt;/a&gt; from the folks at &lt;a
  href="https://matrix.org/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->matrix.org&lt;/a>. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like &lt;a
+&gt;matrix.org&lt;/a&gt;. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/federate.md"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->federation&lt;/a>, &lt;a
+&gt;federation&lt;/a&gt;, &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/delegate.md"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->delegation&lt;/a> and &lt;a
+&gt;delegation&lt;/a&gt; and &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->PostgreSQL&lt;/a> are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the &lt;a
+&gt;PostgreSQL&lt;/a&gt; are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the &lt;a
  href="https://github.com/Awesome-Technologies/synapse-admin"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Synapse Admin UI&lt;/a> deployment with secure access to the &lt;a
+&gt;Synapse Admin UI&lt;/a&gt; deployment with secure access to the &lt;a
  href="https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->administration endpoints&lt;/a> to make management of our homeserver easier.&lt;/p></description></item><item><title>Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website</title><link>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</link><pubDate>Sun, 09 May 2021 09:31:13 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</guid><description>&lt;p>Building upon our previous work, we will deploy &lt;a
+&gt;administration endpoints&lt;/a&gt; to make management of our homeserver easier.&lt;/p&gt;</description></item><item><title>Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website</title><link>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</link><pubDate>Sun, 09 May 2021 09:31:13 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</guid><description>&lt;p&gt;Building upon our previous work, we will deploy &lt;a
  href="https://remark42.com/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Remark42&lt;/a> on Kubernetes with &lt;a
+&gt;Remark42&lt;/a&gt; on Kubernetes with &lt;a
  href="https://www.terraform.io/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Terraform&lt;/a> and integrate it with your existing &lt;a
+&gt;Terraform&lt;/a&gt; and integrate it with your existing &lt;a
  href="https://gohugo.io/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Hugo&lt;/a> website. Make sure to check out my previous posts about &lt;a
+&gt;Hugo&lt;/a&gt; website. Make sure to check out my previous posts about &lt;a
  href="https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
  
  
->creating a Hugo Website&lt;/a> and &lt;a
+&gt;creating a Hugo Website&lt;/a&gt; and &lt;a
  href="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates"
  
  
->deploying an Azure Kubernetes Service cluster&lt;/a> if you haven&amp;rsquo;t already.&lt;/p></description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p>In this post, we will deploy a simple
+&gt;deploying an Azure Kubernetes Service cluster&lt;/a&gt; if you haven&amp;rsquo;t already.&lt;/p&gt;</description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p&gt;In this post, we will deploy a simple
 &lt;a
  href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Kubernetes Service (AKS)&lt;/a>
+&gt;Azure Kubernetes Service (AKS)&lt;/a&gt;
 cluster from scratch. To expose our web services securely, we will install
 Traefik 2 and configure &lt;a
  href="https://cert-manager.io/"
@@ -92,7 +92,7 @@ Traefik 2 and configure &lt;a
  
  class="link--external" target="_blank" rel="noreferrer"
  
->cert-manager&lt;/a> to manage Let&amp;rsquo;s
+&gt;cert-manager&lt;/a&gt; to manage Let&amp;rsquo;s
 Encrypt certificates. The best part about it: we will do everything with
 &lt;a
  href="https://www.terraform.io/"
@@ -100,4 +100,4 @@ Encrypt certificates. The best part about it: we will do everything with
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Terraform&lt;/a>.&lt;/p></description></item></channel></rss>
+&gt;Terraform&lt;/a&gt;.&lt;/p&gt;</description></item></channel></rss>

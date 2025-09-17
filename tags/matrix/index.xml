@@ -1,49 +1,49 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Matrix on Michael Schnerring</title><link>https://schnerring.net/tags/matrix/</link><description>Recent content in Matrix on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Fri, 22 Apr 2022 05:35:34 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/matrix/index.xml" rel="self" type="application/rss+xml"/><item><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</title><link>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</link><pubDate>Fri, 14 May 2021 01:13:33 +0200</pubDate><guid>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</guid><description>&lt;p>Did you ever think about running a Matrix homeserver? In this post, we will set one up on the &lt;a
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Matrix on Michael Schnerring</title><link>https://schnerring.net/tags/matrix/</link><description>Recent content in Matrix on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Fri, 22 Apr 2022 05:35:34 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/matrix/index.xml" rel="self" type="application/rss+xml"/><item><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</title><link>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</link><pubDate>Fri, 14 May 2021 01:13:33 +0200</pubDate><guid>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</guid><description>&lt;p&gt;Did you ever think about running a Matrix homeserver? In this post, we will set one up on the &lt;a
  href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Kubernetes Service&lt;/a> (AKS). We will use the reference homeserver implementation, which is &lt;a
+&gt;Azure Kubernetes Service&lt;/a&gt; (AKS). We will use the reference homeserver implementation, which is &lt;a
  href="https://github.com/matrix-org/synapse/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Synapse&lt;/a> from the folks at &lt;a
+&gt;Synapse&lt;/a&gt; from the folks at &lt;a
  href="https://matrix.org/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->matrix.org&lt;/a>. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like &lt;a
+&gt;matrix.org&lt;/a&gt;. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/federate.md"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->federation&lt;/a>, &lt;a
+&gt;federation&lt;/a&gt;, &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/delegate.md"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->delegation&lt;/a> and &lt;a
+&gt;delegation&lt;/a&gt; and &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->PostgreSQL&lt;/a> are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the &lt;a
+&gt;PostgreSQL&lt;/a&gt; are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the &lt;a
  href="https://github.com/Awesome-Technologies/synapse-admin"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Synapse Admin UI&lt;/a> deployment with secure access to the &lt;a
+&gt;Synapse Admin UI&lt;/a&gt; deployment with secure access to the &lt;a
  href="https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->administration endpoints&lt;/a> to make management of our homeserver easier.&lt;/p></description></item></channel></rss>
+&gt;administration endpoints&lt;/a&gt; to make management of our homeserver easier.&lt;/p&gt;</description></item></channel></rss>

@@ -1,43 +1,43 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Plex on Michael Schnerring</title><link>https://schnerring.net/tags/plex/</link><description>Recent content in Plex on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Wed, 29 Jun 2022 20:15:31 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/plex/index.xml" rel="self" type="application/rss+xml"/><item><title>Install qBittorrent, Jackett, Lidarr, Radarr, Sonarr, and Plex inside TrueNAS Jails</title><link>https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</link><pubDate>Sun, 14 Nov 2021 20:41:04 +0100</pubDate><guid>https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</guid><description>&lt;p>This post documents the steps required to install &lt;a
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Plex on Michael Schnerring</title><link>https://schnerring.net/tags/plex/</link><description>Recent content in Plex on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Wed, 29 Jun 2022 20:15:31 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/plex/index.xml" rel="self" type="application/rss+xml"/><item><title>Install qBittorrent, Jackett, Lidarr, Radarr, Sonarr, and Plex inside TrueNAS Jails</title><link>https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</link><pubDate>Sun, 14 Nov 2021 20:41:04 +0100</pubDate><guid>https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</guid><description>&lt;p&gt;This post documents the steps required to install &lt;a
  href="https://www.qbittorrent.org/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->qBittorrent&lt;/a>, &lt;a
+&gt;qBittorrent&lt;/a&gt;, &lt;a
  href="https://github.com/Jackett/Jackett"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Jackett&lt;/a>, &lt;a
+&gt;Jackett&lt;/a&gt;, &lt;a
  href="https://lidarr.audio/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Lidarr&lt;/a>, &lt;a
+&gt;Lidarr&lt;/a&gt;, &lt;a
  href="https://radarr.video/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Radarr&lt;/a>, &lt;a
+&gt;Radarr&lt;/a&gt;, &lt;a
  href="https://sonarr.tv/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Sonarr&lt;/a>, and &lt;a
+&gt;Sonarr&lt;/a&gt;, and &lt;a
  href="https://www.plex.tv/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Plex&lt;/a> in &lt;a
+&gt;Plex&lt;/a&gt; in &lt;a
  href="https://www.truenas.com/docs/core/applications/jails/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->TrueNAS jails&lt;/a> version &lt;code>12.0-U6&lt;/code>.&lt;/p></description></item></channel></rss>
+&gt;TrueNAS jails&lt;/a&gt; version &lt;code&gt;12.0-U6&lt;/code&gt;.&lt;/p&gt;</description></item></channel></rss>

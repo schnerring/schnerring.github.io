@@ -1,157 +1,194 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Self-Host on Michael Schnerring</title><link>https://schnerring.net/tags/self-host/</link><description>Recent content in Self-Host on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Tue, 06 Feb 2024 20:32:47 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/self-host/index.xml" rel="self" type="application/rss+xml"/><item><title>Configure NUT for OPNsense and TrueNAS with the CyberPower PR750ERT2U UPS</title><link>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</link><pubDate>Sun, 28 Nov 2021 03:50:22 +0100</pubDate><guid>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</guid><description>&lt;p>For storage in my homelab, I use &lt;a
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Self-Host on Michael Schnerring</title><link>https://schnerring.net/tags/self-host/</link><description>Recent content in Self-Host on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Tue, 06 Feb 2024 20:32:47 +0100</lastBuildDate><atom:link href="https://schnerring.net/tags/self-host/index.xml" rel="self" type="application/rss+xml"/><item><title>Configure NUT for OPNsense and TrueNAS with the CyberPower PR750ERT2U UPS</title><link>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</link><pubDate>Sun, 28 Nov 2021 03:50:22 +0100</pubDate><guid>https://schnerring.net/blog/configure-nut-for-opnsense-and-truenas-with-the-cyberpower-pr750ert2u-ups/</guid><description>&lt;p&gt;For storage in my homelab, I use &lt;a
  href="https://www.truenas.com/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->TrueNAS&lt;/a>. Additionally, I run a couple of apps on top of it as &lt;a
+&gt;TrueNAS&lt;/a&gt;. Additionally, I run a couple of apps on top of it as &lt;a
  href="https://docs.freebsd.org/en/books/handbook/jails/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->jails&lt;/a>. For over a year, I&amp;rsquo;ve been using an &lt;a
+&gt;jails&lt;/a&gt;. For over a year, I&amp;rsquo;ve been using an &lt;a
  href="https://en.wikipedia.org/wiki/Uninterruptible_power_supply"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->uninterruptible power supply (UPS)&lt;/a> to protect my TrueNAS from possible data loss in case of a power failure. What I&amp;rsquo;ve been missing throughout that time are the monitoring and management tools to shut down everything gracefully when the battery of the UPS runs low. In the event of a power outage lasting longer than 30 minutes, the battery would run out of juice. Everything attached to the UPS would be powered off immediately, and data loss might occur. Luckily I live in an area where power outages rarely happen. I also have backups I could restore if my TrueNAS data gets corrupted. Still, doing this right and configuring &lt;a
+&gt;uninterruptible power supply (UPS)&lt;/a&gt; to protect my TrueNAS from possible data loss in case of a power failure. What I&amp;rsquo;ve been missing throughout that time are the monitoring and management tools to shut down everything gracefully when the battery of the UPS runs low. In the event of a power outage lasting longer than 30 minutes, the battery would run out of juice. Everything attached to the UPS would be powered off immediately, and data loss might occur. Luckily I live in an area where power outages rarely happen. I also have backups I could restore if my TrueNAS data gets corrupted. Still, doing this right and configuring &lt;a
  href="https://networkupstools.org/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Network UPS Tools (NUT)&lt;/a> to orchestrate shutdowns has been on my to-do list for way too long. It&amp;rsquo;s time to tackle the issue!&lt;/p></description></item><item><title>OPNsense Baseline Guide with Mullvad VPN Multi-WAN, Guest, and VLAN Support</title><link>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</link><pubDate>Wed, 17 Nov 2021 03:56:35 +0100</pubDate><guid>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</guid><description>This beginner-friendly, step-by-step guide walks you through the initial configuration of your OPNsense firewall. The title of this guide is an homage to the pfSense baseline guide with VPN, Guest, and VLAN support that some of you guys might know, and this is an OPNsense migration of it. I found that guide two years ago and immediately fell in love with the network setup. After researching for weeks, I decided to use OPNsense instead of pfSense.</description></item><item><title>Install qBittorrent, Jackett, Lidarr, Radarr, Sonarr, and Plex inside TrueNAS Jails</title><link>https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</link><pubDate>Sun, 14 Nov 2021 20:41:04 +0100</pubDate><guid>https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</guid><description>&lt;p>This post documents the steps required to install &lt;a
+&gt;Network UPS Tools (NUT)&lt;/a&gt; to orchestrate shutdowns has been on my to-do list for way too long. It&amp;rsquo;s time to tackle the issue!&lt;/p&gt;</description></item><item><title>OPNsense Baseline Guide with Mullvad VPN Multi-WAN, Guest, and VLAN Support</title><link>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</link><pubDate>Wed, 17 Nov 2021 03:56:35 +0100</pubDate><guid>https://schnerring.net/blog/opnsense-baseline-guide-with-vpn-guest-and-vlan-support/</guid><description>&lt;p&gt;This beginner-friendly, step-by-step guide walks you through the initial
+configuration of your OPNsense firewall. The title of this guide is an homage to
+the
+&lt;a
+ href="https://nguvu.org/pfsense/pfsense-baseline-setup"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;pfSense baseline guide with VPN, Guest, and VLAN support&lt;/a&gt;
+that some of you guys might know, and this is an
+&lt;a
+ href="https://opnsense.org"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;OPNsense&lt;/a&gt; migration of it. I found that guide two years
+ago and immediately fell in love with the network setup. After researching for
+weeks, I decided to use OPNsense instead of pfSense. I bit the bullet and bought
+the &lt;a
+ href="https://www.deciso.com/product-catalog/dec630/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;Deciso DEC630&lt;/a&gt; appliance.
+Albeit expensive and possibly overkill for my needs, I&amp;rsquo;m happy to support the
+open-source mission of Deciso, the maintainers of OPNsense. The only thing I
+regret about the purchase is that I now can&amp;rsquo;t afford the sexier-looking
+successor model, the
+&lt;a
+ href="https://shop.opnsense.com/dec600-series-opnsense-desktop-security-appliances/"
+ 
+ 
+ class="link--external" target="_blank" rel="noreferrer"
+ 
+&gt;DEC690&lt;/a&gt;.&lt;/p&gt;</description></item><item><title>Install qBittorrent, Jackett, Lidarr, Radarr, Sonarr, and Plex inside TrueNAS Jails</title><link>https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</link><pubDate>Sun, 14 Nov 2021 20:41:04 +0100</pubDate><guid>https://schnerring.net/blog/install-qbittorrent-jackett-lidarr-radarr-sonarr-and-plex-inside-truenas-jails/</guid><description>&lt;p&gt;This post documents the steps required to install &lt;a
  href="https://www.qbittorrent.org/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->qBittorrent&lt;/a>, &lt;a
+&gt;qBittorrent&lt;/a&gt;, &lt;a
  href="https://github.com/Jackett/Jackett"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Jackett&lt;/a>, &lt;a
+&gt;Jackett&lt;/a&gt;, &lt;a
  href="https://lidarr.audio/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Lidarr&lt;/a>, &lt;a
+&gt;Lidarr&lt;/a&gt;, &lt;a
  href="https://radarr.video/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Radarr&lt;/a>, &lt;a
+&gt;Radarr&lt;/a&gt;, &lt;a
  href="https://sonarr.tv/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Sonarr&lt;/a>, and &lt;a
+&gt;Sonarr&lt;/a&gt;, and &lt;a
  href="https://www.plex.tv/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Plex&lt;/a> in &lt;a
+&gt;Plex&lt;/a&gt; in &lt;a
  href="https://www.truenas.com/docs/core/applications/jails/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->TrueNAS jails&lt;/a> version &lt;code>12.0-U6&lt;/code>.&lt;/p></description></item><item><title>Install the Ubiquiti Unifi Controller Software v6 Inside a TrueNAS Jail</title><link>https://schnerring.net/blog/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail/</link><pubDate>Thu, 04 Nov 2021 23:15:27 +0100</pubDate><guid>https://schnerring.net/blog/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail/</guid><description>&lt;p>To manage &lt;a
+&gt;TrueNAS jails&lt;/a&gt; version &lt;code&gt;12.0-U6&lt;/code&gt;.&lt;/p&gt;</description></item><item><title>Install the Ubiquiti Unifi Controller Software v6 Inside a TrueNAS Jail</title><link>https://schnerring.net/blog/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail/</link><pubDate>Thu, 04 Nov 2021 23:15:27 +0100</pubDate><guid>https://schnerring.net/blog/install-the-ubiquiti-unifi-controller-software-v6-inside-a-truenas-jail/</guid><description>&lt;p&gt;To manage &lt;a
  href="https://www.ui.com/wi-fi"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Ubiquiti UniFi devices&lt;/a>, a UniFi controller is required. Over a year ago, I initially installed the controller software inside a Ubuntu VirtualBox VM. Now that version 6 of the UniFi controller software is released, it&amp;rsquo;s time to upgrade. I decided to reinstall the controller inside a TrueNAS jail instead of a VirtualBox VM. When searching the interwebs, I only found lots of outdated instructions. It turns out that it&amp;rsquo;s very straightforward, so here are my quick notes on how to do it.&lt;/p></description></item><item><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</title><link>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</link><pubDate>Fri, 14 May 2021 01:13:33 +0200</pubDate><guid>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</guid><description>&lt;p>Did you ever think about running a Matrix homeserver? In this post, we will set one up on the &lt;a
+&gt;Ubiquiti UniFi devices&lt;/a&gt;, a UniFi controller is required. Over a year ago, I initially installed the controller software inside a Ubuntu VirtualBox VM. Now that version 6 of the UniFi controller software is released, it&amp;rsquo;s time to upgrade. I decided to reinstall the controller inside a TrueNAS jail instead of a VirtualBox VM. When searching the interwebs, I only found lots of outdated instructions. It turns out that it&amp;rsquo;s very straightforward, so here are my quick notes on how to do it.&lt;/p&gt;</description></item><item><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</title><link>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</link><pubDate>Fri, 14 May 2021 01:13:33 +0200</pubDate><guid>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</guid><description>&lt;p&gt;Did you ever think about running a Matrix homeserver? In this post, we will set one up on the &lt;a
  href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Kubernetes Service&lt;/a> (AKS). We will use the reference homeserver implementation, which is &lt;a
+&gt;Azure Kubernetes Service&lt;/a&gt; (AKS). We will use the reference homeserver implementation, which is &lt;a
  href="https://github.com/matrix-org/synapse/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Synapse&lt;/a> from the folks at &lt;a
+&gt;Synapse&lt;/a&gt; from the folks at &lt;a
  href="https://matrix.org/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->matrix.org&lt;/a>. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like &lt;a
+&gt;matrix.org&lt;/a&gt;. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/federate.md"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->federation&lt;/a>, &lt;a
+&gt;federation&lt;/a&gt;, &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/delegate.md"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->delegation&lt;/a> and &lt;a
+&gt;delegation&lt;/a&gt; and &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->PostgreSQL&lt;/a> are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the &lt;a
+&gt;PostgreSQL&lt;/a&gt; are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the &lt;a
  href="https://github.com/Awesome-Technologies/synapse-admin"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Synapse Admin UI&lt;/a> deployment with secure access to the &lt;a
+&gt;Synapse Admin UI&lt;/a&gt; deployment with secure access to the &lt;a
  href="https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->administration endpoints&lt;/a> to make management of our homeserver easier.&lt;/p></description></item><item><title>Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website</title><link>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</link><pubDate>Sun, 09 May 2021 09:31:13 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</guid><description>&lt;p>Building upon our previous work, we will deploy &lt;a
+&gt;administration endpoints&lt;/a&gt; to make management of our homeserver easier.&lt;/p&gt;</description></item><item><title>Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website</title><link>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</link><pubDate>Sun, 09 May 2021 09:31:13 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</guid><description>&lt;p&gt;Building upon our previous work, we will deploy &lt;a
  href="https://remark42.com/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Remark42&lt;/a> on Kubernetes with &lt;a
+&gt;Remark42&lt;/a&gt; on Kubernetes with &lt;a
  href="https://www.terraform.io/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Terraform&lt;/a> and integrate it with your existing &lt;a
+&gt;Terraform&lt;/a&gt; and integrate it with your existing &lt;a
  href="https://gohugo.io/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Hugo&lt;/a> website. Make sure to check out my previous posts about &lt;a
+&gt;Hugo&lt;/a&gt; website. Make sure to check out my previous posts about &lt;a
  href="https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
  
  
->creating a Hugo Website&lt;/a> and &lt;a
+&gt;creating a Hugo Website&lt;/a&gt; and &lt;a
  href="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates"
  
  
->deploying an Azure Kubernetes Service cluster&lt;/a> if you haven&amp;rsquo;t already.&lt;/p></description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p>In this post, we will deploy a simple
+&gt;deploying an Azure Kubernetes Service cluster&lt;/a&gt; if you haven&amp;rsquo;t already.&lt;/p&gt;</description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p&gt;In this post, we will deploy a simple
 &lt;a
  href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Kubernetes Service (AKS)&lt;/a>
+&gt;Azure Kubernetes Service (AKS)&lt;/a&gt;
 cluster from scratch. To expose our web services securely, we will install
 Traefik 2 and configure &lt;a
  href="https://cert-manager.io/"
@@ -159,7 +196,7 @@ Traefik 2 and configure &lt;a
  
  class="link--external" target="_blank" rel="noreferrer"
  
->cert-manager&lt;/a> to manage Let&amp;rsquo;s
+&gt;cert-manager&lt;/a&gt; to manage Let&amp;rsquo;s
 Encrypt certificates. The best part about it: we will do everything with
 &lt;a
  href="https://www.terraform.io/"
@@ -167,4 +204,4 @@ Encrypt certificates. The best part about it: we will do everything with
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Terraform&lt;/a>.&lt;/p></description></item></channel></rss>
+&gt;Terraform&lt;/a&gt;.&lt;/p&gt;</description></item></channel></rss>

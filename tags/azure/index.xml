@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Azure on Michael Schnerring</title><link>https://schnerring.net/tags/azure/</link><description>Recent content in Azure on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Mon, 02 Sep 2024 01:06:03 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/azure/index.xml" rel="self" type="application/rss+xml"/><item><title>Use PowerShell to Request Quotes for Azure Reservations</title><link>https://schnerring.net/blog/use-powershell-to-request-quotes-for-azure-reservations/</link><pubDate>Tue, 26 Apr 2022 04:14:21 +0200</pubDate><guid>https://schnerring.net/blog/use-powershell-to-request-quotes-for-azure-reservations/</guid><description>&lt;p>Over the weekend, I was on a quest to find the cheapest available Azure Virtual
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Azure on Michael Schnerring</title><link>https://schnerring.net/tags/azure/</link><description>Recent content in Azure on Michael Schnerring</description><generator>Hugo</generator><language>en</language><copyright>© 2020 - 2023 Michael Schnerring</copyright><lastBuildDate>Mon, 02 Sep 2024 01:06:03 +0200</lastBuildDate><atom:link href="https://schnerring.net/tags/azure/index.xml" rel="self" type="application/rss+xml"/><item><title>Use PowerShell to Request Quotes for Azure Reservations</title><link>https://schnerring.net/blog/use-powershell-to-request-quotes-for-azure-reservations/</link><pubDate>Tue, 26 Apr 2022 04:14:21 +0200</pubDate><guid>https://schnerring.net/blog/use-powershell-to-request-quotes-for-azure-reservations/</guid><description>&lt;p&gt;Over the weekend, I was on a quest to find the cheapest available Azure Virtual
 Machine to house my Azure Kubernetes Service cluster. I previously wrote about
 &lt;a
  href="https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform"
  
  
->optimizing storage cost with Azure Kubernetes Service (AKS)&lt;/a>,
+&gt;optimizing storage cost with Azure Kubernetes Service (AKS)&lt;/a&gt;,
 where I talk about the importance of selecting VMs that support
 &lt;a
  href="https://docs.microsoft.com/en-us/azure/virtual-machines/ephemeral-os-disks"
@@ -12,18 +12,18 @@ where I talk about the importance of selecting VMs that support
  
  class="link--external" target="_blank" rel="noreferrer"
  
->ephemeral OS disks&lt;/a>.
+&gt;ephemeral OS disks&lt;/a&gt;.
 But what VM type and region should I choose? Searching through reservation
 offers in the Azure Portal turned out to be tedious. This time, I&amp;rsquo;ll demonstrate
 how to find the best offers using PowerShell and export the results to a CSV
-file.&lt;/p></description></item><item><title>Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions</title><link>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</link><pubDate>Sun, 27 Mar 2022 08:12:20 +0200</pubDate><guid>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</guid><description>&lt;p>One aspect of managing
+file.&lt;/p&gt;</description></item><item><title>Automate Building Custom Windows Images For Azure Virtual Desktop With Packer And GitHub Actions</title><link>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</link><pubDate>Sun, 27 Mar 2022 08:12:20 +0200</pubDate><guid>https://schnerring.net/blog/automate-building-custom-windows-images-for-azure-virtual-desktop-with-packer-and-github-actions/</guid><description>&lt;p&gt;One aspect of managing
 &lt;a
  href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Virtual Desktop (AVD)&lt;/a>
+&gt;Azure Virtual Desktop (AVD)&lt;/a&gt;
 is keeping it up-to-date. One strategy is periodically building a &amp;ldquo;golden&amp;rdquo; image
 and re-deploying AVD session host VMs using the updated image. In this post,
 we&amp;rsquo;ll use &lt;a
@@ -32,117 +32,117 @@ we&amp;rsquo;ll use &lt;a
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Packer&lt;/a> and
+&gt;Packer&lt;/a&gt; and
 &lt;a
  href="https://github.com/features/actions"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->GitHub Actions&lt;/a> to build a Windows 11
-image and push it to Azure.&lt;/p></description></item><item><title>Deploy Azure Virtual Desktop (AVD) Using Terraform and Azure Active Directory Domain Services (AADDS)</title><link>https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/</link><pubDate>Sun, 27 Feb 2022 21:32:52 +0100</pubDate><guid>https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/</guid><description>&lt;p>With &lt;a
+&gt;GitHub Actions&lt;/a&gt; to build a Windows 11
+image and push it to Azure.&lt;/p&gt;</description></item><item><title>Deploy Azure Virtual Desktop (AVD) Using Terraform and Azure Active Directory Domain Services (AADDS)</title><link>https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/</link><pubDate>Sun, 27 Feb 2022 21:32:52 +0100</pubDate><guid>https://schnerring.net/blog/deploy-azure-virtual-desktop-avd-using-terraform-and-azure-active-directory-domain-services-aadds/</guid><description>&lt;p&gt;With &lt;a
  href="https://azure.microsoft.com/en-us/services/virtual-desktop/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Virtual Desktop (AVD)&lt;/a>, you can deliver secure Windows 11 desktops and environments anywhere. It&amp;rsquo;s pretty easy to deploy and scale. You can provide a coherent user experience from any end-user device and reduce costs by leveraging Windows 11 multi-session licensing. This tutorial will guide you through setting up AVD with AADDS using Terraform.&lt;/p></description></item><item><title>Set Up Azure Active Directory Domain Services (AADDS) With Terraform</title><link>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/</link><pubDate>Sun, 20 Feb 2022 06:05:36 +0100</pubDate><guid>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/</guid><description>&lt;p>I wanted to revisit this topic for a while because the &lt;a
+&gt;Azure Virtual Desktop (AVD)&lt;/a&gt;, you can deliver secure Windows 11 desktops and environments anywhere. It&amp;rsquo;s pretty easy to deploy and scale. You can provide a coherent user experience from any end-user device and reduce costs by leveraging Windows 11 multi-session licensing. This tutorial will guide you through setting up AVD with AADDS using Terraform.&lt;/p&gt;</description></item><item><title>Set Up Azure Active Directory Domain Services (AADDS) With Terraform</title><link>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/</link><pubDate>Sun, 20 Feb 2022 06:05:36 +0100</pubDate><guid>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated/</guid><description>&lt;p&gt;I wanted to revisit this topic for a while because the &lt;a
  href="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform"
  
  
->previous guide I wrote about setting up Azure Active Directory Domain Services (AADDS) with Terraform&lt;/a> is outdated. However, the article still attracts around 100 visitors per month. People also keep downloading the deprecated Terraform module I created. Time to set things right!&lt;/p></description></item><item><title>Reduce Storage Costs when Deploying Azure Kubernetes Service Clusters with Terraform</title><link>https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform/</link><pubDate>Mon, 29 Nov 2021 03:50:04 +0100</pubDate><guid>https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform/</guid><description>&lt;p>I use the Azure Kubernetes Service (AKS) to host a few services, like Synapse,
+&gt;previous guide I wrote about setting up Azure Active Directory Domain Services (AADDS) with Terraform&lt;/a&gt; is outdated. However, the article still attracts around 100 visitors per month. People also keep downloading the deprecated Terraform module I created. Time to set things right!&lt;/p&gt;</description></item><item><title>Reduce Storage Costs when Deploying Azure Kubernetes Service Clusters with Terraform</title><link>https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform/</link><pubDate>Mon, 29 Nov 2021 03:50:04 +0100</pubDate><guid>https://schnerring.net/blog/reduce-storage-costs-when-deploying-azure-kubernetes-service-clusters-with-terraform/</guid><description>&lt;p&gt;I use the Azure Kubernetes Service (AKS) to host a few services, like Synapse,
 Remark42, and Plausible Analytics. As of yet, none of these services require
 much computing power, so I chose a small VM size for the AKS node:
-&lt;code>Standard_B2ms&lt;/code>. I recently analyzed my Azure costs and found out that I could
+&lt;code&gt;Standard_B2ms&lt;/code&gt;. I recently analyzed my Azure costs and found out that I could
 have saved more than a hundred bucks in the past months if I had been more
-diligent.&lt;/p></description></item><item><title>Set Up Azure Active Directory Domain Services (AADDS) with Terraform</title><link>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/</link><pubDate>Sat, 22 May 2021 16:23:36 +0200</pubDate><guid>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/</guid><description>&lt;h2 id="update-2022-02-20">Update 2022-02-20&lt;a href="#update-2022-02-20" class="post-heading__anchor" aria-hidden="true">#&lt;/a>
-&lt;/h2>
-&lt;p>This guide is outdated! &lt;a
+diligent.&lt;/p&gt;</description></item><item><title>Set Up Azure Active Directory Domain Services (AADDS) with Terraform</title><link>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/</link><pubDate>Sat, 22 May 2021 16:23:36 +0200</pubDate><guid>https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform/</guid><description>&lt;h2 id="update-2022-02-20"&gt;Update 2022-02-20&lt;a href="#update-2022-02-20" class="post-heading__anchor" aria-hidden="true"&gt;#&lt;/a&gt;
+&lt;/h2&gt;
+&lt;p&gt;This guide is outdated! &lt;a
  href="https://schnerring.net/blog/set-up-azure-active-directory-domain-services-aadds-with-terraform-updated"
  
  
->Please click here to go to the new guide I wrote.&lt;/a>&lt;/p></description></item><item><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</title><link>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</link><pubDate>Fri, 14 May 2021 01:13:33 +0200</pubDate><guid>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</guid><description>&lt;p>Did you ever think about running a Matrix homeserver? In this post, we will set one up on the &lt;a
+&gt;Please click here to go to the new guide I wrote.&lt;/a&gt;&lt;/p&gt;</description></item><item><title>Deploy a Matrix Homeserver to Azure Kubernetes Service (AKS) with Terraform</title><link>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</link><pubDate>Fri, 14 May 2021 01:13:33 +0200</pubDate><guid>https://schnerring.net/blog/deploy-a-matrix-homeserver-to-azure-kubernetes-service-aks-with-terraform/</guid><description>&lt;p&gt;Did you ever think about running a Matrix homeserver? In this post, we will set one up on the &lt;a
  href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Kubernetes Service&lt;/a> (AKS). We will use the reference homeserver implementation, which is &lt;a
+&gt;Azure Kubernetes Service&lt;/a&gt; (AKS). We will use the reference homeserver implementation, which is &lt;a
  href="https://github.com/matrix-org/synapse/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Synapse&lt;/a> from the folks at &lt;a
+&gt;Synapse&lt;/a&gt; from the folks at &lt;a
  href="https://matrix.org/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->matrix.org&lt;/a>. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like &lt;a
+&gt;matrix.org&lt;/a&gt;. This post focuses on the Kubernetes stuff, keeping Synapse configuration to a minimum. Things like &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/federate.md"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->federation&lt;/a>, &lt;a
+&gt;federation&lt;/a&gt;, &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/delegate.md"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->delegation&lt;/a> and &lt;a
+&gt;delegation&lt;/a&gt; and &lt;a
  href="https://github.com/matrix-org/synapse/blob/master/docs/postgres.md#set-up-database"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->PostgreSQL&lt;/a> are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the &lt;a
+&gt;PostgreSQL&lt;/a&gt; are out of scope, because plenty of excellent guides and the official documentation exist covering that. The icing on the cake will be the &lt;a
  href="https://github.com/Awesome-Technologies/synapse-admin"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Synapse Admin UI&lt;/a> deployment with secure access to the &lt;a
+&gt;Synapse Admin UI&lt;/a&gt; deployment with secure access to the &lt;a
  href="https://github.com/matrix-org/synapse/blob/develop/docs/reverse_proxy.md#synapse-administration-endpoints"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->administration endpoints&lt;/a> to make management of our homeserver easier.&lt;/p></description></item><item><title>Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website</title><link>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</link><pubDate>Sun, 09 May 2021 09:31:13 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</guid><description>&lt;p>Building upon our previous work, we will deploy &lt;a
+&gt;administration endpoints&lt;/a&gt; to make management of our homeserver easier.&lt;/p&gt;</description></item><item><title>Use Terraform to Deploy the Remark42 Commenting System to Kubernetes and Integrate it with a Hugo Website</title><link>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</link><pubDate>Sun, 09 May 2021 09:31:13 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-the-remark42-commenting-system-to-kubernetes-and-integrate-it-with-a-hugo-website/</guid><description>&lt;p&gt;Building upon our previous work, we will deploy &lt;a
  href="https://remark42.com/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Remark42&lt;/a> on Kubernetes with &lt;a
+&gt;Remark42&lt;/a&gt; on Kubernetes with &lt;a
  href="https://www.terraform.io/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Terraform&lt;/a> and integrate it with your existing &lt;a
+&gt;Terraform&lt;/a&gt; and integrate it with your existing &lt;a
  href="https://gohugo.io/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Hugo&lt;/a> website. Make sure to check out my previous posts about &lt;a
+&gt;Hugo&lt;/a&gt; website. Make sure to check out my previous posts about &lt;a
  href="https://schnerring.net/blog/create-a-hugo-website-with-github-pages-github-actions-and-cloudflare"
  
  
->creating a Hugo Website&lt;/a> and &lt;a
+&gt;creating a Hugo Website&lt;/a&gt; and &lt;a
  href="https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates"
  
  
->deploying an Azure Kubernetes Service cluster&lt;/a> if you haven&amp;rsquo;t already.&lt;/p></description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p>In this post, we will deploy a simple
+&gt;deploying an Azure Kubernetes Service cluster&lt;/a&gt; if you haven&amp;rsquo;t already.&lt;/p&gt;</description></item><item><title>Use Terraform to Deploy an Azure Kubernetes Service (AKS) Cluster, Traefik 2, cert-manager, and Let's Encrypt Certificates</title><link>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</link><pubDate>Sun, 25 Apr 2021 01:00:27 +0200</pubDate><guid>https://schnerring.net/blog/use-terraform-to-deploy-an-azure-kubernetes-service-aks-cluster-traefik-2-cert-manager-and-lets-encrypt-certificates/</guid><description>&lt;p&gt;In this post, we will deploy a simple
 &lt;a
  href="https://azure.microsoft.com/en-us/services/kubernetes-service/"
  
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Azure Kubernetes Service (AKS)&lt;/a>
+&gt;Azure Kubernetes Service (AKS)&lt;/a&gt;
 cluster from scratch. To expose our web services securely, we will install
 Traefik 2 and configure &lt;a
  href="https://cert-manager.io/"
@@ -150,7 +150,7 @@ Traefik 2 and configure &lt;a
  
  class="link--external" target="_blank" rel="noreferrer"
  
->cert-manager&lt;/a> to manage Let&amp;rsquo;s
+&gt;cert-manager&lt;/a&gt; to manage Let&amp;rsquo;s
 Encrypt certificates. The best part about it: we will do everything with
 &lt;a
  href="https://www.terraform.io/"
@@ -158,4 +158,4 @@ Encrypt certificates. The best part about it: we will do everything with
  
  class="link--external" target="_blank" rel="noreferrer"
  
->Terraform&lt;/a>.&lt;/p></description></item></channel></rss>
+&gt;Terraform&lt;/a&gt;.&lt;/p&gt;</description></item></channel></rss>
